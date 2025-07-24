@@ -1,0 +1,61 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.CustomPermissionModel
+@{
+    var roles = Model.Roles.OrderBy(x => x.Name).ToArray();
+}
+
+@Html.Partial("~/Views/Shared/_Alert.cshtml")
+
+<div id="permission-roles">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "permission-roles" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label>Module:</label>
+            @Html.DropDownListFor(x => x.ModuleId, new SelectList(Model.Modules, "Value", "Text"), "Select a module...", new { @class = "form-control select2", style = "width:100%;text-transform:capitalize;" })
+            @Html.ValidationMessageFor(x => x.ModuleId, "", new { @class = "text-danger" })
+        </div>
+        if (roles.IsNotNullOrEmpty() && roles.Any())
+        {
+            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Roles:</h3>
+            <div class="form-group">
+                <div class="checkbox-list">
+                    <table>
+                        <tbody>
+                            @for (var i = 0; i < roles.Length; i++)
+                            {
+                                <tr>
+                                    <td class="pb-2">
+                                        <div class="checkbox-list">
+                                            <span class="switch switch-sm switch-icon">
+                                                <label>
+                                                    <input class="cbx_roles" type="checkbox" name="SelectedRoles" @Html.Raw(Model.SelectedRoles.Any(q => q.Equals(roles[i].Id)) ? "checked" : "") value="@roles[i].Id"> &nbsp;&nbsp;&nbsp;<a class="cursor-pointer">@roles[i].Name</a>
+                                                    <span class="mt-0"></span>
+                                                </label>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="pb-2">
+                                        @if (roles.Length > i + 1)
+                                        {
+                                            <div class="checkbox-list">
+                                                <span class="switch switch-sm switch-icon">
+                                                    <label>
+                                                        <input class="cbx_roles" type="checkbox" name="SelectedRoles" @Html.Raw(Model.SelectedRoles.Any(q => q.Equals(roles[i + 1].Id)) ? "checked" : "") value="@roles[i + 1].Id"> &nbsp;&nbsp;&nbsp;<a class="cursor-pointer">@roles[i + 1].Name</a>
+                                                        <span class="mt-0"></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+</div>

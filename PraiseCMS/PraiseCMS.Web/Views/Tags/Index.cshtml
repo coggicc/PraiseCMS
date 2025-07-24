@@ -1,0 +1,147 @@
+﻿@model PraiseCMS.DataAccess.Models.FoldersTagsViewModel
+@using Roles = PraiseCMS.Shared.Shared.Roles
+
+@{
+    ViewBag.Title = "Tags";
+}
+
+@section leftsubheader{
+    <a href="/settings" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-958595693250ac1c90e1ed47c98ba8 @Html.IsActive("settings", "Index", true)">Church Info</a>
+    <a href="/campuses" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-9320982602755ea0f9a4ba47d7a34e">Campuses</a>
+    @*<a href="/serviceareas" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-07737697423e093561d03a485a9e64">Service Areas</a>*@
+    <a href="/users?type=@Roles.Administrator" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-4295413424b858715f7bc14a3fb3f7">Administrators</a>
+    <a href="/permissions" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-28834340961e860481430b4d1fbad1">Permissions</a>
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">@ViewBag.Title</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Manage Tags &amp; Folders</span>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="RolePermission" role="tabpanel" aria-labelledby="RolePermission">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div id="kt_tree" class="tree-demo overflow-auto">
+                        </div>
+                    </div>
+                    <div class="col-lg-9 p-0">
+                        <div class="tag_folder_container">
+                            @Html.Partial("_TagsAndFolders", Model)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        var activeId = '@Model.ParentFolder.Id';
+        var treeContainer;
+        function BindSideBar(id = "", trigger = false) {
+            $.get('/Tags/GetFolders', null, function (result) {
+                var data = [];
+                data.push(result);
+                treeContainer = $("#kt_tree").jstree({
+                    "core": {
+                        "themes": {
+                            "responsive": false
+                        },
+                        "check_callback": true,
+                        "data": data
+                    },
+                    "types": {
+                        "default": {
+                            "icon": "fa fa-folder text-warning"
+                        },
+                        "file": {
+                            "icon": "fa fa-file  text-warning"
+                        }
+                    },
+                    "state": {
+                        "key": "demo2"
+                    },
+                    "plugins": ["search", "dnd", "state", "types"]
+                }).on('ready.jstree', function () {
+                        $('.jstree .jstree-anchor').removeClass('text-primary');
+                        $('.jstree .jstree-icon').removeClass('text-primary').addClass('text-warning');
+                        $('#' + activeId + '_anchor').addClass('text-primary');
+                        $('#' + activeId + '_anchor').children('i').addClass('text-primary').removeClass('text-warning');
+                        if (trigger) {
+                            $('#' + id + '_anchor').trigger('click');
+                        }
+                    });
+            });
+        }
+        $(document).on('dnd_stop.vakata', function (e, data) {
+            var targetId = data.event.target.id;
+            var sourceId = data.element.id;
+            if (targetId && sourceId) {
+                var childId = sourceId.replace('_anchor', '');
+                var parentId = targetId.replace('_anchor', '');
+
+                //return false If we dragdrop any parent node into its child
+                var parent = $('#' + targetId).parents('#' + childId);
+                if (parent && parent.length) {
+                    return false;
+                }
+
+                //activate the parent in which curent folder dropped
+                activeId = parentId;
+                updateFolderParent(childId, parentId);
+            }
+            return false;
+        });
+        $(function () {
+            let sessionId = sessionStorage.getItem("sessionActiveId");
+            if (sessionId) {
+                activeId = sessionId;
+                BindSideBar(activeId, true);
+            } else {
+                BindSideBar();
+            }
+
+        });
+        window.onbeforeunload = function (e) {
+            sessionStorage.setItem("sessionActiveId", activeId);
+          };
+        function RefreshTree() {
+            $("div#kt_tree").html("");
+            $("#kt_tree").jstree('destroy');
+            BindSideBar(activeId, true);
+        }
+
+        function updateFolderParent(childId, parentId) {
+            $.get("/Tags/UpdateParent/", ({ childId: childId, parentId: parentId }), function (result) {
+                RefreshTree();
+            });
+        }
+
+        function refreshFoldersAndTags(folderId = '') {
+            folderId = folderId ? folderId : activeId;
+            $.get("/Tags/GetFoldersAndTags/" + folderId, null, function (result) {
+                activeId = folderId;
+                $(".tag_folder_container").html("").html(result);
+                $('.jstree .jstree-anchor').removeClass('text-primary');
+                $('.jstree .jstree-icon').removeClass('text-primary').addClass('text-warning');
+                $('#' + activeId + '_anchor').addClass('text-primary');
+                $('#' + activeId + '_anchor').children('i').addClass('text-primary').removeClass('text-warning');
+            });
+        }
+
+        $(document).on('click', '.jstree-anchor', function () {
+            var id = $(this).attr('id');
+            if (id) {
+                var folderId = id.replace('_anchor', '');
+                refreshFoldersAndTags(folderId);
+            }
+        });
+    </script>
+}

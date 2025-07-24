@@ -1,0 +1,45 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.GivingSignUpViewModel
+
+<div id="SignUp_Details" class="kt-login__signin">
+    <div class="kt-login__head">
+        <div class="kt-login__desc">Enter the code just sent to @Model.Phone:</div>
+    </div>
+    @using (Html.BeginForm("_PhoneConfirm", RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Church.Id)
+        @Html.HiddenFor(x => x.Phone)
+        @Html.HiddenFor(x => x.AccountFound)
+        @Html.HiddenFor(x => x.Payment.Amount)
+        @Html.HiddenFor(x => x.Payment.FundId)
+        @Html.HiddenFor(x => x.Payment.CampusId)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.VerificationCode, new { @class = "form-control", name = "login-form-verification-code", placeholder = "" })
+            @Html.ValidationMessageFor(m => m.VerificationCode, "", new { @class = "invalid-feedback" })
+        </div>
+        <span id="Verification-Code-Message"></span>
+    }
+    <div class="kt-login__account">
+        <p>Didn't get a text? <button type="button" onclick="ResendCode()">Send me another code</button></p>
+        <p><a href="/account/register">Sign up another way</a></p>
+        <span class="kt-login__account-msg">
+            Already have an account?
+        </span>&nbsp;&nbsp;
+        <a href="@Url.Action("Login","Account")" class="kt-link kt-link--light kt-login__account-link">Sign In</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ResendCode() {
+        $.ajax({
+            url: '/Account/_ResendCode',
+            type: 'GET',
+            data: { churchName: '@Model.Church.Name', phone: '@Model.Phone' },
+            cache: false,
+            success: function (result) {
+                $("#Verification-Code-Message").text('Please enter the 4 digit code we just sent you.');
+            }
+        });
+    }
+</script>

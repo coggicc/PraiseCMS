@@ -1,0 +1,63 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Floor>
+
+@{
+    ViewBag.Title = "Floors";
+}
+
+@section leftsubheader{
+    @Html.Partial("_CampusesSubheader")
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Create Floor", "/campuses/_CreateFloor", "Create Floor", "Save", "btn btn-light-primary font-weight-bold", "")
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th width="25%">Name</th>
+                            <th width="25%" class="text-center">Campus</th>
+                            <th width="25%" class="text-center">Building</th>
+                            <th width="25%" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @item.FloorName
+                                </td>
+                                <td class="text-center">
+                                    <span>@item.Building.BuildingName</span>
+                                </td>
+                                <td class="text-center">
+                                    <span>@(SessionVariables.Campuses.Any(q => q.Id.Equals(item.CampusId))? SessionVariables.Campuses.Find(q => q.Id.Equals(item.CampusId)).Display: "Campus Not Defined")</span>
+                                </td>
+                                <td class="text-center">
+                                    @Html.AjaxModalLink("Edit", "/campuses/_EditFloor/" + item.Id, "Edit Floor", "Save", "", "", "/campuses/DeleteFloor/" + item.Id)
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>You haven't added any floors yet.</p>
+        }
+    </div>
+</div>

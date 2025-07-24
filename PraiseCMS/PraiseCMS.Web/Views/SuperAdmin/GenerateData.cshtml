@@ -1,0 +1,64 @@
+﻿@model List<PraiseCMS.DataAccess.Models.Church>
+
+@{
+    ViewBag.Title = "Generate Data";
+}
+
+<h2>Generate Attendance Data</h2>
+
+@using (Html.BeginForm("GenerateAttendanceData", "SuperAdmin", FormMethod.Get))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.Label("Select Church")
+        @Html.DropDownList("churchId", new SelectList(Model, "Id", "Name"), "Select a church", new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Generate Attendance Data</button>
+}
+
+<hr />
+<h2 class="mt-4">Generate Baptism Data</h2>
+
+@using (Html.BeginForm("GenerateBaptismData", "SuperAdmin", FormMethod.Get))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.Label("Select Church")
+        @Html.DropDownList("churchId", new SelectList(Model, "Id", "Name"), "Select a church", new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Generate Baptism Data</button>
+}
+
+<hr />
+<h2 class="mt-4">Generate Salvation Data</h2>
+
+@using (Html.BeginForm("GenerateSalvationData", "SuperAdmin", FormMethod.Get))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.Label("Select Church")
+        @Html.DropDownList("churchId", new SelectList(Model, "Id", "Name"), "Select a church", new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Generate Salvation Data</button>
+}
+
+<hr />
+<h2 class="mt-4">Generate Offline Giving Data</h2>
+
+@using (Html.BeginForm("GenerateOfflineGivingData", "SuperAdmin", FormMethod.Get))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.Label("Select Church")
+        @Html.DropDownList("churchId", new SelectList(Model, "Id", "Name"), "Select a church", new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Generate Offline Giving Data</button>
+}

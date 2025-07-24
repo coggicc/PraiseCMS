@@ -1,0 +1,361 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.TaskSD>
+@{
+    ViewBag.Title = "Tasks";
+    var db = new ApplicationDbContext();
+}
+@*<style>
+    .kt-todo__body{
+        max-height:500px;
+        overflow-y:auto;
+    }
+</style>*@
+<style>
+    .kt-todo__name:hover, .kt-todo__details:hover{
+        cursor:pointer;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        <div class="kt-grid kt-grid--desktop kt-grid--ver-desktop  kt-todo" id="kt_todo">
+            <!--Begin::Aside Mobile Toggle-->
+            <button class="kt-todo__aside-close" id="kt_todo_aside_close">
+                <i class="la la-close"></i>
+            </button>
+            <!--End:: Aside Mobile Toggle-->
+            <!--Begin:: Tasks Aside-->
+            <div class="kt-grid__item   kt-portlet kt-todo__aside" id="kt_todo_aside">
+                <div class="kt-todo__nav">
+                    <ul class="kt-nav">
+                        <li class="kt-nav__item  kt-nav__item--active">
+                            <a href="/tasks?status=incomplete" class="kt-nav__link" data-action="list" data-type="marked">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon kt-nav__link-icon">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24" />
+                                        <path d="M8,3 L8,3.5 C8,4.32842712 8.67157288,5 9.5,5 L14.5,5 C15.3284271,5 16,4.32842712 16,3.5 L16,3 L18,3 C19.1045695,3 20,3.8954305 20,5 L20,21 C20,22.1045695 19.1045695,23 18,23 L6,23 C4.8954305,23 4,22.1045695 4,21 L4,5 C4,3.8954305 4.8954305,3 6,3 L8,3 Z" fill="#000000" opacity="0.3" />
+                                        <path d="M10.875,15.75 C10.6354167,15.75 10.3958333,15.6541667 10.2041667,15.4625 L8.2875,13.5458333 C7.90416667,13.1625 7.90416667,12.5875 8.2875,12.2041667 C8.67083333,11.8208333 9.29375,11.8208333 9.62916667,12.2041667 L10.875,13.45 L14.0375,10.2875 C14.4208333,9.90416667 14.9958333,9.90416667 15.3791667,10.2875 C15.7625,10.6708333 15.7625,11.2458333 15.3791667,11.6291667 L11.5458333,15.4625 C11.3541667,15.6541667 11.1145833,15.75 10.875,15.75 Z" fill="#000000" />
+                                        <path d="M11,2 C11,1.44771525 11.4477153,1 12,1 C12.5522847,1 13,1.44771525 13,2 L14.5,2 C14.7761424,2 15,2.22385763 15,2.5 L15,3.5 C15,3.77614237 14.7761424,4 14.5,4 L9.5,4 C9.22385763,4 9,3.77614237 9,3.5 L9,2.5 C9,2.22385763 9.22385763,2 9.5,2 L11,2 Z" fill="#000000" />
+                                    </g>
+                                </svg> <span class="kt-nav__link-text">Tasks</span>
+                                <span class="kt-nav__link-badge">
+                                    <span class="kt-badge kt-badge--unified-success kt-badge--md kt-badge--rounded kt-badge--boldest">@Model.Where(x=>x.AssignedToUserId.Equals(SessionVariables.CurrentUser.User.Id) && !x.Completed).Count()</span>
+                                </span>
+                            </a>
+                        </li>
+                        @*<li class="kt-nav__item">
+                                <a href="javascript:;" class="kt-nav__link" data-action="list" data-type="draft">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon kt-nav__link-icon">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <rect x="0" y="0" width="24" height="24" />
+                                            <rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5" />
+                                            <path d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z" fill="#000000" opacity="0.3" />
+                                        </g>
+                                    </svg> <span class="kt-nav__link-text">Calendar</span>
+                                </a>
+                            </li>
+                            <li class="kt-nav__item">
+                                <a href="javascript:;" class="kt-nav__link" data-action="list" data-type="draft">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon kt-nav__link-icon">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <rect x="0" y="0" width="24" height="24" />
+                                            <path d="M5,3 L6,3 C6.55228475,3 7,3.44771525 7,4 L7,20 C7,20.5522847 6.55228475,21 6,21 L5,21 C4.44771525,21 4,20.5522847 4,20 L4,4 C4,3.44771525 4.44771525,3 5,3 Z M10,3 L11,3 C11.5522847,3 12,3.44771525 12,4 L12,20 C12,20.5522847 11.5522847,21 11,21 L10,21 C9.44771525,21 9,20.5522847 9,20 L9,4 C9,3.44771525 9.44771525,3 10,3 Z" fill="#000000" />
+                                            <rect fill="#000000" opacity="0.3" transform="translate(17.825568, 11.945519) rotate(-19.000000) translate(-17.825568, -11.945519) " x="16.3255682" y="2.94551858" width="3" height="18" rx="1" />
+                                        </g>
+                                    </svg> <span class="kt-nav__link-text">Reports</span>
+                                    <span class="kt-nav__link-badge">
+                                        <span class="kt-badge kt-badge--unified-warning kt-badge--md kt-badge--rounded kt-badge--boldest">1</span>
+                                    </span>
+                                </a>
+                            </li>*@
+                        <li class="kt-nav__item kt-margin-t-20 kt-margin-b-20">
+                            <span class="kt-nav__link-title">Tags</span>
+                        </li>
+                        <li class="kt-nav__item">
+                            <a href="/tasks" class="kt-nav__link">
+                                @*<i class="kt-nav__link-icon fa fa-tasks kt-font-brand"></i>*@
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon kt-nav__link-icon">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24" />
+                                        <path d="M8,3 L8,3.5 C8,4.32842712 8.67157288,5 9.5,5 L14.5,5 C15.3284271,5 16,4.32842712 16,3.5 L16,3 L18,3 C19.1045695,3 20,3.8954305 20,5 L20,21 C20,22.1045695 19.1045695,23 18,23 L6,23 C4.8954305,23 4,22.1045695 4,21 L4,5 C4,3.8954305 4.8954305,3 6,3 L8,3 Z" fill="#000000" opacity="0.3" />
+                                        <path d="M10.875,15.75 C10.6354167,15.75 10.3958333,15.6541667 10.2041667,15.4625 L8.2875,13.5458333 C7.90416667,13.1625 7.90416667,12.5875 8.2875,12.2041667 C8.67083333,11.8208333 9.29375,11.8208333 9.62916667,12.2041667 L10.875,13.45 L14.0375,10.2875 C14.4208333,9.90416667 14.9958333,9.90416667 15.3791667,10.2875 C15.7625,10.6708333 15.7625,11.2458333 15.3791667,11.6291667 L11.5458333,15.4625 C11.3541667,15.6541667 11.1145833,15.75 10.875,15.75 Z" fill="#000000" />
+                                        <path d="M11,2 C11,1.44771525 11.4477153,1 12,1 C12.5522847,1 13,1.44771525 13,2 L14.5,2 C14.7761424,2 15,2.22385763 15,2.5 L15,3.5 C15,3.77614237 14.7761424,4 14.5,4 L9.5,4 C9.22385763,4 9,3.77614237 9,3.5 L9,2.5 C9,2.22385763 9.22385763,2 9.5,2 L11,2 Z" fill="#000000" />
+                                    </g>
+                                </svg>
+                                <span class="kt-nav__link-text">All Tasks</span>
+                            </a>
+                        </li>
+                        <li class="kt-nav__item">
+                            <a href="/tasks?status=@TaskStatuses.Complete" class="kt-nav__link">
+                                <i class="kt-nav__link-icon far fa-check-circle text-success"></i>
+                                <span class="kt-nav__link-text">Complete</span>
+                            </a>
+                        </li>
+                        <li class="kt-nav__item">
+                            <a href="/tasks?status=@TaskStatuses.Incomplete" class="kt-nav__link">
+                                <i class="kt-nav__link-icon far fa-circle" style="color:#c8cfdd;"></i>
+                                <span class="kt-nav__link-text">Incomplete</span>
+                            </a>
+                        </li>
+                        <li class="kt-nav__item">
+                            <a href="/tasks?status=@TaskStatuses.PastDue" class="kt-nav__link">
+                                <i class="kt-nav__link-icon fas fa-history kt-font-danger"></i>
+                                <span class="kt-nav__link-text">Past Due</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--End:: Tasks Aside-->
+            <!--Begin:: Tasks Content-->
+            <div class="kt-grid__item kt-grid__item--fluid kt-todo__content" id="kt_todo_content">
+                <div class="kt-todo__tasks-top">
+                    <div class="kt-portlet">
+                        <!--Begin:: Tasks Toolbar-->
+                        <div class="kt-todo__header">
+                            <h3 class="kt-todo__title">@ViewBag.Title</h3>
+                            <!--End:: Tasks Nav-->
+                            <!--Begin:: Tasks Users-->
+                            <div class="kt-todo__users">
+                                <a href="javascript:;" class="kt-media kt-media--xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Nick Mana">
+                                    <img src="~/Content/assets/media/users/100_1.jpg" alt="image">
+                                </a>
+                                <a href="javascript:;" class="kt-media kt-media--xs kt-media--danger" data-toggle="tooltip" data-placement="top" title="" data-original-title="Sean Stone">
+                                    <span>S</span>
+                                </a>
+                                <a href="javascript:;" class="kt-media kt-media--xs  kt-media--info" data-toggle="tooltip" data-placement="top" title="" data-original-title="Anna Krox">
+                                    <span>A</span>
+                                </a>
+                                <a href="javascript:;" class="kt-media kt-media--xs  kt-bg-success kt-margin-l-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Participants">
+                                    <span><i class="kt-nav__link-icon fa flaticon2-plus kt-font-light"></i></span>
+                                </a>
+                            </div>
+                            <!--End:: Tasks Users-->
+                        </div>
+                        <!--End:: Tasks Toolbar-->
+                    </div>
+                </div>
+                <div class="kt-todo__tasks-bottom">
+                    <div class="row">
+                        <div id="tasks-container" class="col-lg-8">
+                            <!--Begin:: Inbox List-->
+                            <div class="kt-grid__item kt-grid__item--fluid  kt-portlet kt-portlet--height-fluid kt-todo__list" id="kt_todo_list">
+                                <div class="kt-portlet__body kt-portlet__body--fit-x">
+                                    <div class="kt-todo__head">
+                                        <div class="kt-todo__toolbar">
+                                            <div class="kt-todo__actions kt-todo__actions--expanded">
+                                                <div class="kt-todo__check">
+                                                    <label class="kt-checkbox kt-checkbox--single kt-checkbox--tick kt-checkbox--brand">
+                                                        <input type="checkbox">
+                                                        <span></span>
+                                                    </label>
+                                                    <div class="btn-group">
+                                                        <button type="button" class="kt-todo__icon kt-todo__icon--sm kt-todo__icon--light" data-toggle="dropdown">
+                                                            <i class="flaticon2-down"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-left dropdown-menu-fit dropdown-menu-xs">
+                                                            <ul class="kt-nav">
+                                                                <li class="kt-nav__item kt-nav__item--active">
+                                                                    <a href="#" class="kt-nav__link">
+                                                                        <span class="kt-nav__link-text">All</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="kt-nav__item">
+                                                                    <a href="#" class="kt-nav__link">
+                                                                        <span class="kt-nav__link-text">Read</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="kt-nav__item">
+                                                                    <a href="#" class="kt-nav__link">
+                                                                        <span class="kt-nav__link-text">Unread</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="kt-nav__item">
+                                                                    <a href="#" class="kt-nav__link">
+                                                                        <span class="kt-nav__link-text">Starred</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="kt-nav__item">
+                                                                    <a href="#" class="kt-nav__link">
+                                                                        <span class="kt-nav__link-text">Unstarred</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <a href="/tasks" class="kt-todo__icon kt-todo__icon--light" data-toggle="tooltip" title="" data-original-title="Reload list">
+                                                        <i class="flaticon2-refresh-arrow"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="kt-todo__panel">
+                                                    <button class="kt-todo__icon" data-toggle="tooltip" title="" data-original-title="Archive">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                <rect x="0" y="0" width="24" height="24"></rect>
+                                                                <path d="M6,2 L18,2 C18.5522847,2 19,2.44771525 19,3 L19,12 C19,12.5522847 18.5522847,13 18,13 L6,13 C5.44771525,13 5,12.5522847 5,12 L5,3 C5,2.44771525 5.44771525,2 6,2 Z M7.5,5 C7.22385763,5 7,5.22385763 7,5.5 C7,5.77614237 7.22385763,6 7.5,6 L13.5,6 C13.7761424,6 14,5.77614237 14,5.5 C14,5.22385763 13.7761424,5 13.5,5 L7.5,5 Z M7.5,7 C7.22385763,7 7,7.22385763 7,7.5 C7,7.77614237 7.22385763,8 7.5,8 L10.5,8 C10.7761424,8 11,7.77614237 11,7.5 C11,7.22385763 10.7761424,7 10.5,7 L7.5,7 Z" fill="#000000" opacity="0.3"></path>
+                                                                <path d="M3.79274528,6.57253826 L12,12.5 L20.2072547,6.57253826 C20.4311176,6.4108595 20.7436609,6.46126971 20.9053396,6.68513259 C20.9668779,6.77033951 21,6.87277228 21,6.97787787 L21,17 C21,18.1045695 20.1045695,19 19,19 L5,19 C3.8954305,19 3,18.1045695 3,17 L3,6.97787787 C3,6.70173549 3.22385763,6.47787787 3.5,6.47787787 C3.60510559,6.47787787 3.70753836,6.51099993 3.79274528,6.57253826 Z" fill="#000000"></path>
+                                                            </g>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @Html.AjaxModalLink("New Task", "/tasks/_createtask", "Create", "Send", "btn btn-label-brand btn-upper btn-sm btn-bold", "")
+                                        </div>
+                                    </div>
+                                    <div class="kt-todo__body">
+                                        <div class="kt-todo__items" data-type="task">
+                                            @if (Model.Any())
+                                            {
+                                                foreach (var item in Model)
+                                                {
+                                                    string unreadClass = "kt-todo__item--unread";
+                                                    if (item.Completed) { unreadClass = ""; }
+                                                    var userProfileImage = db.UserSettings.FirstOrDefault(x => x.UserId.Equals(item.CreatedBy)).ProfileImage;
+                                                    var user = db.Users.FirstOrDefault(x => x.Id.Equals(item.CreatedBy));
+
+                                                    <div class="kt-todo__item @unreadClass" data-id="@item.Id" data-type="task">
+                                                        <div class="kt-todo__info">
+                                                            <div class="kt-todo__actions">
+                                                                <label class="kt-checkbox kt-checkbox--single kt-checkbox--tick kt-checkbox--brand">
+                                                                    <input type="checkbox">
+                                                                    <span></span>
+                                                                </label>
+                                                                <a data-ajax="true" data-ajax-method="get" href="/tasks/_complete/@item.Id" class="task-check task-check-@item.Id">
+                                                                    <span class="kt-todo__icon kt-todo__icon--light" data-toggle="tooltip" data-placement="right" title="Mark @(item.Completed ? "incomplete" : "completed")">
+                                                                        <i class="task-status-icon-@item.Id far @(item.Completed ? "fa-check-circle text-success" : "fa-circle") fa-1-5x"></i>
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="kt-todo__details" data-toggle="view">
+                                                            <div class="kt-todo__message">
+                                                                <span class="kt-todo__subject">
+                                                                    <a href="/Tasks/DetailTasks?id=@item.Id" class="jq_load_tasks_details kt-todo__subject task-text task-text-@item.Id @(item.Completed ? "task-text-complete" : "")">@item.Name.EllipsisAt(100)</a>
+                                                                </span>
+                                                            </div>
+                                                            <div class="kt-todo__labels">
+                                                                @if (!item.Completed && item.DueDate < DateTime.Now.AddDays(7))
+                                                                {
+                                                                    <span class="task-label-@item.Id kt-todo__label kt-badge kt-badge--unified-danger kt-badge--bold kt-badge--inline"><i class="fas fa-history mr-1"></i>Past Due: @(item.DueDate?.ToShortDateString())</span>
+                                                                }
+
+                                                            </div>
+                                                        </div>
+                                                        @if (item.Completed)
+                                                        {
+                                                            <div class="kt-todo__datetime" data-toggle="view">
+                                                                Completed on @(item.DateCompleted?.ToShortDateString())
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="kt-todo__datetime" data-toggle="view">
+                                                                Created on @item.CreatedDate.ToShortDateString()
+                                                            </div>
+                                                        }
+                                                        <div class="kt-todo__sender" data-toggle="tooltip" data-placement="top" title="" data-original-title="@user.FullName">
+                                                            @if (!string.IsNullOrEmpty(userProfileImage))
+                                                            {
+                                                                <span class="kt-media kt-media--sm kt-media--danger" style="background-image: url('@Url.Content("~/Uploads/profile/" + userProfileImage)')">
+                                                                    <span></span>
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (user != null && !string.IsNullOrEmpty(user.FirstName) && !string.IsNullOrEmpty(user.LastName))
+                                                                {
+                                                                    <span class="kt-media kt-media--sm kt-media--success">
+                                                                        <span>@user.Initials</span>
+                                                                    </span>
+                                                                }
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="kt-todo__item" data-id="999">
+                                                    <div class="kt-todo__details">
+                                                        <div class="kt-todo__message">
+                                                            <span class="kt-todo__subject">You don't have any tasks yet.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="kt-todo__foot">
+                                        <div class="kt-todo__toolbar">
+                                            <div class="kt-todo__controls">
+                                                <div class="kt-todo__pages" data-toggle="tooltip" title="" data-original-title="Records per page">
+                                                    <span class="kt-todo__perpage" data-toggle="dropdown">1 - 50 of 235</span>
+                                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-fit dropdown-menu-xs">
+                                                        <ul class="kt-nav">
+                                                            <li class="kt-nav__item">
+                                                                <a href="#" class="kt-nav__link">
+                                                                    <span class="kt-nav__link-text">20 per page</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="kt-nav__item kt-nav__item--active">
+                                                                <a href="#" class="kt-nav__link">
+                                                                    <span class="kt-nav__link-text">50 par page</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="kt-nav__item">
+                                                                <a href="#" class="kt-nav__link">
+                                                                    <span class="kt-nav__link-text">100 per page</span>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <button class="kt-todo__icon" data-toggle="tooltip" title="" data-original-title="Previous page">
+                                                    <i class="flaticon2-left-arrow"></i>
+                                                </button>
+
+                                                <button class="kt-todo__icon" data-toggle="tooltip" title="" data-original-title="Next page">
+                                                    <i class="flaticon2-right-arrow"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--End:: Inbox List-->
+                        </div>
+
+                        <div id="task-details" class="col-lg-4">
+                            <!--Begin:: Inbox View-->
+                            <div id="tasks_details"></div>
+                            <!--End:: Inbox View-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End:: Tasks Content-->
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var isExpanded = false;
+    //function toggleDetails() {
+        if (isExpanded == false) {
+            $('#tasks-container').hide();
+            $('#task-details').removeClass('col-lg-4').addClass('col-lg-12');
+            $('#task-details-icon').removeClass('fa-expand-alt').addClass('fa-compress-alt');
+            isExpanded = true;
+        }
+        else {
+            isExpanded = false;
+            $('#tasks-container').show();
+            $('#task-details').removeClass('col-lg-12').addClass('col-lg-4');
+            $('#task-details-icon').removeClass('fa-compress-alt').addClass('fa-expand-alt');
+        }
+    }
+
+    function closeDetails() {
+        $('#task-details').hide();
+        $('#tasks-container').show();
+        $('#task-details').removeClass('col-lg-12').addClass('col-lg-4');
+    }
+</script>

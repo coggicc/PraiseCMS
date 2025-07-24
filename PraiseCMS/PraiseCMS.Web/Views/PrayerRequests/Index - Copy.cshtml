@@ -1,0 +1,355 @@
+﻿@model PraiseCMS.DataAccess.Models.PrayerRequestsView
+@{
+    ViewBag.Title = "Prayer Requests";
+    var currentUrl = Model.CurrentUrl;
+}
+
+@section leftsubheader{
+    @Html.Partial("~/Views/People/_PeopleSubheader.cshtml")
+}
+
+@section subheader{
+    @if (SessionVariables.CurrentUser != null && SessionVariables.CurrentUser.IsSuperAdmin)
+    {
+        <a href="/prayerrequests/categories" class="btn btn-light-primary btn-sm font-weight-bold mr-1">Manage Categories</a>
+    }
+    @Html.AjaxModalLink("New Prayer Request", "/prayerrequests/_addprayerrequest", "Create Prayer Request", "Save", "btn btn-light-success btn-sm font-weight-bold", "", "", "", false, ModalSizes.Large)
+}
+
+<style>
+    .inbox-action {
+        display: none;
+    }
+
+    a {
+        cursor: pointer !important;
+    }
+
+    .read {
+        font-weight: normal;
+    }
+</style>
+
+<div class="d-flex flex-row">
+    <div class="flex-row-auto offcanvas-mobile w-200px w-xxl-275px" id="kt_todo_aside">
+        @Html.Partial("_Sidebar", Model)
+    </div>
+    <div class="flex-row-fluid ml-lg-8" id="prayer-request-records">
+        @Html.Partial("_RequestList", Model)
+    </div>
+    <a href="" id="filter"></a>
+</div>
+
+<script type="text/javascript">
+    let selectedIds = [];
+    let selectedItems = [];
+    var currentUrl= '@currentUrl';
+
+    $('#filterKeyword').keypress(function (e) {
+        var key = e.which;
+        if (key === 13)
+        {
+            getPrayerRequestsByKeyword();
+            return false;
+        }
+    });
+    $('#filterKeyword').keyup(function (e) {
+        if (e.currentTarget.value !== "") {
+            $('#clearSearchBtn').show();
+        } else {
+            $('#clearSearchBtn').hide();
+        }
+    });
+
+    function sorting(sortBy) {
+        let currentUrl = window.location;
+        if (!currentUrl.href.includes('sortType')) {
+            if (currentUrl.href.includes('?')) {
+                let url = currentUrl.href + "&sortType=" + sortBy;
+                location.replace(url);
+            }
+            else {
+                let url = currentUrl.href + "?sortType=" + sortBy;
+                location.replace(url);
+            }
+        }
+        else {
+            let url = currentUrl.href;
+            if (url.includes('asc')) {
+                url = url.replace('asc', sortBy);
+            } else if (url.includes('desc')) {
+                url = url.replace('desc', sortBy);
+            }
+            location.replace(url);
+          }
+    }
+
+    function getPrayerRequestsByKeyword() {
+        if ($('#filterKeyword').val()) {
+            let currentUrl = window.location;
+            if (!currentUrl.href.includes('filterKeyword')) {
+                if (currentUrl.href.includes('?')) {
+                    let url = currentUrl.href + "&filterKeyword=" + $('#filterKeyword').val();
+                    location.replace(url);
+                }
+                else {
+                    let url = currentUrl.href + "?filterKeyword=" + $('#filterKeyword').val();
+                    location.replace(url);
+                }
+            }
+            else {
+                let url = currentUrl.href;
+                let startIndex = url.indexOf("filterKeyword=") + 14;
+                let oldKeyword = url.substr(startIndex);
+                if (oldKeyword !== '') {
+                    url = url.replace(oldKeyword, $('#filterKeyword').val());
+                } else {
+                    url = currentUrl.href + $('#filterKeyword').val();
+                }
+                location.replace(url);
+            }
+        }
+    }
+
+    function clearSearch() {
+        if ($('#filterKeyword').val()) {
+            $('#filterKeyword').val('');
+            $('#clearSearchBtn').hide();
+            $('#filterKeyword').focus();
+            let currentUrl = window.location;
+            if (currentUrl.href.includes('filterKeyword')) {
+                {
+                    let url = currentUrl.href;
+                    let items = url.split('filterKeyword=');
+                    if (items && items.length > 0) {
+                        if (items[1].includes('&')) {
+                            let subItems = items[1].split('&');
+                            if (subItems && subItems.length > 0) {
+                                url = url.replace("=" + subItems[0], "=");
+                            }
+                        }
+                        else {
+                            url = url.replace("=" + items[1], "=");
+                        }
+                    }
+                    location.replace(url);
+                }
+            }
+        }
+    }
+
+    function archived(id) {
+        $.ajax({
+            url: '/PrayerRequests/PrayedOver',
+            type: 'POST',
+            data: { id: id, url:'@currentUrl' },
+            success: function (response) {
+                if (!response) {
+                    alert(response.responseText);
+                }
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    }
+
+    function markStarred(id) {
+        $.ajax({
+            url: '/PrayerRequests/MarkStarred',
+            type: 'POST',
+            data: { id: id},
+            success: function (response) {
+                if (!response.Success) {
+                    Swal.fire({
+                        text: response.Message,
+                        icon: "warning",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok",
+                        customClass: {
+                            confirmButton: "btn font-weight-bold btn-light"
+                        }
+                    });
+                } else {
+                    let cell = $('.starred-' + id);
+                    if (currentUrl && currentUrl !== '' && currentUrl.toLowerCase().includes('starred')) {
+                        if ($(cell).hasClass('marked')) {
+                            $('#prayer-request-' + id).hide();
+                        } else {
+                            $('#prayer-request-' + id).show();
+                        }
+                    }
+                    if ($(cell).hasClass('marked')) {
+                        $(cell).removeClass('marked').addClass('unmarked');
+                        $(cell).attr('data-original-title', 'Not Starred');
+                        $(cell).html("<i class='far fa-star text-muted'></i>");
+                    } else if ($(cell).hasClass('unmarked')) {
+                        $(cell).removeClass('unmarked').addClass('marked');
+                        $(cell).attr('data-original-title', 'Starred');
+                        $(cell).html("<i class='fas fa-star text-warning'></i>");
+                    }
+                 }
+            },
+            error: function (response) {
+                Swal.fire({
+                    text: response.Message,
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok",
+                    customClass: {
+                        confirmButton: "btn font-weight-bold btn-light"
+                    }
+                });
+            }
+        });
+    }
+
+    function archiveData(action) {
+        $.ajax({
+            url: '/PrayerRequests/_archive',
+            type: 'POST',
+            data: { ids: selectedIds, url: '@currentUrl', action: action },
+            success: function (response) {
+                selectedIds = [];
+                selectedItems = [];
+                $('#prayer-request-records').html('');
+                $('#prayer-request-records').html(response);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    }
+
+    function markRead(eve) {
+        let action = $(eve).data('action');
+        $.ajax({
+            url: '/PrayerRequests/_markread',
+            type: 'POST',
+            data: { ids: selectedIds, url: '@currentUrl', action: action },
+            success: function (response) {
+                selectedIds = [];
+                selectedItems = [];
+                $('#prayer-request-records').html('');
+                $('#prayer-request-records').html(response);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    }
+
+    function markFollowUpRequired() {
+        $.ajax({
+            url: '/PrayerRequests/markFollowUpRequired',
+            type: 'POST',
+            data: { ids: selectedIds , url:'@currentUrl'},
+            success: function (response) {
+                if (!response) {
+                    alert(response.responseText);
+                }
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    }
+
+    $(document).on('change', '#checkAll', function (item) {
+        selectedIds = [];
+        selectedItems = [];
+        if (this.checked) {
+            $(".button-actions").show();
+            $(".item-checkbox").prop("checked", true);
+            $(".inbox-action").show();
+            let selectedItemsList = $(".list input:checkbox:checked");
+            if (selectedItemsList.length > 0) {
+                $.each(selectedItemsList, function (index, val) {
+                    selectedIds.push(val.id);
+                    selectedItems.push({ id: val.id, read: val.dataset.type });
+                    if (index === selectedItemsList.length-1) {
+                        setReadorUnread();
+                    }
+                });
+            }
+        }
+        else {
+            $(".button-actions").hide();
+            $(".item-checkbox").prop("checked", false);
+        }
+    });
+
+    $(document).on('change', '.item-checkbox', function (item) {
+        if ($("input:checkbox:checked").length > 0) {
+            $(".button-actions").show();
+            $(".inbox-action").show();
+        }
+        else {
+            $(".button-actions").hide();
+            $(".inbox-action").hide();
+        }
+
+        if ($(this).is(":checked")) {
+            $(".button-actions").show();
+            if (selectedIds.length > 0) {
+                let selectedId = selectedIds.find(x => x === item.target.id);
+                if (!selectedId) {
+                    selectedIds.push(item.target.id);
+                    selectedItems.push({ id: item.target.id, read: item.target.dataset.type });
+                }
+            }
+
+            else {
+                selectedIds.push(item.target.id);
+                selectedItems.push({ id: item.target.id, read: item.target.dataset.type });
+            }
+        }
+        else {
+            if (selectedIds.length > 0) {
+                let unselectedIndex = selectedIds.findIndex(x => x === item.target.id);
+                if (unselectedIndex || unselectedIndex === 0) {
+                    selectedIds.splice(unselectedIndex, 1);
+                    selectedItems.splice(unselectedIndex, 1);
+                }
+            }
+        }
+
+        if (selectedIds.length > 0) {
+            $(".button-actions").show();
+        }
+        else {
+            $(".button-actions").hide();
+        }
+
+        let allCheckboxes = $(".list input:checkbox");
+        if (allCheckboxes.length === selectedItems.length) {
+            $('#checkAll').prop('checked', true);
+        } else {
+            $('#checkAll').prop('checked', false);
+        }
+
+        setReadorUnread();
+
+    });
+
+    function setReadorUnread() {
+        let notread = selectedItems.filter(x => x.read === "False");
+        let read = selectedItems.filter(x => x.read === "True");
+
+        if (read.length > 0 && notread.length > 0) {
+            $('#readIcon').attr('data-original-title', 'Mark as read');
+            $('#readIcon').data('action', 'Read');
+            return;
+        }
+        else if (read.length > 0) {
+            $('#readIcon').attr('data-original-title', 'Mark as unread');
+            $('#readIcon').data('action', 'Unread');
+            return;
+        }
+        else if (notread.length > 0) {
+            $('#readIcon').attr('data-original-title', 'Mark as read');
+            $('#readIcon').data('action', 'Read');
+            return;
+        }
+    }
+</script>

@@ -1,0 +1,37 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SermonViewModel
+
+@{
+    ViewBag.Title = Model.Series?.Title + " | Series | Media" ?? "";
+}
+
+<div class="kt-portlet kt-portlet--mobile">
+    <div class="kt-portlet__head kt-portlet__head--lg">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon">
+                <i class="kt-font-brand fa fa-bible"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="kt-portlet__body">
+        <div class="row">
+            @if (Model.Series != null)
+            {
+                <div class="col-md-4">
+                    <a href="@Url.Action("Series", "Media", new { seriesId = Model.Series.Id})" class="kt-link">
+                        <div class="card" style="width: 18rem;">
+                            <img class="card-img-top" src="~/Content/assets/media/products/product1.jpg" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">@Model.Series.Title</h5>
+                                <p class="card-text">@Model.Series.MessagesInSeries Part Series</p>
+                                <p class="text-muted">@Model.Series.CreatedDate.ToShortDateString()</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

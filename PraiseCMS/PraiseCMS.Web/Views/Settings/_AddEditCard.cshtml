@@ -1,0 +1,191 @@
+﻿@model PraiseCMS.DataAccess.Models.PaymentMethodViewModel
+@using PraiseCMS.Shared.Methods
+
+@{
+    ViewBag.Title = RouteHelpers.CurrentAction.Contains("Edit") ? "Edit Card" : "Add Card";
+    var mode = "";
+}
+
+@section leftsubheader{
+    @Html.Partial("_AccountSubHeader")
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+<link href="~/Scripts/card/card.css" rel="stylesheet" />
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", SessionVariables.CurrentChurch)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom">
+            <div class="card-header card-header-tabs-line">
+                <div class="card-title">
+                    <h3 class="card-label">@ViewBag.Title</h3>
+                </div>
+                @if (RouteHelpers.CurrentAction.Contains("Edit"))
+                {
+                    <div class="card-toolbar">
+                        <button class="btn btn-outline-danger font-weight-bolder font-size-sm" onclick="deleteMethod('@Model.PaymentCard.AccountGUID', true)">Delete</button>
+                    </div>
+                    mode = "readonly";
+                }
+            </div>
+            @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data", id = "AddCardForm" }))
+            {
+                <div class="form-container active">
+                    <div id="card-info" class="animate__animated">
+                        <div id="card">
+                            <div class="card-body">
+                                @if (RouteHelpers.CurrentAction.Contains("Edit"))
+                                {
+                                    <div class="alert alert-custom alert-notice alert-light-info fade show" role="alert">
+                                        <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="alert-text"><strong>Note:</strong> Only the nickname field is editable for this payment method. If you need to modify other details, you'll need to delete the payment method and add it again.</div>
+                                        <div class="alert-close">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true"><i class="la la-close"></i></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        @Html.AntiForgeryToken()
+                                        @Html.HiddenFor(x => x.PaymentCard.CcExpMonth)
+                                        @Html.HiddenFor(x => x.PaymentCard.CcExpYear)
+                                        @Html.HiddenFor(x => x.PaymentCard.AccountGUID)
+                                        @if (mode.IsNullOrEmpty())
+                                        {
+                                            <div class="form-group row">
+                                                <label class="col-lg-4 col-form-label">Name on Card:</label>
+                                                <div class="col-lg-8">
+                                                    @Html.TextBoxFor(x => x.PaymentCard.CcName, new { placeholder = "Name on Card", @class = "form-control dynamic" })
+                                                    @Html.ValidationMessageFor(x => x.PaymentCard.CcName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-lg-4 col-form-label">Card Number:</label>
+                                                <div class="col-lg-8">
+                                                    @Html.TextBoxFor(x => x.PaymentCard.CcNumber, new { placeholder = "Card number", @class = "form-control dynamic", type = "tel", oncopy = "return false", onpaste = "return false", oncut = "return false" })
+                                                    @Html.ValidationMessageFor(x => x.PaymentCard.CcNumber, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-lg-4 col-form-label">Expiration Date:</label>
+                                                <div class="col-lg-8">
+                                                    @Html.TextBoxFor(x => x.PaymentCard.CcExpiry, new { id = "expiryDate", @class = "form-control dynamic", type = "tel", placeholder = "MM/YY" })
+                                                    @Html.ValidationMessageFor(x => x.PaymentCard.CcExpiry, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-lg-4 col-form-label">Card Type:</label>
+                                                <div class="col-lg-8">
+                                                    @Html.DropDownListFor(x => x.PaymentCard.CcType, CreditCardTypes.Items.ToSelectList("Select Card Type...", x => x), new { id = "cardType", @class = "form-control select2", style = "width:100%;" })
+                                                    @Html.ValidationMessageFor(x => x.PaymentCard.CcType, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <p>@Model.PaymentCard.CcNumber</p>
+                                        }
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Nickname:</label>
+                                            <div class="col-lg-8">
+                                                @Html.TextBoxFor(x => x.PaymentCard.NickName, new { placeholder = "Ex. My Debit Card", @class = "form-control" })
+                                                @Html.ValidationMessageFor(x => x.PaymentCard.NickName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 d-none d-lg-block d-xl-block">
+                                        <div class="card-wrapper mt-5"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-light-primary font-weight-bold">Save Changes</button>
+                    <a href="/settings/paymentmethods" class="btn btn-light-dark font-weight-bold">Cancel</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section belowscripts{
+    <script src="~/Scripts/card/jquery.card.js"></script>
+    <script type="text/javascript">
+        const edit = '@mode.IsNotNullOrEmpty()' === "True" ? true : false;
+
+        $(document).on("keyup", "#PaymentCard_CcNumber", function (e) {
+            const form = document.getElementById('AddCardForm');
+            let str = e.currentTarget.value;
+            if (/^3[47]/.test(str)) {
+                form.cardType.value = "AMEX";
+            }
+            else if (/^(6011|65|64[4-9]|622)/.test(str)) {
+                form.cardType.value = "DISC";
+            }
+            else if (/^(5[1-5]|677189)|^(222[1-9]|2[3-6]\d{2}|27[0-1]\d|2720)/.test(str)) {
+                form.cardType.value = "MSTR";
+            }
+            else if (/^4/.test(str)) {
+                form.cardType.value = "VISA";
+            }
+            else {
+                form.cardType.value = "";
+            }
+            $('#cardType').trigger('change');
+            return false;
+        });
+
+        $(function () {
+            if (edit) {
+                $('.dynamic').attr("readonly", "readonly");
+                $('.dynamic').css('cursor', 'not-allowed');
+            }
+        });
+        if (!edit) {
+            $('#card').card({
+                container: '.card-wrapper'
+            });
+        }
+        $("#AddCardForm").submit(function (e) {
+            if (edit) {
+                return true; // Allow form submission for editing
+            }
+
+            e.preventDefault();
+
+            if ($('#PaymentCard_CcNumber').val()) {
+                if ((parseInt($('#PaymentCard_CcNumber').val().replace(/\D/g, "").length) < 16 && $('#cardType').val() !== "AMEX") || ($('#cardType').val() === "AMEX" && parseInt($('#PaymentCard_CcNumber').val().replace(/\D/g, "").length) < 15)) {
+                    $('#PaymentCard_CcNumber').addClass('is-invalid');
+                    StopLoading();
+                    return false;
+                }
+            } else {
+                $('#PaymentCard_CcNumber').addClass('is-invalid');
+                StopLoading();
+                return false;
+            }
+
+            if ($('#expiryDate').val()) {
+                let expiryDate = $('#expiryDate').val().split('/');
+                if (expiryDate.length === 2) {
+                    const form = document.getElementById('AddCardForm');
+                    form.PaymentCard_CcExpMonth.value = expiryDate[0].trim();
+                    form.PaymentCard_CcExpYear.value = expiryDate[1].trim();
+                    form.submit();
+                }
+            } else {
+                StopLoading();
+                return false;
+            }
+        });
+    </script>
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

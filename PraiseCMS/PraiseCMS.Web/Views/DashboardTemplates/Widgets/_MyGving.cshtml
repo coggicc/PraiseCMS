@@ -1,0 +1,58 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+@{
+    var last5MyGivings = Model.MyGiving.MyGiving.Take(5);
+}
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder text-dark">My Giving</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (last5MyGivings.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-borderless table-vertical-center">
+                    <thead>
+                        <tr>
+                            <th class="p-0 w-100 min-w-200px"></th>
+                            <th class="p-0"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var giving in last5MyGivings)
+                        {
+                            var amount = giving.Amount.ToCurrencyString();
+                            var fund = Model.MyGiving.Funds.Any() ? Model.MyGiving.Funds.FirstOrDefault(x => x.Id.Equals(giving.FundId))?.Display : "";
+                            <tr>
+                                <td class="pl-0">
+                                    <a href="#" class="text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg">@giving.CreatedDate.ToShortDateString()</a>
+                                    <span class="text-muted font-weight-bold d-block">@fund</span>
+                                </td>
+                                <td class="text-left">
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">@amount</span>
+                                </td>
+                            </tr>
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+            if (Model.MyGiving.MyGiving.Count() > 5)
+            {
+                <div class="text-center pt-6">
+                    <a href="/users/History/@SessionVariables.CurrentUser.User.PersonId" class="btn btn-light-primary btn-sm font-weight-bold">View More</a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center pt-6">
+                No giving history available.
+            </div>
+        }
+    </div>
+</div>

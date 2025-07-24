@@ -1,0 +1,17 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder">New Donors</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-5 px-10">
+        <span class="card-title font-weight-bolder text-dark-75 font-size-h2 mb-0 mt-6 d-block">@Model.NewDonors</span>
+        <span class="font-weight-bold text-muted font-size-sm">New @Model.NewDonors.Pluralize("donor") this week</span>
+    </div>
+</div>

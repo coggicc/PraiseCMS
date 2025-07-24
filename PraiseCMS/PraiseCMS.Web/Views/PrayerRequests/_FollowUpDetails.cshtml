@@ -1,0 +1,104 @@
+﻿@model PraiseCMS.DataAccess.Models.PrayerRequest
+
+@{
+    var usersList = TempData.ContainsKey("users") ? (List<ApplicationUser>)TempData["users"] : new List<ApplicationUser>();
+}
+
+<div id="alert-container"></div>
+<div id="follow-up-div">
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "followUp-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Followed Up By:</label>
+            <div class="col-lg-8">
+                @Html.DropDownListFor(x => x.FollowUpBy, usersList.ToSelectList(x => x.Display, x => x.Id), new { @class = "form-control select2", style = "width:100%;" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Followed Up Status:</label>
+            <div class="col-lg-8">
+                @Html.DropDownListFor(x => x.FollowUpStatus, FollowUpStatuses.Items.ToSelectList("Select a follow-up status...", x => x), new { @class = "form-control select2", style = "width:100%;" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Followed Up Method:</label>
+            <div class="col-lg-8">
+                @Html.DropDownListFor(x => x.FollowUpMethod, FollowUpMethods.Items.ToSelectList("Select a follow-up method...", x => x), new { @class = "form-control select2", style = "width:100%;" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Followed Up Date:</label>
+            <div class="col-lg-8">
+                <div class="input-group date">
+                    @Html.EditorFor(x => x.FollowUpDate, new { htmlAttributes = new { Value = !string.IsNullOrEmpty(Convert.ToString(Model.FollowUpDate)) ? Convert.ToDateTime(Model.FollowUpDate).ToShortDateString() : "", @class = "form-control datepicker", placeholder = "Select a follow-up date...", autocomplete = "off" } })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="la la-calendar-check-o"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Follow Up Time:</label>
+            <div class="col-lg-8">
+                @Html.DropDownListFor(x => x.FollowUpTime, Constants.Times.ToSelectList("Select a follow-up time...", x => x), new { @class = "form-control select2", style = "width:100%;" })
+            </div>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    var validation = [];
+    $(function () {
+        validationStep();
+    });
+    $("#followUp-form").submit(function (e) {
+        e.preventDefault(e);
+        validation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                StopLoading();
+                submit();
+            }
+            setTimeout(function () {
+                StopLoading();
+            });
+        });
+    });
+
+    function validationStep() {
+        const form = document.getElementById('followUp-form');
+        validation.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'FollowUpTime': { validators: { notEmpty: { message: 'Please select follow-up time.' } } },
+                    'FollowUpStatus': { validators: { notEmpty: { message: 'Please select a follow-up status.' } } },
+                    'FollowUpMethod': { validators: { notEmpty: { message: 'Please select a follow-up method.' } } },
+                    'FollowUpDate': { validators: { notEmpty: { message: 'Please select follow-up date.' } } },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+    }
+
+    function submit() {
+        var currentUrl = window.location.href;
+        $.ajax({
+            type: "POST",
+            url: '/PrayerRequests/FollowUp?url=' + currentUrl,
+            data: $("#followUp-form").serialize(),
+            success: function (result) {
+                if (!result) {
+                    ShowErrorAlert(result.Message);
+                }
+            },
+            error: function (result) {
+                ShowErrorAlert(result.Message);
+            }
+        });
+    };
+</script>

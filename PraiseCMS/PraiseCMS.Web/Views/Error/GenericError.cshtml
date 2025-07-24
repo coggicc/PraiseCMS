@@ -1,0 +1,59 @@
+﻿@model ErrorViewModel
+@{
+    ViewBag.Title = "Error";
+    Layout = "~/Views/Shared/_ErrorLayout.cshtml";
+}
+
+<style>
+    .error-details {
+        display: none;
+    }
+</style>
+
+<div class="d-flex flex-column flex-root">
+    <div class="error error-6 d-flex flex-row-fluid bgi-size-cover bgi-position-center" style="background-image: url(../../Content/assets/media/error/bg6.jpg);">
+        <div class="flex-row-fluid text-center">
+            <p class="col-lg-8 offset-lg-2">
+                <h1 class="error-title font-weight-boldest text-white mb-12" style="margin-top: 6rem;">Oops...</h1>
+            <p class="display-4 font-weight-bold text-white">
+                It looks like something went wrong. We've been notified and will check it out.
+            </p>
+            <p class="display-4 my-10 font-weight-bold text-white">
+                Return to the <a href="@Url.Action("Index", "Home")" class="text-secondary" style="text-decoration: underline;">dashboard</a> or <a href="https://www.praisecms.com/contact" class="text-secondary" style="text-decoration:underline;">contact us</a>.
+            </p>
+            @if (Model != null && Model.ShowErrorDetails && Model.Exception != null)
+            {
+                <p class="display-4 font-weight-bold text-white">Error Details:</p>
+                <p class="display-4 font-weight-bold text-white"><small>Error Type: @(Model.Exception.Exception.GetType().FullName ?? "Unknown")</small></p>
+                <p class="display-4 font-weight-bold text-white"><small>Exception Message: @(Model.Exception.Exception.Message)</small></p>
+                if (Model.Exception.Exception.InnerException != null)
+                {
+                    <p class="display-4 font-weight-bold text-white">Inner Exception:</p>
+                    <p class="display-4 font-weight-bold text-white"><small>Error Type: @(Model.Exception.Exception.InnerException.GetType().FullName ?? "Unknown")</small></p>
+                    <p class="display-4 font-weight-bold text-white"><small>Exception Message: @(Model.Exception.Exception.InnerException.Message)</small></p>
+                }
+                <p class="display-4 font-weight-bold text-white">Source: @(Model.Exception.Exception.Source ?? "Unknown")</p>
+                <p class="display-4 font-weight-bold text-white"><small>Target Site: @(Model.Exception.Exception.TargetSite != null ? Model.Exception.Exception.TargetSite.ToString() : "Unknown")</small></p>
+                if (Model.Exception.Exception.Data != null && Model.Exception.Exception.Data.Count > 0)
+                {
+                    <p class="display-4 font-weight-bold text-white">Custom Data:</p>
+                    <ul>
+                        @foreach (var key in Model.Exception.Exception.Data.Keys)
+                        {
+                            <li><small>@key: @(Model.Exception.Exception.Data[key])</small></li>
+                        }
+                    </ul>
+                }
+                if (!string.IsNullOrEmpty(Model.Exception.Exception.StackTrace))
+                {
+                    <p class="display-4 font-weight-bold text-white">Stack Trace:</p>
+                    <p class="display-4 font-weight-bold text-white"><small>@(Model.Exception.Exception.StackTrace)</small></p>
+                }
+            }
+            else
+            {
+                <p class="display-4 font-weight-bold text-white"><small>We apologize for the inconvenience. Please try again later.</small></p>
+            }
+        </div>
+    </div>
+</div>

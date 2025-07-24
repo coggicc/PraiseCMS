@@ -1,0 +1,47 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder">Recent Deaths</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0">
+        @if (Model.RecentDeaths.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-borderless table-vertical-center">
+                    <thead>
+                        <tr>
+                            <th class="p-0 w-50px"></th>
+                            <th class="p-0 min-w-150px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var person in Model.RecentDeaths)
+                        {
+                            <tr>
+                                <td class="pl-0">
+                                    <div class="symbol symbol-circle symbol-50 symbol-light mr-2 mt-2">
+                                        <img src="@person.ProfileImageURL" class="h-100 align-self-end" alt="">
+                                    </div>
+                                </td>
+                                <td class="pl-0">
+                                    <a href="javascript:;" class="text-dark font-weight-bolder text-hover-primary font-size-lg">@person.Display</a>
+                                    <span class="text-muted font-weight-bolder d-block font-size-lg">@Convert.ToDateTime(person.DeceasedDate).ToShortDateYearString()</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>No recent deaths</p>
+        }
+    </div>
+</div>

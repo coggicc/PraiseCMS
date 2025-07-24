@@ -1,0 +1,22 @@
+﻿@model PraiseCMS.DataAccess.Models.ApplicationRoles
+
+<div id="role-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "role-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Description:</label>
+            @Html.TextBoxFor(x => x.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger" })
+        </div>
+        <p>After saving, assign permissions to your new role via the Manage Permissions button.</p>
+    }
+</div>

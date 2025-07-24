@@ -1,0 +1,188 @@
+﻿@model PraiseCMS.DataAccess.Models.CommunicationHistoryModel
+@{
+    var emails = Model.CommunicationHistory.Where(q => q.CommunicationMethod == (int)ContactMethod.Email).ToList();
+    var textMessages = Model.CommunicationHistory.Where(q => q.CommunicationMethod == (int)ContactMethod.Text).ToList();
+}
+<div class="card card-custom card-stretch gutter-b">
+    <div class="card-header border-0 py-5">
+        <div class="card-title align-items-start flex-column">
+            <ul class="nav nav-tabs nav-bold nav-tabs-line">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#all_communications_tab">
+                        <span class="nav-icon"><i class="fas fa-history"></i></span>
+                        <span class="nav-text">All Communication (@Model.CommunicationHistory.Count())</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#emails_tab">
+                        <span class="nav-icon"><i class="fas fa-envelope"></i></span>
+                        <span class="nav-text">Emails (@emails.Count())</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#text_messages_tab">
+                        <span class="nav-icon"><i class="far fa-comment-dots"></i></span>
+                        <span class="nav-text">Text Messages (@textMessages.Count())</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="card-body px-0">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="all_communications_tab" role="tabpanel" aria-labelledby="all_communications_tab">
+                    @if (Model.CommunicationHistory.Any())
+                    {
+                        foreach (var item in Model.CommunicationHistory.OrderByDescending(q => q.CreatedDate))
+                        {
+                            <div class="card card-custom gutter-b">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <a href="#" class="btn btn-icon btn-circle btn-xs btn-light-primary mr-2 toggle" data-animation="true" data-toggle="tooltip" data-placement="top" title="View">
+                                            <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+                                        </a>
+                                        <h4 class="card-label toggle cursor-pointer">
+                                            @(((ContactMethod)item.CommunicationMethod).GetDescription())
+                                            <small class="text-dark-50">(@item.CreatedDate.ToShortDateAndTimeString())</small>
+                                        </h4>
+                                    </div>
+                                    <div class="card-toolbar">
+                                        @if (item.IsSuccess)
+                                        {
+                                            <i class="fa-2x fa fa-check-circle text-success" data-toggle="tooltip" title="Sent"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-2x fas fa-exclamation-circle text-warning" data-toggle="tooltip" title="Error - Not Sent"></i>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="card-body" style="display:none">
+                                    @if (item.CommunicationMethod.Equals((int)ContactMethod.Email))
+                                    {
+                                        @Html.Raw($"<p class='font-weight-bold'>{item.Subject}</p>")
+                                    }
+
+                                    @Html.Raw(item.Message)
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="card card-custom gutter-b">
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                            No communication history found
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="tab-pane fade" id="emails_tab" role="tabpanel" aria-labelledby="emails_tab">
+                    @if (emails.Any())
+                    {
+                        foreach (var item in emails.OrderByDescending(q => q.CreatedDate))
+                        {
+                            <div class="card card-custom gutter-b">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <a href="#" class="btn btn-icon btn-circle btn-xs btn-light-primary mr-2 toggle" data-animation="true" data-toggle="tooltip" data-placement="top" title="View">
+                                            <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+                                        </a>
+                                        <h4 class="card-label toggle cursor-pointer">
+
+                                            @(((ContactMethod)item.CommunicationMethod).GetDescription())
+                                            <small class="text-dark-50">(@item.CreatedDate.ToShortDateAndTimeString())</small>
+                                        </h4>
+                                    </div>
+                                    <div class="card-toolbar">
+                                        @if (item.IsSuccess)
+                                        {
+                                            <i class="fa-2x fa fa-check-circle text-success" data-toggle="tooltip" title="Sent"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-2x fas fa-exclamation-circle text-warning" data-toggle="tooltip" title="Not Sent"></i>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="card-body" style="display:none">
+                                    @Html.Raw($"<p class='font-weight-bold'>{item.Subject}</p>")
+                                    @Html.Raw(item.Message)
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="card card-custom gutter-b">
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                            No email history found
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="tab-pane fade" id="text_messages_tab" role="tabpanel" aria-labelledby="text_messages_tab">
+                    @if (textMessages.Any())
+                    {
+                        foreach (var item in textMessages.OrderByDescending(q => q.CreatedDate))
+                        {
+                            <div class="card card-custom gutter-b">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <a href="#" class="btn btn-icon btn-circle btn-xs btn-light-primary mr-2 toggle" data-animation="true" data-toggle="tooltip" data-placement="top" title="View">
+                                            <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+                                        </a>
+                                        <h4 class="card-label toggle cursor-pointer">
+                                            @(((ContactMethod)item.CommunicationMethod).GetDescription())
+                                            <small class="text-dark-50">(@item.CreatedDate.ToShortDateAndTimeString())</small>
+                                        </h4>
+                                    </div>
+                                    <div class="card-toolbar">
+                                        @if (item.IsSuccess)
+                                        {
+                                            <i class="fa-2x fa fa-check-circle text-success" data-toggle="tooltip" title="Sent"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-2x fas fa-exclamation-circle text-warning" data-toggle="tooltip" title="Not Sent"></i>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="card-body" style="display:none">
+                                    @Html.Raw(item.Message)
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="card card-custom gutter-b">
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                            No text message history found
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

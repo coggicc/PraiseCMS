@@ -1,0 +1,95 @@
+﻿@model PraiseCMS.DataAccess.Models.RefundModel
+@{
+    ViewBag.Title = "Refund Gift";
+    var campus = SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(Model.Payment.CampusId));
+    var refundEligible = Model.Payment.CreatedDate > DateTime.Now.AddDays(120);
+}
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                Refund Gift
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (!refundEligible)
+        {
+            <div class="alert alert-custom alert-notice alert-light-danger fade show mb-5" role="alert">
+                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="alert-text">
+                    This gift cannot be refunded. Gifts made over 120 days ago cannot be refunded.
+                </div>
+                <div class="alert-close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="la la-close"></i></span>
+                    </button>
+                </div>
+            </div>
+        }
+        <div class="table-responsive my-4">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Fund</th>
+                        <th>Campus</th>
+                        <th>Payment Method</th>
+                        <th>Created Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            @Convert.ToDecimal(Model.Payment.Amount).ToCurrencyString()
+                        </td>
+                        <td>
+                            @Model.Fund
+                        </td>
+                        <td>
+                            @(campus != null ? campus.Name : "")
+                        </td>
+                        <td>
+                            @Model.PaymentMethod
+                        </td>
+                        <td>
+                            @Model.Payment.CreatedDate.ToShortDateString()
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @if (refundEligible)
+        {
+            using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data", id = "AddCardForm" }))
+            {
+                <div class="form-container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(x => x.Transaction.TransactionGUID)
+                            <div class="form-group row">
+                                <label class="col-lg-4 col-form-label">Refund Reasons:</label>
+                                <div class="col-lg-8">
+                                    @Html.DropDownListFor(x => x.RefundReasonId, Model.RefundReasonTypes.RefundReasonType.ToSelectList(x => x.RefundReasonName, x => x.RefundReasonID).OrderBy(x => x.Text), "Select Refund Reason...", new { @class = "form-control select2", name = "Fund", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.RefundReasonId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 d-none d-lg-block d-xl-block">
+                            <div class="card-wrapper mt-5"></div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        }
+        <div class="card-footer">
+            @if (refundEligible)
+            {
+                <button type="submit" class="btn btn-light-danger font-weight-bold">Request Refund</button>
+            }
+            <a href="/mygiving/paymentmethods" class="btn btn-light-dark font-weight-bold">Cancel</a>
+        </div>
+    </div>
+</div>

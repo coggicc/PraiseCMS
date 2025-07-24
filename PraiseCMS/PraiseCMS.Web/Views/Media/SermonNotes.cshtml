@@ -1,0 +1,33 @@
+﻿@model PraiseCMS.DataAccess.Models.SermonNote
+
+@{
+    ViewBag.Title = "Sermon Notes";
+}
+
+<div class="kt-portlet kt-portlet--mobile">
+    <div class="kt-portlet__head kt-portlet__head--lg">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon">
+                <i class="kt-font-brand fa fa-toolbox"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="kt-portlet__body">
+        <div class="row">
+            <div class="col-4">
+                <div class="card">
+                    @{var image = "~/Content/assets/media/stock-600x400/img-1.jpg"; }
+                    <img class="card-img-top" src="@Url.Content(image)" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">@Model.SermonId</h5>
+                        <p class="card-text">@Model.Message</p>
+                        <p class="text-muted">@Model.CreatedDate.ToShortDateString()</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

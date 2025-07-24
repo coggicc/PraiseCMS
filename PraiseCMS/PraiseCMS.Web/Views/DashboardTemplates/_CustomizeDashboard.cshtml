@@ -1,0 +1,81 @@
+﻿@model CustomDashboardVM
+<div id="customizeDashboard-div">
+    @if (TempData.ContainsKey(TempDataKeys.AlertMessage))
+    {
+        var message = TempData[TempDataKeys.AlertMessage]?.ToString();
+        var messageType = TempData.ContainsKey(TempDataKeys.AlertMessageType) ? TempData[TempDataKeys.AlertMessageType]?.ToString() : "";
+        var messageIcon = TempData.ContainsKey(TempDataKeys.AlertMessageIcon) ? TempData[TempDataKeys.AlertMessageIcon]?.ToString() : "";
+        <div class="alert alert-custom alert-notice @messageType fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="@messageIcon"></i></div>
+            <div class="alert-text">@Html.Raw(message)</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i class="ki ki-close"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    }
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "customizeDashboard-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(q => q.CustomTemplateId)
+
+        if (!string.IsNullOrEmpty(Model.CustomTemplateId))
+        {
+            @Html.HiddenFor(q => q.Template)
+            <div class="alert alert-custom alert-notice alert-light-primary fade show" role="alert">
+                <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="alert-text">Add or hide widgets and save your changes for your custom dashboard: @Model.Template.<br /><br />Additional changes can be made on the <a href="/dashboardtemplates" class="alert-link">dashboard template page</a>.</div>
+                <div class="alert-close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="la la-close"></i></span>
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-custom alert-notice alert-light-primary fade show" role="alert">
+                <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="alert-text">Add or hide widgets and save your changes as a custom dashboard.<br /><br />Additional changes can be made on the <a href="/dashboardtemplates" class="alert-link">dashboard template page</a>.</div>
+                <div class="alert-close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="la la-close"></i></span>
+                    </button>
+                </div>
+            </div>
+        }
+        if (string.IsNullOrEmpty(Model.CustomTemplateId))
+        {
+            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Custom name:</h3>
+            <p>Feel free to give your new dashboard a name.</p>
+            <div class="form-group">
+                @Html.TextBoxFor(x => x.Template, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.Template, "", new { @class = "text-danger" })
+            </div>
+            <p class="pb-4">Note: Location refers to where the widget will appear on your dashboard (top or main section).</p>
+        }
+        foreach (var item in Model.CategoryWidgets.Where(item => item.Widgets.Any()))
+        {
+            <h6 class="text-dark-50">@item.WidgetCategoryType.Display</h6>
+            foreach (var widget in item.Widgets)
+            {
+                var isChecked = Model.Widgets.Any(q => q.Equals(widget.Id)) ? "checked='checked'" : "";
+
+                <div class="form-group row">
+                    <div class="col-2">
+                        <span class="switch switch-sm switch-icon">
+                            <label>
+                                <input type="checkbox" value="@widget.Id" name="Widgets" id="Widgets-@widget.Id" @Html.Raw(isChecked) />
+                                <span style="margin-top: 20% !important;"></span>
+                            </label>
+                        </span>
+                    </div>
+                    <label class="col-10 col-form-label font-weight-bold"> @widget.Display:<br /> <span class="text-muted">@widget.Description<br />Location: @widget.Location</span></label>
+                </div>
+            }
+        }
+    }
+</div>

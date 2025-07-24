@@ -1,0 +1,21 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.Note
+
+<div id="note-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "note-div" }, new { @class = "" }))
+    {
+        @Html.ValidationSummary()
+        @Html.HiddenFor(x => x.Id)
+        if (SessionVariables.CurrentChurch.NoteCategories.SplitToList().Any())
+        {
+            <div class="form-group">
+                <label>Select a Category:</label>
+                @Html.DropDownListFor(x => x.Category, SessionVariables.CurrentChurch.NoteCategories.SplitToList().OrderBy(x => x).ToSelectList("Select a category...", x => x, x => x, x => x.Contains("General")), new { @class = "form-control select2", style = "width:100%;" })
+            </div>
+        }
+        <div class="form-group">
+            <label>Note:</label>
+            @Html.TextAreaFor(x => x.Description, new { @class = "form-control", placeholder = "Enter your note here..." })
+        </div>
+    }
+</div>

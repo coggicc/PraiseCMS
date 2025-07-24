@@ -1,0 +1,90 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.WelcomeViewModel
+@{
+    ViewBag.Title = "Welcome";
+}
+
+@*<div class="row">
+        <div class="col-8 offset-2">
+            <div class="card card-custom gutter-b">
+                <div class="card-header border-0">
+                    <h3 class="card-title font-weight-bolder">Heading Here</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mt-4">
+                        <div class="col-4">
+                            <img src="~/Content/assets/media/svg/humans/custom-13.svg" class="img-fluid" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img src="~/Content/assets/media/svg/humans/custom-13.svg" class="img-fluid" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img src="~/Content/assets/media/svg/humans/custom-13.svg" class="img-fluid" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<div class="card card-custom card-stretch gutter-b">
+    <div class="card-body p-5">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="p-1 flex-grow-1 font-weight-bold">
+                    @if (Model.HeaderLink.IsNotNullOrEmpty())
+                    {
+                        <h2 class="text-primary font-size-h1"><a href="@Model.HeaderLink" class="text-dark text-hover-primary">@Html.Raw(Model.Header)</a></h2>
+                    }
+                    else
+                    {
+                        <h2 class="text-primary font-size-h1">@Html.Raw(Model.Header)</h2>
+                    }
+                    @if (Model.SubHeader.IsNotNullOrEmpty())
+                    {
+                        <p class="text-dark-50 mt-3 font-size-h2">@Html.Raw(Model.SubHeader)</p>
+                    }
+                    <p class="pt-2 pb-5 font-size-h3 font-weight-normal">
+                        @Html.Raw(Model.BodyText)
+                    </p>
+                    <p>
+                        <a href="@Model.ButtonLink" class="btn btn-light-primary font-weight-bold">
+                            @Html.Raw(Model.ButtonText)
+                        </a>
+                    </p>
+                    @if (Model.HelperText.IsNotNullOrEmpty())
+                    {
+                        <p class="pt-5 font-size-lg font-weight-normal">@Html.Raw(Model.HelperText)</p>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                @if (Model.ImagePath.IsNotNullOrEmpty())
+                {
+                    <img src="@Model.ImagePath" class="img-fluid" alt="">
+                }
+                else
+                {
+                    <img src="~/Content/assets/media/svg/humans/custom-13.svg" class="img-fluid" alt="">
+                }
+            </div>
+        </div>
+    </div>
+    @if (Model.CardFooterButtonText.IsNotNullOrEmpty() && Model.CardFooterButtonLink.IsNotNullOrEmpty())
+    {
+        <div class="card-footer">
+            <a href="@Model.CardFooterButtonLink" class="btn btn-link btn-link-primary font-size-h5">
+                @Model.CardFooterButtonText
+                <span class="svg-icon svg-icon-lg svg-icon-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24"></polygon>
+                            <rect fill="#000000" opacity="0.3" transform="translate(12.000000, 12.000000) rotate(-90.000000) translate(-12.000000, -12.000000)" x="11" y="5" width="2" height="14" rx="1"></rect>
+                            <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)"></path>
+                        </g>
+                    </svg>
+                </span>
+            </a>
+        </div>
+    }
+</div>

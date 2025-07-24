@@ -1,0 +1,127 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.ViewModels.BillingActivityVM>
+@{
+    ViewBag.Title = "Billing Activity";
+}
+
+@section leftsubheader{
+    @Html.Partial("_AccountSubHeader")
+}
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", SessionVariables.CurrentChurch)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom gutter-b">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">
+                        Billing Activity
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <a href="/settings/account" class="btn btn-light-dark btn-sm mr-2">Back</a>
+                    <a href="/settings/DownloadBillingPdf" target="_blank" data-toggle="tooltip" data-placement="top" title="Download PDF" class="btn btn-light-primary btn-sm">Download</a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <table class="table table-bordered table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Billing Frequency</th>
+                                <th>Date</th>
+                                <th>Service Period</th>
+                                <th>Status</th>
+                                <th width="5%"><i class="fas fa-th-list"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@(item.Subscription.BillingPlan.EqualsIgnoreCase(BillingType.Free)? "Free" : "Standard")</td>
+                                    @if (item.Subscription.BillingPlan.EqualsIgnoreCase(BillingType.Free))
+                                    {
+                                        <td>N/A</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.Subscription.BillingPlan @Html.Raw(item.Subscription.FreeTrial ? "<small>(Free Trial)</small>" : "")</td>
+                                    }
+                                    <td>@item.Subscription.CreatedDate.ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(item.Subscription.StartDate).ToShortDateString() - @Html.Raw(item.Subscription.EndDate.IsNotNullOrEmpty() ? Convert.ToDateTime(item.Subscription.EndDate).ToShortDateString() : "Unlimited")</td>
+                                    <td>@Html.Raw(item.Subscription.IsActive ? "Active" : "Expired")</td>
+                                    <td>
+                                        <a class="btn btn-icon btn-circle btn-sm btn-light-primary" data-toggle="tooltip" data-placement="top" title="View Transaction Details" href="#" onclick="collapse('@item.Subscription.Id',this)">
+                                            <i class="fas fa-chevron-down icon-nm"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                if (item.Transactions.Any())
+                                {
+                                    <tr id="collapse-@item.Subscription.Id" class="panel-collapse collapse">
+                                        <td colspan="6">
+                                            <div class="panel-body">
+                                                <table class="table table-head-custom table-head-bg table-border table-vertical-center table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Transaction Date</th>
+                                                            <th>Amount</th>
+                                                            <th>Payment Method</th>
+                                                            <th>Transaction Id</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var transaction in item.Transactions)
+                                                        {
+                                                            <tr>
+                                                                <td><a target="_blank" href="/settings/DownloadTransactionInvoice/@transaction.Id" data-toggle="tooltip" title="Click to download Transaction Invoice">@transaction.TransactionDate.ToShortDateString()</a></td>
+                                                                <td>@transaction.Amount.ToCurrencyString()</td>
+                                                                <td>@transaction.PaymentMethod</td>
+                                                                <td>@transaction.TransactionId</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr id="collapse-@item.Subscription.Id" class="panel-collapse collapse">
+                                        <td colspan="6">
+                                            <div class="panel-body">
+                                                <p>No transaction history available for this plan.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        function collapse(id, self) {
+            const target = $('#collapse-' + id);
+            if (target.hasClass('collapse')) {
+                target.removeClass('collapse').addClass('uncollapse');
+            } else if (target.hasClass('uncollapse')) {
+                target.removeClass('uncollapse').addClass('collapse');
+            }
+        }
+
+        function toggleClass(id) {
+            $('.show-' + id).toggle();
+            $('.hide-' + id).toggle();
+        }
+    </script>
+}

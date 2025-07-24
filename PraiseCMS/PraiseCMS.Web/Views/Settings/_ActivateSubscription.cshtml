@@ -1,0 +1,147 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.ActivateSubscriptionVM
+
+<div id="buy-subscription">
+    @Html.Partial("~/Views/Shared/_Alert.cshtml")
+
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "buy-subscription" }, new { @class = "form", id = "subscriptionForm" }))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.FreeTrialAvailable)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.FundId)
+        @Html.HiddenFor(x => x.DonorGUID)
+
+        if (Model.FreeTrialAvailable)
+        {
+            <p class="font-size-lg primary-card">You have an available free trial. Click Activate button to start.</p>
+            @Html.HiddenFor(x => x.BillingType)
+        }
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label class="mb-4">Choose Subscription Plan:</label>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label class="option option-plain">
+                                <span class="option-control">
+                                    <span class="radio">
+                                        @Html.RadioButtonFor(x => x.BillingType, BillingType.Annually)
+                                        <span></span>
+                                    </span>
+                                </span>
+                                <span class="option-label">
+                                    <span class="option-head">
+                                        <span class="option-title">
+                                            Billed Annually
+                                        </span>
+                                    </span>
+                                    <span class="option-body">
+                                        @Model.AnnualBillingAmount / month (@Model.TotalAnnualBillingAmount)
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="option option option-plain">
+                                <span class="option-control">
+                                    <span class="radio">
+                                        @Html.RadioButtonFor(x => x.BillingType, BillingType.Monthly)
+                                        <span></span>
+                                    </span>
+                                </span>
+                                <span class="option-label">
+                                    <span class="option-head">
+                                        <span class="option-title">
+                                            Billed Monthly
+                                        </span>
+                                    </span>
+                                    <span class="option-body">
+                                        @Model.MonthlyBillingAmount / month
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label class="label-dark">Choose a subscription billing plan.</label>
+                    <div class="radio-inline">
+                        <label class="ml-20 radio radio-outline radio-outline-2x radio-primary">
+                            @Html.RadioButtonFor(x => x.BillingType, BillingType.Annually)
+                            <span class="mt-6"></span>
+                            <div class="m-4"><span class="m-0">Billed Annually</span><br /><span class="m-0 font-weight-bolder">@Model.AnnualBillingAmount @Utilities.GetAnnualSubscriptionAmount() / month</span></div>
+                        </label>
+                        <label class="radio radio-outline radio-outline-2x radio-primary">
+                            @Html.RadioButtonFor(x => x.BillingType, BillingType.Monthly)
+                            <span class="mt-6"></span>
+                            <div class="m-4"><span class="m-0">Billed Monthly</span><br /><span class="m-0 font-weight-bolder">@Model.MonthlyBillingAmount @Utilities.GetMonthlySubscriptionAmount() / month</span></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    @if (Model.Accounts.Any(q => !q.Disabled))
+                    {
+                        <label>Select Payment Method or <a href="/settings/paymentmethods">add new</a></label>
+                        <select class="form-control select2" name="AccountGUID" id="AccountGUID" style="width:100%;">
+                            <option value="">Select a payment method...</option>
+                            @foreach (var item in Model.Accounts.Where(q => !q.Disabled).ToList())
+                            {
+                                <option @(item.IsPrimary ? Html.Raw("selected='selected'") : Html.Raw("")) @(item.IsPrimary ? Html.Raw("data-content='<span class=\"primary-card ml-2\">(Primary)</span>'") : Html.Raw("")) @(item.Disabled ? "disabled='disabled' data-content='<i class=\"fas fa-exclamation-circle text-danger\"></i>'>" : "") value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(x => x.AccountGUID, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        <p><a href="/settings/paymentmethods">Add a payment method.</a></p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $(".select2").select2({
+                templateResult: formatState,
+                templateSelection: formatState
+            });
+
+            function formatState(opt) {
+                if (!opt.id) {
+                    return opt.text;
+                }
+                var optcontent = $(opt.element).attr('data-content');
+                if (!optcontent) {
+                    const $opt = $(
+                        '<span>' + opt.text + '</span>'
+                    );
+                    return $opt;
+                } else {
+                    const $opt = $(
+                        '<span>' + opt.text + ' ' + optcontent + '</span>'
+                    );
+                    return $opt;
+                }
+            };
+
+            $(".select2-selection").on("focus", function () {
+                $(this).parent().parent().prev().select2("open");
+            });
+        });
+    </script>
+}

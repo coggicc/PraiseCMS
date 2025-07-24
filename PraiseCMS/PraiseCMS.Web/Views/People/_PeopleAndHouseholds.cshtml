@@ -1,0 +1,125 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.HouseholdDashboard
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title"><h3 class="card-label toggle cursor-pointer"><i class="fas fa-users text-success fa-1-5x ml-2"></i> People</h3></div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mx-2 toggle" data-animation="true" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.People.Any())
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="20%"></th>
+                            <th width="40%">Name</th>
+                            <th width="40%">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var person in Model.People)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="symbol symbol-circle symbol-lg-50">
+                                        <img src="@person.ProfileImageURL" alt="profile image" />
+                                    </div>
+                                </td>
+                                <td style="vertical-align: middle;">
+                                    <div>
+                                        @if (SessionVariables.CurrentUser.IsSuperAdmin || SessionVariables.CurrentUser.IsAdmin)
+                                        {
+                                            if (person.UserId.IsNotNullOrEmpty())
+                                            {
+                                                <a href="/users/userprofile?Id=@person.UserId&type=user" data-toggle="tooltip" title="View profile">@person.Display</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/users/userprofile?Id=@person.Id&type=person" data-toggle="tooltip" title="View profile">@person.Display</a>
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <a>@person.Display</a>
+                                        }
+                                    </div>
+                                </td>
+                                <td style="vertical-align: middle;">@(person.Email.IsNotNullOrEmpty()?person.Email:"")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>No people found</p>
+        }
+    </div>
+</div>
+<div class="card card-custom my-5">
+    <div class="card-header">
+        <div class="card-title"><h3 class="card-label toggle cursor-pointer"><i class="fas fa-home text-info fa-1-5x ml-2"></i> Households</h3></div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mx-2 toggle" data-animation="true" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Households.Any())
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Households</th>
+                            <th width="40%" class="text-center">Head of Household</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var household in Model.Households)
+                        {
+                            var members = Model.HouseholdMembers.Where(x => x.HouseholdId == household.Id).ToList();
+                            <tr>
+                                <td>
+                                    <a href="/people/householdMembers/@household.Id" data-toggle="tooltip" title="Manage household members" data-placement="top">@household.Display (@members.Count() @members.Count().Pluralize("member"))</a>
+                                </td>
+                                <td class="text-center">
+                                    @if (members.Any(x => x.IsHeadofHousehold))
+                                    {
+                                        var headofHousehold = members.FirstOrDefault(x => x.IsHeadofHousehold);
+
+                                        if (headofHousehold.UserId.IsNotNullOrEmpty())
+                                        {
+                                            <a href="/users/userprofile?Id=@headofHousehold.UserId&type=user" data-toggle="tooltip" title="View profile">@headofHousehold.MemberName</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/users/userprofile?Id=@headofHousehold.PersonId&type=person" data-toggle="tooltip" title="View profile">@headofHousehold.MemberName</a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>[Not Assigned]</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>No households found</p>
+        }
+    </div>
+</div>

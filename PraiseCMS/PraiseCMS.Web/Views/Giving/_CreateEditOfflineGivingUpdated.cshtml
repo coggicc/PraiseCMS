@@ -1,0 +1,189 @@
+﻿@model PraiseCMS.DataAccess.Models.OfflineGivingView
+<div id="manual-gift-div">
+    <div id="alert-container"></div>
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "manual-gift-div" }, new { @class = "kt-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.OfflineGiving.Id)
+        @Html.HiddenFor(x => x.OfflineGiving.ChurchId)
+        @Html.HiddenFor(x => x.OfflineGiving.CreatedBy)
+        @Html.HiddenFor(x => x.OfflineGiving.CreatedDate)
+        @Html.HiddenFor(x => x.OfflineGivingType)
+        @Html.HiddenFor(x => x.Mode)
+        <div id="donor-row" class="row form-group">
+            <div class="col-6">
+                <label>Donor:*</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.PersonId, Model.People.ToSelectList("Select a donor...", x => x.DisplayWithAddress, x => x.Id), new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.PersonId, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-6">
+                <button type="button" class="btn btn-primary mt-4" onclick="toggleNewDonor()">Add New Donor</button>
+            </div>
+        </div>
+        <div id="new-donor-fields" style="display:none;">
+            <div class="row form-group">
+                <div class="col">
+                    <label>First Name:</label>
+                    @Html.EditorFor(x => x.Person.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.Person.FirstName, "", new { @class = "text-danger" })
+                </div>
+                <div class="col">
+                    <label>Last Name:</label>
+                    @Html.EditorFor(x => x.Person.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.Person.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col">
+                    <label>Email:</label>
+                    @Html.EditorFor(x => x.Person.Email, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="col">
+                    <label>Phone:</label>
+                    @Html.EditorFor(x => x.Person.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone" } })
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-6">
+                <label>Payment Method:*</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.OfflinePaymentMethod, OfflinePaymentMethods.Items.ToSelectList(x => x), new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.OfflinePaymentMethod, "", new { @class = "text-danger" })
+            </div>
+            <div class="col" id="check-number-div" style="display:none;">
+                <label>Check #:</label>
+                @Html.TextBoxFor(x => x.OfflineGiving.CheckNumber, new { @class = "form-control numeric" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.CheckNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col">
+                <label>Gift Received Via:</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.OfflinePaymentType, OfflinePaymentTypes.Items.ToSelectList(x => x), "Select how the gift was received...", new { @class = "form-control select2", style = "width:100%;" })
+            </div>
+            <div class="col">
+                <label>Campus:*</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.CampusId, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id), "Select a campus...", new { @class = "form-control select2" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.CampusId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12">
+                <label>Date Received:*</label>
+                <div class="input-group date">
+                    @Html.TextBoxFor(x => x.OfflineGiving.DateReceived, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.OfflineGiving.DateReceived, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div id="donation-rows">
+                @for (int i = 0; i < Model.Payments.Count; i++)
+                {
+                    <div class="form-group row mb-3">
+                        <div class="col-md-5">
+                            <label>Amount:*</label>
+                            @Html.TextBoxFor(m => m.Payments[i].Amount, new { @class = "form-control amount", placeholder = "Enter amount", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Payments[i].Amount, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-5">
+                            <label>Fund:*</label>
+                            @Html.DropDownListFor(m => m.Payments[i].FundId, new SelectList(Model.Funds, "Id", "Display"), "Select a fund...", new { @class = "form-control select2 fund", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Payments[i].FundId, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-light-danger" onclick="removeDonationRow(this)">Remove</button>
+                        </div>
+                    </div>
+                }
+
+                @if (!Model.Payments.Any())
+                {
+                    <div class="form-group row mb-3">
+                        <div class="col-md-5">
+                            <label>Amount:*</label>
+                            <input type="text" name="Payments[0].Amount" class="form-control amount" placeholder="Enter amount" required />
+                            @Html.ValidationMessage("Payments[0].Amount", "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-5">
+                            <label>Fund:*</label>
+                            <select name="Payments[0].FundId" class="form-control select2 fund" required>
+                                <option value="" disabled selected>Select a fund...</option>
+                                @foreach (var fund in Model.Funds)
+                                {
+                                    <option value="@fund.Id">@fund.Display</option>
+                                }
+                            </select>
+                            @Html.ValidationMessage("Payments[0].FundId", "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-light-danger" onclick="removeDonationRow(this)">Remove</button>
+                        </div>
+                    </div>
+                }
+            </div>
+            <button type="button" class="btn btn-primary" onclick="addDonationRow()">Split Donation</button>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    function toggleNewDonor() {
+        var newDonorFields = document.getElementById("new-donor-fields");
+        if (newDonorFields.style.display === "none") {
+            newDonorFields.style.display = "block";
+        } else {
+            newDonorFields.style.display = "none";
+        }
+    }
+
+    function addDonationRow() {
+        var rowCount = $('#donation-rows .form-group.row').length;
+        var newRow = `
+            <div class="form-group row mb-3">
+                <div class="col-md-5">
+                    <label>Amount:*</label>
+                    <input type="text" name="Payments[${rowCount}].Amount" class="form-control amount" placeholder="Enter amount" required />
+                </div>
+                <div class="col-md-5">
+                    <label>Fund:*</label>
+                    <select name="Payments[${rowCount}].FundId" class="form-control select2 fund" required>
+                        <option>Select a fund...</option>
+                        @foreach (var fund in Model.Funds)
+                        {
+                            <option value="@fund.Id">@fund.Display</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-light-danger" onclick="removeDonationRow(this)">Remove</button>
+                </div>
+            </div>`;
+        $('#donation-rows').append(newRow);
+
+        // Initialize Select2 on newly added dropdowns
+        $('.select2').select2();
+    }
+
+    function removeDonationRow(button) {
+        var row = $(button).closest('.form-group.row');
+        row.remove();
+    }
+
+    $(document).ready(function () {
+        $('#OfflineGiving_OfflinePaymentMethod').change(function () {
+            var selectedMethod = $(this).val();
+            if (selectedMethod === '@OfflinePaymentMethods.Check') {
+                $('#check-number-div').show();
+            } else {
+                $('#check-number-div').hide();
+                $('#OfflineGiving_CheckNumber').val('');
+            }
+        }).trigger('change');
+    });
+</script>

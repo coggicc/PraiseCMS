@@ -1,0 +1,90 @@
+﻿
+@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.CommunicationGroupsDashboard
+
+@{
+    var group = Model.CommunicationGroups.FirstOrDefault()?.Display;
+    var groupId = Model.CommunicationGroups.FirstOrDefault()?.Id;
+    ViewBag.Title = $"{group} Communication Groups";
+}
+
+@section subheader{
+    <a href="/people/CommunicationGroups" class="btn btn-light-dark btn-sm font-weight-bold mr-2">Back</a>
+    @Html.AjaxModalLink("Add Members", $"/people/_CreateCommunicationGroupPeople?groupId={groupId}", "Add Communication Group Members", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.CommunicationGroupsPeoples.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-center">Phone</th>
+                            <th class="text-center">Email</th>
+                            <th width="10%" class="text-center">Date Added</th>
+                            <th width="5%" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var member in Model.CommunicationGroupsPeoples)
+                        {
+                            <tr>
+                                <td>
+                                    @if (member.UserId.IsNotNullOrEmpty())
+                                    {
+                                        <a href="/users/userprofile?Id=@member.UserId&type=user" data-toggle="tooltip" title="View profile">@member.MemberName</a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/users/userprofile?Id=@member.PersonId&type=person" data-toggle="tooltip" title="View profile">@member.MemberName</a>
+                                    }
+                                </td>
+                                <td class="text-center">@Html.Raw(member.PhoneNumber.IsNotNullOrEmpty() ? member.PhoneNumber : "<i class='fas fa-comment text-danger' data-toggle='tooltip' title='No phone number provided'></i>")</td>
+                                <td class="text-center">@Html.Raw(member.Email.IsNotNullOrEmpty() ? member.Email : "<i class='fas fa-envelope text-danger' data-toggle='tooltip' title='No email provided'></i>")</td>
+                                <td class="text-center">@member.CreatedDate.ToShortDateString()</td>
+                                <td class="text-center">
+                                    <a href="#" onclick="deleteGroupMember('@member.Id')" data-toggle="tooltip" title="Remove member"><i class="fas fa-trash-alt text-hover-danger"></i></a>
+                                    <a id="delete-group-member-@member.Id" hidden href="/people/DeleteCommunicationGroupPeople?id=@member.Id"></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center">
+                <p>You don't have any members assigned to this group yet. @Html.AjaxModalLink("Do you want to add a member?", $"/people/_CreateCommunicationGroupPeople?groupId={groupId}", "Add Communication Group Members", "Save", "ml-2", "")</p>
+            </div>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    function deleteGroupMember(id) {
+        Swal.fire({
+            title: "Remove Group Member",
+            text: "Are you sure you want to remove this person from the group?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#delete-group-member-' + id)[0].click();
+            }
+        });
+    }
+</script>

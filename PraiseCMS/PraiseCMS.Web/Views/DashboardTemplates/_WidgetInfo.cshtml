@@ -1,0 +1,19 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.Widget
+
+@if (Model.Description.IsNotNullOrEmpty())
+{
+    <div class="row my-4">
+        <div class="col-12">
+            <p>@Model.Description</p>
+        </div>
+    </div>
+}
+@if (Model.ImageUrl.IsNotNullOrEmpty())
+{
+    <div class="row">
+        <div class="col-12">
+            <img src="@Model.ImageUrl.ToCompleteImagePath()" class="mx-auto d-block img-fluid" alt="Responsive image">
+        </div>
+    </div>
+}

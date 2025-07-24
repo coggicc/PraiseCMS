@@ -1,0 +1,586 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.EventViewModel
+<div id="event-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "event-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.Type)
+        @Html.HiddenFor(x => x.TypeId)
+        @Html.HiddenFor(x => x.CalendarColor)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.IsStandard)
+
+        <!-- Standard Event Type Dropdown -->
+        <div class="form-group" id="standardEventTypeDiv">
+            <label>Type:</label>
+            @Html.DropDownListFor(
+                model => model.TypeId,
+                new SelectList(Model.StandardEventTypes, "Value", "Text"),
+                "Select an event type...",
+                new { @class = "form-control select2", id = "StandardEventTypeDropdown" }
+            )
+            @Html.ValidationMessageFor(x => x.TypeId, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Or Create a New Event Option -->
+        <div class="form-group">
+            <a href="#" id="createNewEventLink">Or create a new event type</a>
+        </div>
+
+        <!-- Custom Event Title Input (only for new custom events) -->
+        <div class="form-group" id="customEventTitleDiv" style="display:none;">
+            <label>Event Name:</label>
+            @Html.EditorFor(x => x.Title, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter custom event name" } })
+            @Html.ValidationMessageFor(x => x.Title, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Custom Name for Standard Event (optional custom name for selected standard event type) -->
+        <div class="form-group" id="customNameForStandardEventDiv" style="display:none;">
+            <label>Custom Name (Optional):</label>
+            @Html.EditorFor(x => x.CustomName, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter custom name for selected event type" } })
+            @Html.ValidationMessageFor(x => x.CustomName, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Optional "Back to Standard Event Types" Link -->
+        <div class="form-group" id="backToStandardEventLinkDiv" style="display:none;">
+            <a href="#" id="backToStandardEventLink">Use a standard event type</a>
+        </div>
+
+        <div class="form-group">
+            <label>Description:</label>
+            @Html.TextAreaFor(x => x.Description, new { @class = "form-control readonly", rows = "5", id = "EventDescription" })
+            @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger" })
+        </div>
+        if (SessionVariables.CurrentUser.IsSuperAdmin)
+        {
+            <div class="form-group">
+                <label>Is Standard:</label>
+                <div>
+                    <span class="switch switch-icon">
+                        <label>
+                            @Html.CheckBoxFor(x => x.IsStandard, new { id = "IsStandard", @class = "readonly" })
+                            <span></span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <label>Start Date:</label>
+            <div class="input-group date">
+                @Html.TextBoxFor(x => x.StartDate, new { id = "startDate", @class = "form-control readonly datepicker", autocomplete = "off" })
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="la la-calendar-check-o"></i>
+                    </span>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(x => x.StartDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>End Date:</label>
+            <div class="input-group date">
+                @Html.TextBoxFor(x => x.EndDate, new { id = "endDate", @class = "form-control readonly datepicker", autocomplete = "off" })
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="la la-calendar-check-o"></i>
+                    </span>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(x => x.EndDate, "", new { @class = "text-danger readonly" })
+            <span id="endDateError" class="text-danger" style="display: none;">End date must be after the start date.</span>
+        </div>
+        <div id="time-div" style="display:@(Model.AllDay ? "none" : "block")">
+            <div class="form-group">
+                <label>Start Time:</label>
+                @Html.TextBoxFor(model => model.StartTime, new
+                {
+                    @class = "form-control",
+                    id = "startTimePicker",
+                    @readonly = "readonly",
+                    placeholder = "Select start time",
+                    type = "text"
+                })
+            </div>
+            <div class="form-group">
+                <label>End Time:</label>
+                @Html.TextBoxFor(model => model.EndTime, new
+                {
+                    @class = "form-control",
+                    id = "endTimePicker",
+                    @readonly = "readonly",
+                    placeholder = "Select end time",
+                    type = "text"
+                })
+            </div>
+        </div>
+        <div class="form-group">
+            <label>All Day:</label>
+            <div>
+                <span class="switch switch-icon">
+                    <label>
+                        @Html.CheckBoxFor(x => x.AllDay, new { id = "AllDay", @class = "readonly" })
+                        <span></span>
+                    </label>
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Frequency</label>
+            @Html.DropDownListFor(model => model.Frequency, new SelectList(ChurchEventFrequency.Items, Model.Frequency), "Select Frequency", new { @class = "form-control select2", id = "FrequencyDropdown" })
+        </div>
+        <div class="form-group" id="repeatEveryCountDiv" style="display:none;">
+            <label>Repeat Every</label>
+            @Html.TextBoxFor(model => model.RepeatEveryCount, new { @class = "form-control", type = "number", min = "1" })
+        </div>
+        <div class="form-group" id="repeatEveryTypeDiv" style="display:none;">
+            <label>Repeat Type</label>
+            @Html.DropDownListFor(
+                model => model.RepeatEveryType,
+                new SelectList(EventRepeatFrequency.Items, Model.RepeatEveryType),
+                "Select Repeat Type",
+                new { @class = "form-control select2", id = "repeatEveryTypeDropdown" }
+            )
+        </div>
+        <div class="form-group" id="daysOfWeekDiv" style="display:none;">
+            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Repeat on:</h3>
+            <div class="checkbox-list">
+                @for (int i = 0; i < DaysOfTheWeek.Items.Count; i++)
+                {
+                    <label class="checkbox">
+                        <input type="checkbox" name="SelectedWeekdays" value="@DaysOfTheWeek.Items[i]"
+                               @(Model.SelectedWeekdays != null && Model.SelectedWeekdays.Contains(DaysOfTheWeek.Items[i]) ? "checked" : "")
+                               onchange="EventForm.checkMinSelected(this)" />
+                        @DaysOfTheWeek.Items[i]
+                        <span></span>
+                    </label>
+                }
+            </div>
+        </div>
+        <div class="form-group" id="eventEndsDiv" style="display:none;">
+            <label>Event Ends</label>
+            <div class="radio-list">
+                @for (int i = 0; i < EventEnds.Items.Count; i++)
+                {
+                    <label class="radio">
+                        @Html.RadioButtonFor(model => model.EventEnds, EventEnds.Items[i], new { @class = "event-ends-radio", id = $"eventEnds_{i}" })
+                        @EventEnds.Items[i]
+                        <span></span>
+                    </label>
+                }
+            </div>
+        </div>
+        <div class="form-group" id="specificEndDateDiv" style="display: none;">
+            <label>Specific End Date:</label>
+            <div class="input-group date">
+                @Html.TextBoxFor(x => x.SpecificEndDate, new { id = "specificEndDate", @class = "form-control readonly datepicker", autocomplete = "off" })
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="la la-calendar-check-o"></i>
+                    </span>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(x => x.SpecificEndDate, "", new { @class = "text-danger readonly" })
+        </div>
+        <div class="form-group" id="maxOccurrencesDiv" style="display: none;">
+            <label>Max Occurences</label>
+            @Html.TextBoxFor(model => model.MaxOccurrences, new { @class = "form-control", type = "number", min = "1", placeholder = "Enter max occurrences" })
+            <span id="maxOccurrencesError" class="text-danger" style="display:none;">Please enter a valid integer.</span>
+        </div>
+        if (SessionVariables.Campuses?.Any() == true)
+        {
+            <div class="form-group" id="campusSelection" style="display:none;">
+                <h3 class="font-size-lg text-dark font-weight-bold mb-6">Location(s):</h3>
+                <div class="checkbox-list">
+                    @{
+                        bool isAllChecked = SessionVariables.Campuses.Count() == 1;
+                    }
+                    @foreach (var campus in SessionVariables.Campuses)
+                    {
+                        <label class="checkbox">
+                            <input class="cbx_campus" type="checkbox" name="Campuses" value="@campus.Id" @(isAllChecked ? "checked" : "")> @campus.Name
+                            <span></span>
+                        </label>
+                    }
+                    <div class="separator separator-dashed my-5"></div>
+                    <label class="checkbox">
+                        <input type="checkbox" id="kt-checkbox-selectall" @(isAllChecked ? "checked" : "")> Select All/None
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+        }
+        <div id="CalendarColorDiv" style="display: none;">
+            <div class="form-group">
+                <label>Calendar Color:</label>
+                @Html.DropDownListFor(x => x.CalendarColor, Constants.ButtonColors.ToSelectList(x => x.Value, x => x.Key).OrderBy(x => x.Text), "Select a calendar color...", new { @class = "form-control select2", style = "width:100%;" })
+                <span class="form-text text-muted">Your event will be represented by this color on your calendar</span>
+            </div>
+            <div class="d-flex mb-5">
+                @foreach (var color in Constants.ButtonColors.OrderBy(x => x.Value))
+                {
+                    <div class="bg-@color.Key d-flex flex-center w-75px h-75px mr-5 mb-1 mb-md-0 text-white">@color.Value</div>
+                }
+            </div>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        EventForm.init();
+
+            // Hide CalendarColorDiv by default
+            $('#CalendarColorDiv').hide();
+
+            // Handle "Or create a new event" link click
+            $('#createNewEventLink').click(function (e) {
+                e.preventDefault();
+                $('#StandardEventTypeDropdown').val(''); // Clear standard event selection
+                $('#standardEventTypeDiv').hide(); // Hide standard event dropdown
+                $('#customEventTitleDiv').show(); // Show custom event title input
+                $('#CalendarColorDiv').show(); // Show CalendarColorDiv for custom events
+                $('#customNameForStandardEventDiv').hide(); // Hide custom name for standard events
+                $('#createNewEventLink').hide(); // Hide "Or create a new event" link
+                $('#backToStandardEventLinkDiv').show(); // Show "Back to standard event types" link
+            });
+
+            // Handle "Back to Standard Event Types" link click
+            $('#backToStandardEventLink').click(function (e) {
+                e.preventDefault();
+                $('#customEventTitleDiv').hide(); // Hide custom event title input
+                $('#standardEventTypeDiv').show(); // Show standard event dropdown
+                $('#createNewEventLink').show(); // Show "Or create a new event" link again
+                $('#backToStandardEventLinkDiv').hide(); // Hide "Back to standard event types" link
+                $('#CalendarColorDiv').hide(); // Hide CalendarColorDiv for standard events
+                $('#customNameForStandardEventDiv').show(); // Show custom name
+            });
+
+        $('#StandardEventTypeDropdown').change(function () {
+            var selectedEventTypeId = $(this).val();
+
+            // Update the hidden TypeId input with the selected value
+            $('#TypeId').val(selectedEventTypeId);
+
+            if (selectedEventTypeId) {
+                // Set divs for when a standard event type is selected
+                $('#CalendarColorDiv').hide();            // Hide calendar color selection for standard events
+                $('#customNameForStandardEventDiv').show(); // Show custom name input for standard event
+                $('#customEventTitleDiv').hide();          // Hide custom event title input
+                $('#backToStandardEventLinkDiv').hide();   // Hide "Back to standard event types" link
+                $('#createNewEventLink').show();           // Show "Or create a new event" link
+            } else {
+                // Set divs for when a custom event is created
+                $('#CalendarColorDiv').show();              // Show calendar color selection for custom events
+                $('#customNameForStandardEventDiv').hide(); // Hide custom name input for standard events
+            }
+        });
+
+    });
+
+    var EventForm = {
+        init: function () {
+            this.initTimePickers();
+            this.initDatePickers();
+            this.initAllDayToggle();
+            this.initFrequencyAndEventEnds();
+            this.initCampusSelection();
+            this.initDaysOfWeekSelection();
+            this.initEventEndsChange();
+            this.initMaxOccurrencesValidation();
+            this.initDateValidation();
+        },
+
+        initTimePickers: function () {
+            $('#startTimePicker').timepicker();
+            $('#endTimePicker').timepicker();
+
+            var timeDifferenceInMinutes = 60;
+            $('#startTimePicker').on('changeTime.timepicker', function () {
+                EventForm.calculateTimeDifference();
+                EventForm.updateEndTime();
+            });
+        },
+
+        initDatePickers: function () {
+            $('#specificEndDate').datepicker('destroy').datepicker({
+                orientation: "top left",
+                todayHighlight: true,
+                autoclose: true
+            });
+        },
+
+        initAllDayToggle: function () {
+            var allDayCheckbox = $('#AllDay');
+            EventForm.toggleTimeFields(allDayCheckbox.is(':checked'));
+
+            $('#AllDay').on('change', function () {
+                EventForm.toggleTimeFields($(this).is(':checked'));
+            });
+        },
+
+        toggleTimeFields: function (isAllDay) {
+            if (isAllDay) {
+                $('#time-div').hide();
+            } else {
+                $('#time-div').show();
+            }
+        },
+
+        calculateTimeDifference: function () {
+            const startTimeStr = $('#startTimePicker').val();
+            const endTimeStr = $('#endTimePicker').val();
+            const startTime = EventForm.parseTimeToDate(startTimeStr);
+            const endTime = EventForm.parseTimeToDate(endTimeStr);
+
+            if (startTime && endTime && startTime < endTime) {
+                const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+                const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+                EventForm.timeDifferenceInMinutes = endMinutes - startMinutes;
+            }
+        },
+
+        updateEndTime: function () {
+            const startTimeStr = $('#startTimePicker').val();
+            const startTime = EventForm.parseTimeToDate(startTimeStr);
+
+            if (startTime) {
+                let endTime = new Date(startTime);
+                endTime.setMinutes(startTime.getMinutes() + EventForm.timeDifferenceInMinutes);
+
+                if (endTime <= startTime) {
+                    endTime = new Date(startTime);
+                    endTime.setMinutes(startTime.getMinutes() + 30);
+                }
+
+                const formattedEndTime = EventForm.formatDateToTimeString(endTime);
+                $('#endTimePicker').timepicker('setTime', formattedEndTime);
+            }
+        },
+
+        parseTimeToDate: function (timeStr) {
+            const timeParts = timeStr.match(/(\d+):(\d+) (\w+)/);
+            if (timeParts) {
+                let hours = parseInt(timeParts[1]);
+                const minutes = parseInt(timeParts[2]);
+                const meridian = timeParts[3];
+
+                if (meridian === "PM" && hours < 12) hours += 12;
+                if (meridian === "AM" && hours === 12) hours = 0;
+
+                const date = new Date();
+                date.setHours(hours);
+                date.setMinutes(minutes);
+                return date;
+            }
+            return null;
+        },
+
+        formatDateToTimeString: function (date) {
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const meridian = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+            return `${hours}:${formattedMinutes} ${meridian}`;
+        },
+
+        initFrequencyAndEventEnds: function () {
+            $('#FrequencyDropdown').change(function () {
+                EventForm.toggleEventEnds($(this).val());
+            });
+
+            EventForm.toggleEventEnds($('#FrequencyDropdown').val());
+            EventForm.toggleMaxOccurrencesAndSpecificEndDate();
+        },
+
+        toggleEventEnds: function (frequency) {
+            if (frequency === '@ChurchEventFrequency.Custom') {
+                $('#repeatEveryTypeDiv').show();
+                $('#repeatEveryTypeDropdown').select2();
+                $('#eventEndsDiv').show();
+
+                $("input[name='EventEnds'][value='Never']").prop("checked", true);
+
+                $('#repeatEveryCountDiv').show();
+                $('#daysOfWeekDiv').show();
+
+                $('#RepeatEveryCount').val(1);
+                $('#repeatEveryTypeDropdown').val('@EventRepeatFrequency.Week').trigger('change');
+            } else {
+                $('#eventEndsDiv').hide();
+                EventForm.clearEventEnds();
+                $('#repeatEveryCountDiv').hide();
+                $('#repeatEveryTypeDiv').hide();
+                $('#daysOfWeekDiv').hide();
+            }
+        },
+
+        toggleMaxOccurrencesAndSpecificEndDate: function () {
+            var selectedEventEnd = $("input[name='EventEnds']:checked").val();
+
+            if (selectedEventEnd === '@EventEnds.AfterEventOccurrences') {
+                $('#maxOccurrencesDiv').show();
+                $('#specificEndDateDiv').hide();
+                $('#specificEndDate').val('');
+                EventForm.setDefaultMaxOccurrences();
+            } else if (selectedEventEnd === '@EventEnds.OnSpecificDate') {
+                $('#specificEndDateDiv').show();
+                $('#maxOccurrencesDiv').hide();
+                $('#MaxOccurrences').val('');
+
+                const startDateStr = $('#startDate').val();
+                const startDate = new Date(startDateStr);
+
+                if (!isNaN(startDate)) {
+                    const specificEndDate = new Date(startDate);
+                    specificEndDate.setMonth(specificEndDate.getMonth() + 1);
+                    specificEndDate.setDate(specificEndDate.getDate() - 1);
+
+                    const formattedSpecificEndDate = `${(specificEndDate.getMonth() + 1).toString().padStart(2, '0')}/${specificEndDate.getDate().toString().padStart(2, '0')}/${specificEndDate.getFullYear()}`;
+                    $('#specificEndDate').val(formattedSpecificEndDate);
+                }
+            } else {
+                $('#maxOccurrencesDiv').hide();
+                $('#MaxOccurrences').val('');
+                $('#specificEndDateDiv').hide();
+                $('#specificEndDate').val('');
+            }
+        },
+
+        initEventEndsChange: function () {
+            $("input[name='EventEnds']").change(function () {
+                EventForm.toggleMaxOccurrencesAndSpecificEndDate();
+            });
+        },
+
+        clearEventEnds: function () {
+            $("input[name='EventEnds']").prop("checked", false);
+            $('#maxOccurrencesDiv').hide();
+            $('#MaxOccurrences').val('');
+            $('#specificEndDateDiv').hide();
+            $('#specificEndDate').val('');
+        },
+
+        initMaxOccurrencesValidation: function () {
+            $('#MaxOccurrences').on('blur', function () {
+                EventForm.validateMaxOccurrences();
+            });
+        },
+
+        validateMaxOccurrences: function () {
+            var maxOccurrences = $('#MaxOccurrences').val();
+            var isValid = /^\d+$/.test(maxOccurrences) && +maxOccurrences >= 1 && +maxOccurrences <= 10000;
+            var errorMessage = $('#maxOccurrencesError');
+
+            if (!isValid) {
+                errorMessage.show();
+                $('#MaxOccurrences').val(''); // Clear the field if invalid
+            } else {
+                errorMessage.hide();
+            }
+        },
+
+        setDefaultMaxOccurrences: function () {
+            var repeatType = $('#repeatEveryTypeDropdown').val();
+            var maxOccurrences = 30;
+
+            if (repeatType === '@EventRepeatFrequency.Day') {
+                maxOccurrences = 30;
+            } else if (repeatType === '@EventRepeatFrequency.Week') {
+                maxOccurrences = 13;
+            } else if (repeatType === '@EventRepeatFrequency.Month') {
+                maxOccurrences = 12;
+            } else if (repeatType === '@EventRepeatFrequency.Year') {
+                maxOccurrences = 5;
+            }
+
+            $('#MaxOccurrences').val(maxOccurrences);
+        },
+
+        initCampusSelection: function () {
+            var hasMultipleCampuses = '@(SessionVariables.Campuses?.Count() > 1 ? "True" : "False")';
+            if (hasMultipleCampuses === 'True') {
+                $('#campusSelection').show();
+            } else {
+                $('#campusSelection').hide();
+            }
+        },
+
+        initDaysOfWeekSelection: function () {
+            $('#FrequencyDropdown').on('change', function () {
+                EventForm.toggleDaysOfWeekDiv();
+            });
+
+            $('#repeatEveryTypeDropdown').on('change', function () {
+                EventForm.toggleDaysOfWeekDiv();
+            });
+
+            this.toggleDaysOfWeekDiv();
+        },
+
+        toggleDaysOfWeekDiv: function () {
+            var frequency = $('#FrequencyDropdown').val();
+            var repeatEveryType = $('#repeatEveryTypeDropdown').val();
+
+            if (frequency === '@ChurchEventFrequency.Custom' && repeatEveryType === '@EventRepeatFrequency.Week') {
+                $('#daysOfWeekDiv').show();
+                this.selectDefaultDayBasedOnStartDate();
+            } else {
+                $('#daysOfWeekDiv').hide();
+                $('input[name="SelectedWeekdays"]').prop('checked', false);
+            }
+        },
+
+        checkMinSelected: function (checkbox) {
+            var checkboxes = document.querySelectorAll('input[name="SelectedWeekdays"]');
+            var checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            if (checkedCount === 0) {
+                checkbox.checked = true;
+                alert('You must select at least one day.');
+            }
+        },
+
+        selectDefaultDayBasedOnStartDate: function () {
+            var startDateStr = document.getElementById("startDate").value;
+            var startDate = new Date(startDateStr);
+            var dayOfWeek = startDate.getDay();
+            var daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+            var checkboxes = document.querySelectorAll('input[name="SelectedWeekdays"]');
+            checkboxes.forEach(function (cb) {
+                if (cb.value === daysOfTheWeek[dayOfWeek]) {
+                    cb.checked = true;
+                }
+            });
+        },
+
+        initDateValidation: function () {
+            $('#startDate, #endDate').on('change', function () {
+                EventForm.validateDates();
+            });
+        },
+
+        validateDates: function () {
+            var startDate = new Date($('#startDate').val());
+            var endDate = new Date($('#endDate').val());
+            var errorMessage = $('#endDateError');
+            var saveButton = $('.btn_submit');
+
+            if (endDate < startDate) {
+                // Show error message and disable the Save button
+                errorMessage.show();
+                saveButton.prop('disabled', true);
+            } else {
+                // Hide error message and enable the Save button if dates are valid
+                errorMessage.hide();
+                saveButton.prop('disabled', false);
+            }
+        }
+    };
+</script>

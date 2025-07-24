@@ -1,0 +1,34 @@
+﻿@model PraiseCMS.DataAccess.Models.EmailCampaign
+
+<div id="emailCampaign-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "emailCampaign-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="kt-section kt-section--first">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.Id)
+            @Html.HiddenFor(x => x.ChurchId)
+            @Html.HiddenFor(x => x.CreatedBy)
+            @Html.HiddenFor(x => x.CreatedDate)
+
+            <h3 class="kt-section__title">Email Campaign Info:</h3>
+            <div class="kt-section__body">
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label">Title:</label>
+                    <div class="col-lg-8">
+                        @Html.TextBoxFor(x => x.Title, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.Title, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label">Description:</label>
+                    <div class="col-lg-8">
+                        @Html.TextAreaFor(x => x.Description, new { @class = "form-control", rows = 3 })
+                        @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,29 @@
+﻿@model PraiseCMS.DataAccess.Models.FundReportFilter
+
+<div id="fund-Report-Filter-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "fund-Report-Filter-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <p>Choose a fund and date range to view the giving details.</p>
+        <div class="form-group row">
+            <label>Fund:</label>
+            @Html.DropDownListFor(x => x.FundId, Model.Funds.ToSelectList(x => x.Display, x => x.Id), "Select a fund...", new { @class = "form-control select2", style = "width:100%;" })
+            @Html.ValidationMessageFor(x => x.FundId, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group row">
+            <label>Start Date</label>
+            <div class="input-group">
+                @Html.TextBoxFor(x => x.StartDate, new { @class = "form-control datepicker", autocomplete = "off" })
+                <div class="input-group-append"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label>End Date</label>
+            <div class="input-group">
+                @Html.TextBoxFor(x => x.EndDate, new { @class = "form-control datepicker", autocomplete = "off" })
+                <div class="input-group-append"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,119 @@
+﻿@model PraiseCMS.DataAccess.Models.PrayerRequestsSummary
+@{
+    ViewBag.Title = "Prayer Request Response Summary";
+}
+@section leftsubheader {
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-primary card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-praying-hands fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.StatusCounts[StatusKeys.FollowUpRequiredRequests].YTD</span>
+                <span class="font-weight-bold text-white font-size-sm">Total Prayer Requests - YTD</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-info card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-user-check text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.StatusCounts[StatusKeys.FollowUpRequiredRequests].YTD</span>
+                <span class="font-weight-bold text-white font-size-sm">Follow-Up Required - YTD</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Requests by Response</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportPrayerRequestsResponseSummaryToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="50%" class="pl-7">Response Type</th>
+                        <th width="30%" class="text-center">Total</th>
+                        <th width="20%" class="text-center">Avg. Response Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-8">
+                            <span class="text-dark-75 d-block font-size-lg"><i class="fas fa-user-check text-info mr-2"></i>Follow-Up Required</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">
+                                @Model.StatusCounts[StatusKeys.FollowUpRequiredRequests].ByDate
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            N/A
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-8">
+                            <span class="text-dark-75 d-block font-size-lg"><i class="fas fa-check-circle text-light-dark mr-2"></i>Incomplete</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">
+                                @Model.FollowUpStatusCounts[FollowUpStatuses.Incomplete]
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            N/A
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-8">
+                            <span class="text-dark-75 d-block font-size-lg"><i class="fas fa-phone-slash text-warning mr-2"></i>Attempted to Contact</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">
+                                @Model.FollowUpStatusCounts[FollowUpStatuses.AttemptedToContact]
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            @Model.AverageResponseTimes[FollowUpStatuses.AttemptedToContact]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-8">
+                            <span class="text-dark-75 d-block font-size-lg"><i class="fas fa-check-circle text-success mr-2"></i>Completed</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">
+                                @Model.FollowUpStatusCounts[FollowUpStatuses.Completed]
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            @Model.AverageResponseTimes[FollowUpStatuses.Completed]
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+        });
+    </script>
+}

@@ -1,0 +1,62 @@
+﻿@model RoleTableViewModel
+@{
+    var work = new PraiseCMS.BusinessLayer.Work();
+    var roleIds = Model.Roles.Select(x => x.Id).ToList();
+    var userCounts = work.Role.CountUsers(roleIds, SessionVariables.CurrentChurch.Id);
+}
+<div class="card card-custom gutter-b" id="kt_card_@(Model.Title.Replace(" ", "").ToLower())">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">@Model.Title</span>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <span class="text-muted mt-3 font-weight-bold font-size-sm">@Model.Description</span>
+                }
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Collapse">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Roles.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Users</th>
+                        </tr>
+                    </thead>
+                    <tbody id="view-module-container">
+                        @foreach (var item in Model.Roles)
+                        {
+                            var totalUsers = userCounts.FirstOrDefault(x => x.RoleId == item.Id);
+                            <tr>
+                                <td>@Html.AjaxModalLink(item.Name, "/permissions/_editrole/" + item.Id, "Edit Role", "Save", "", "", "/permissions/deleterole/" + item.Id)</td>
+                                <td>@item.Description</td>
+                                <td width="200"><a href="/users/viewbyrole/@item.Id">View Users @(totalUsers != null ? "(" + totalUsers.UserCount + ")" : "")</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+            {
+                <p>You don't have any custom roles.</p>
+            }
+            else
+            {
+                <p>You don't have any custom roles. You can @Html.AjaxModalLink("create", "/permissions/_createrole/", "Create Role", "Save", "", "") a role to fit your church's needs.</p>
+            }
+        }
+    </div>
+</div>

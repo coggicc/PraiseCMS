@@ -1,0 +1,254 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ChurchEventDetail
+
+@{
+    ViewBag.Title = Model.Event.DisplayName;
+    ViewBag.SubTitle = Model.Event.Description;
+}
+
+@section subheader{
+    @Html.AjaxModalLink("<i class='fas fa-pencil-alt'></i>", "/events/_EditChurchEvent/" + Model.Event.Id, "Edit Event", "Save", "btn btn-light-primary btn-sm btn-icon mr-2", "")
+    <a href="/events/delete/@Model.Event.Id" class="btn btn-light-primary btn-sm btn-icon mr-2" id="delete-event" data-toggle="tooltip" title="Delete Event"><i class="fas fa-trash"></i></a>
+    <a href="/events/manage" class="btn btn-light-primary btn-sm btn-icon mr-2" data-toggle="tooltip" title="Go to Manage Events">
+        <i class="fas fa-tasks"></i>
+    </a>
+    <a href="/events" class="btn btn-light-primary btn-sm btn-icon" data-toggle="tooltip" title="Go to Dashboard">
+        <i class="fas fa-laptop-house"></i>
+    </a>
+}
+
+@if (Model.CampusWithTime.Any())
+{
+    Model.CampusWithTime.Select(x => { x.Campus = SessionVariables.Campuses.Find(q => q.Id.Equals(x.CampusId)).Display; return x; }).ToList();
+
+    foreach (var item in Model.CampusWithTime.OrderBy(q => q.Campus))
+    {
+        <div class="card card-custom gutter-b">
+            @if (item.Id.IsNotNullOrEmpty())
+            {
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3 class="card-label text-dark-50 font-size-h3">
+                            @item.Campus
+                        </h3>
+                    </div>
+                    <div class="card-title ml-xxl-auto">
+                        <h3 class="card-label text-dark-50 font-size-h3">
+                            <i class="far fa-calendar-alt text-primary fa-1-5x"></i>
+                        </h3>
+                    </div>
+                    <div class="card-toolbar" style="width:75%">
+
+                        <table class="table table-borderless table-vertical-center">
+                            <thead>
+                                <tr>
+                                    <th class="p-0"></th>
+                                    <th class="p-0"></th>
+                                    <th class="p-0"></th>
+                                    <th class="p-0"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-left pb-0">
+                                        <span class="text-muted font-weight-500">Start Date</span>
+                                        <span class="text-dark-75 font-weight-bold d-block">@item.StartDate.ToShortDateString()</span>
+                                    </td>
+                                    <td class="text-left pb-0">
+                                        <span class="text-muted font-weight-500">Event Ends</span>
+                                        @switch (item.EventEnds)
+                                        {
+                                            case EventEnds.Never:
+                                                <span class="text-dark-75 font-weight-bold d-block">@(item.EventEnds)</span>
+                                                break;
+                                            case EventEnds.OnSpecificDate:
+                                                <span class="text-dark-75 font-weight-bold d-block">@(Convert.ToDateTime(item.EndDate).ToShortDateString())</span>
+                                                break;
+                                            case EventEnds.AfterEventOccurrences:
+                                                <span class="text-dark-75 font-weight-bold d-block">@($"After {item.Occurrences} Occurrences")</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-left pb-0">
+                                        <span class="text-muted font-weight-500">Event Frequency</span>
+                                        <span class="text-dark-75 font-weight-bold d-block">@(item.Frequency.IsNotNullOrEmpty()? item.Frequency : "")</span>
+                                    </td>
+                                    <td class="text-right pr-0 pb-0">
+                                        @Html.AjaxModalLink("Edit", $"/events/_EditEventTime?id={item.Id}", "Edit Event Time", "Save", "btn btn-light-primary btn-sm font-weight-bold backdropStatic", "", $"/events/DeleteScheduler?id={item.Id}", "", false, "", true, "delete-scheduler")
+                                        <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mx-2 toggle" data-animation="true" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                                            <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (item.Times.IsNotNullOrEmpty() && item.Times.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-vertical-center">
+                                <tbody>
+                                    @foreach (var time in item.Times)
+                                    {
+                                        <tr>
+                                            <td class="py-5 pl-0">
+                                                <span class="svg-icon svg-icon-3x svg-icon-primary">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                            <rect x="0" y="0" width="24" height="24" />
+                                                            <path d="M12,22 C7.02943725,22 3,17.9705627 3,13 C3,8.02943725 7.02943725,4 12,4 C16.9705627,4 21,8.02943725 21,13 C21,17.9705627 16.9705627,22 12,22 Z" fill="#000000" opacity="0.3" />
+                                                            <path d="M11.9630156,7.5 L12.0475062,7.5 C12.3043819,7.5 12.5194647,7.69464724 12.5450248,7.95024814 L13,12.5 L16.2480695,14.3560397 C16.403857,14.4450611 16.5,14.6107328 16.5,14.7901613 L16.5,15 C16.5,15.2109164 16.3290185,15.3818979 16.1181021,15.3818979 C16.0841582,15.3818979 16.0503659,15.3773725 16.0176181,15.3684413 L11.3986612,14.1087258 C11.1672824,14.0456225 11.0132986,13.8271186 11.0316926,13.5879956 L11.4644883,7.96165175 C11.4845267,7.70115317 11.7017474,7.5 11.9630156,7.5 Z" fill="#000000" />
+                                                        </g>
+                                                    </svg>
+                                                </span>
+                                            </td>
+                                            @if (!time.AllDay)
+                                            {
+                                                <td class="text-left">
+                                                    <span class="text-muted font-weight-500">Start Time</span>
+                                                    <span class="text-dark-75 font-weight-bold d-block">@(time.StartTime)</span>
+                                                </td>
+                                                <td class="text-left">
+                                                    <span class="text-muted font-weight-500">End Time</span>
+                                                    <span class="text-dark-75 font-weight-bold d-block">@(time.EndTime)</span>
+                                                </td>
+                                                <td class="text-left">
+                                                    <span class="text-muted font-weight-500">Show Event At</span>
+                                                    <span class="text-dark-75 font-weight-bold d-block">@(time.ShowEventAt)</span>
+                                                </td>
+                                                <td class="text-left">
+                                                    <span class="text-muted font-weight-500">Hide Event At</span>
+                                                    <span class="text-dark-75 font-weight-bold d-block">@(time.HideEventAt)</span>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td colspan="4" class="text-left">
+                                                    <span class="text-dark-75 font-weight-bold d-block">All Day</span>
+                                                </td>
+                                            }
+                                            <td class="text-right pr-0">
+                                                @Html.AjaxModalLink("<i class='fa fa-pencil-alt'></i>", $"/events/EditTime?id={time.Id}", "Edit Event Time", "Save", "btn btn-light-primary btn-icon btn-sm font-weight-bold backdropStatic", "", $"/events/DeleteTime?id={time.Id}", "", false, "", false, "delete-time")
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.AjaxModalLink("Add Time", $"/events/AddTime?ChurchEventSchedulerId={item.Id}", "Add Event Time", "Save", "btn btn-light-primary btn-sm font-weight-bold backdropStatic", "", "", "", false, "", false)
+                    }
+                </div>
+                if (item.Times.IsNotNullOrEmpty() && item.Times.Any())
+                {
+                    <div class="card-footer p-5">
+                        @if (item.Times.Any(x => x.EndDate.IsNotNullOrEmpty()))
+                        {
+                            <em class="text-dark-50">Multi-day event will end after @Html.Raw((Convert.ToDateTime(item.Times.Find(x => x.EndDate.IsNotNullOrEmpty()).EndDate).Date - item.StartDate.Date).TotalDays) day of start</em>
+                        }
+                        else
+                        {
+                            @Html.AjaxModalLink("Add Another Time", $"/events/AddTime?ChurchEventSchedulerId={item.Id}", "Add Event Time", "Save", "btn btn-light-primary btn-sm font-weight-bold backdropStatic", "", "", "", false, "", false)
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3 class="card-label">
+                            @item.Campus
+                        </h3>
+                    </div>
+                </div>
+                <div class="card-footer p-5">
+                    @if (Model.CampusWithTime.Any(x => x.Times.IsNotNullOrEmpty() && x.Times.Any()))
+                    {
+                        <p>This event does not have a start time yet. Do you want to @Html.AjaxModalLink("add one", $"/events/_CreateEventTime?eventId={item.EventId}&campusId={item.CampusId}", "Add Event Time", "Save", "text-primary backdropStatic", "", "", "", false, "", false) or @Html.AjaxModalLink("duplicate", $"/events/DuplicateEventTime?eventId={item.EventId}&campusId={item.CampusId}", $"Duplicate Event Times for {item.Campus}", "Save", "text-primary backdropStatic", "", "", "", false, ModalSizes.Large, false) another campus' event times?</p>
+                    }
+                    else
+                    {
+                        <p>This event does not have a start time yet. Do you want to @Html.AjaxModalLink("add one", $"/events/_CreateEventTime?eventId={item.EventId}&campusId={item.CampusId}", "Add Event Time", "Save", "text-primary backdropStatic", "", "", "", false, "", false)?</p>
+                    }
+                </div>
+            }
+        </div>
+    }
+}
+else
+{
+    <p>No campus events have been created.</p>
+}
+<script type="text/javascript">
+    $(document).on('click', '#delete-scheduler', function (e) {
+        e.preventDefault();
+        setTimeout(function () {
+            StopLoading();
+        });
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will delete future events for this campus only. Past event times will not be deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes, Delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                StartLoading();
+                document.location.href = $(this).attr('href');
+            }
+        });
+    });
+
+    $(document).on('click', '#delete-time', function (e) {
+        e.preventDefault();
+        setTimeout(function () {
+            StopLoading();
+        });
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will delete this time for all future events. Past event times will not be deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes, Delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                StartLoading();
+                document.location.href = $(this).attr('href');
+            }
+        });
+    });
+
+    $(document).on('click', '#delete-event', function (e) {
+        e.preventDefault();
+        setTimeout(function () {
+            StopLoading();
+        });
+        Swal.fire({
+            title: "Are you sure?",
+            text: "If you delete this event, all future occurrences will be removed. Past events cannot be deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes, Delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                StartLoading();
+                document.location.href = $(this).attr('href');
+            }
+        });
+    });
+</script>

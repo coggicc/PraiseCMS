@@ -1,0 +1,73 @@
+﻿@model PraiseCMS.DataAccess.Models.UserView
+@{
+    ViewBag.Title = "Security Preferences";
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom card-stretch">
+            <div class="card-header py-3">
+                <div class="card-title align-items-start flex-column">
+                    <h3 class="card-label font-weight-bolder text-dark">Security Preferences</h3>
+                    <span class="text-muted font-weight-bold font-size-sm mt-1">Manage security preferences</span>
+                </div>
+            </div>
+            @if (Request.QueryString["userId"].ToString() == SessionVariables.CurrentUser.User.Id)
+            {
+                string twoFactorEnabled = null;
+                if (Model.User.TwoFactorEnabled)
+                {
+                    twoFactorEnabled = "checked='checked'";
+                }
+                <div class="card-body py-4">
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Password:</label>
+                        <div class="col-8">
+                            @Html.AjaxModalLink("Change Password", "/users/_changepassword?userid=" + Model.User.Id, "Change Password", "Save", "btn btn-light-primary btn-sm", "")
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label mt-3">Two Factor Enabled:</label>
+                        <div class="col-8">
+                            <span class="form-control-plaintext">
+                                <span class="switch switch-sm switch-icon">
+                                    <label>
+                                        <input type="checkbox" class="twoFactorAuth" data-url="/Users/TwoFactorEnabled" value="@Model.User.TwoFactorEnabled" @twoFactorEnabled />
+                                        <span></span>
+                                    </label>
+                                </span>
+                            </span>
+                        </div>
+                        <label class="col-12 swal2-validation-message twoFactorAuthValidationMessage"></label>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @*Check if the current logged in user has permissions to reset another user's password*@
+                <div class="card-body py-4">
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Password:</label>
+                        <div class="col-8">
+                            <a href="javascript:;" data-href="/users/ResetUserPassword?userId=@Model.User.Id&email=@Model.User.Email&token=@Model.User.SecurityStamp" class="btn_reset_password btn btn-light-primary btn-sm">Reset Password</a>
+                            <span class="form-text text-muted">
+                                The user will receive an email containing a link to reset his or her password.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section belowscripts
+{
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

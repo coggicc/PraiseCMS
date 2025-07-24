@@ -1,0 +1,22 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.ReportGroupPartialVM
+@{
+    Layout = null;
+}
+
+@if (Model.ReportGroup.Any())
+{
+    <div class="list-group">
+        @foreach (var item in Model.ReportGroup)
+        {
+            var exist = Model.UserReportGroups.Any(x => x.ReportId == Model.ReportId && x.GroupId == item.Id);
+            if (exist)
+            {
+                <a class="addtogroup list-group-item list-group-item-action list-group-item-success" href="/reports/AddRemoveReportGroup?reportId=@Model.ReportId&groupId=@item.Id" data-ajax="true" data-ajax-method="get">@item.Name</a>
+            }
+            else
+            {
+                <a class="addtogroup list-group-item list-group-item-action list-group-item-light" href="/reports/AddRemoveReportGroup?reportId=@Model.ReportId&groupId=@item.Id" data-ajax="true" data-ajax-method="get">@item.Name</a>
+            }
+        }
+    </div>
+}

@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+    <div class="row">
+        <img src="@Html.AmazonLink(SessionVariables.CurrentChurch.Logo,"Uploads/Logos")" />
+    </div>
+    <div class="row">
+        
+        @for (var i = 0; i < 50; i++)
+        {
+            var text = "";
+            text += "<hr>";
+        <p>@text</p>
+        }
+    </div>
+    </body>
+</html>

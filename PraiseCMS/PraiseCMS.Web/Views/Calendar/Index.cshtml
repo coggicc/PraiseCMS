@@ -1,0 +1,234 @@
+﻿@{
+    ViewBag.Title = "Calendar";
+    string returnUrl = ViewBag.ReturnUrl;
+    var eventTypes = ViewData["churchEventTypes"] as IList<ChurchEventTypesViewModel>;
+    var upcomingEvents = ViewData["upcomingEvents"] as IList<EventViewModel>;
+    <input type="hidden" id="login-user-id" value="@SessionVariables.CurrentUser.User.Id" />
+}
+<style>
+    .fc-unthemed td.fc-today {
+        background: rgba(54, 153, 255, 0.1);
+    }
+
+    .fc-unthemed .fc-list-item-title > a:hover {
+        cursor: pointer;
+    }
+
+    .fc-event-container > .customEvent:not(.fc-draggable) {
+        cursor: pointer !important;
+    }
+
+    .fc-event-container > .customEvent.fc-draggable {
+        cursor: grab !important;
+    }
+
+    #kt_calendar .fc-list-item:hover {
+        cursor: pointer;
+    }
+
+    .fc-unthemed .fc-event.fc-start .fc-content.fc-event-success:before, .fc-unthemed .fc-event-dot.fc-start .fc-content.fc-event-success:before {
+        background-color: #1BC5BD !important;
+    }
+
+    .fc-unthemed .fc-event.fc-start .fc-content.fc-event-danger:before, .fc-unthemed .fc-event-dot.fc-start .fc-content.fc-event-danger:before {
+        background-color: #F64E60 !important;
+    }
+
+    .fc-unthemed .fc-event.fc-start .fc-content.fc-event-warning:before, .fc-unthemed .fc-event-dot.fc-start .fc-content.fc-event-warning:before {
+        background-color: #FFA800 !important;
+    }
+
+    .fc-unthemed .fc-event.fc-start .fc-content.fc-event-primary:before, .fc-unthemed .fc-event-dot.fc-start .fc-content.fc-event-primary:before {
+        background-color: #3699FF !important;
+    }
+
+    .fc-unthemed .fc-event.fc-start .fc-content.fc-event-info:before, .fc-unthemed .fc-event-dot.fc-start .fc-content.fc-event-info:before {
+        background-color: #8950FC !important;
+    }
+
+    .fc-unthemed .fc-event.fc-start .fc-content.fc-event-dark:before, .fc-unthemed .fc-event-dot.fc-start .fc-content.fc-event-dark:before {
+        background-color: #212121 !important;
+    }
+</style>
+@section subheader{
+    <div class="dropdown">
+        <div id="filter-modal" class="topbar-item" data-toggle="dropdown" data-offset="10px,0px">
+            <div class="btn btn-light-primary btn-sm font-weight-bold mr-2"><i class="fas fa-filter"></i>Filter</div>
+        </div>
+        <div class="dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg">
+            <form id="calendar-filter-form">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title"><h3 class="card-label">Filter Options</h3></div>
+                        <div class="card-toolbar cursor-pointer" onclick="closeFilterModal()"><i class="fas fa-times"></i></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Campus:</label>
+                            <div class="row">
+                                @Html.DropDownList("CampusFilter", SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id).OrderBy(x => x.Text), "Select a campus...", new { @class = "form-control select2", style = "width:100%;" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Event Type:</label>
+                            <div class="row">
+                                @Html.DropDownList("ChurchEventTypeFilter", eventTypes.ToSelectList(x => x.Type, x => x.Id).OrderBy(x => x.Text), "Select an event type...", new { @class = "form-control select2", style = "width:100%;" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="resetFilter()" class="btn btn-hover-light-dark font-weight-bold">Reset</button>
+                        <button type="button" onclick="applyFilter()" class="btn btn-light-primary font-weight-bold">Apply</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @Html.AjaxModalLink("Add Event", "/calendar/_CreateEvent", "Create Event", "Save", "btn btn-light-primary btn-sm font-weight-bold backdropStatic", "")
+    <div class="hidden">
+        <span hidden>@Html.AjaxModalLink("<i class='fas fa-plus'></i>View Event", "/calendar/_View?", "Event", "", "btn btn-light-primary font-weight-bold", "", "", "viewModal")</span>
+        <span hidden>@Html.AjaxModalLink("<i class='fa fa-pencil-alt' style='font-size: 1rem;'></i>Edit", $"/calendar/_editEvent?", "Edit Event", "Update", "btn btn-light-primary font-weight-bold", "", $"/calendar/deleteevent?id=123", "editModal")</span>
+    </div>
+}
+<div class="row" id="calendar-main-row">
+    <div class="col-lg-3" id="calendar-sidebar">
+        <div class="card card-custom gutter-b">
+            <div class="accordion accordion-solid accordion-panel accordion-svg-toggle" id="accordionExample1">
+                <div class="card">
+                    <div class="card-header" id="headingOne1">
+                        <div class="card-title" data-toggle="collapse" data-target="#collapseOne1">
+                            <div class="card-label">Upcoming Events</div>
+                            <span class="svg-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <polygon points="0 0 24 0 24 24 0 24"></polygon>
+                                        <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z" fill="#000000" fill-rule="nonzero"></path>
+                                        <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999) "></path>
+                                    </g>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="collapseOne1" class="collapse show" data-parent="#accordionExample1">
+                        <div class="card-body">
+                            <div id="kt_calendar_events" class="fc-unthemed">
+                                @if (upcomingEvents.Any())
+                                {
+                                    foreach (var upcomingEvent in upcomingEvents)
+                                    {
+                                        <div class="mb-4" id="@upcomingEvent.Id" data-id="@upcomingEvent.Id" data-type="@upcomingEvent.Type" data-color="@upcomingEvent.CalendarColor" data-description="@upcomingEvent.Description">
+                                            @{
+                                                string encodedTitle = HttpUtility.HtmlEncode(upcomingEvent.Title);
+                                                string encodedCampus = HttpUtility.HtmlEncode(upcomingEvent.CampusName);
+                                                string encodedDescription = HttpUtility.HtmlEncode(upcomingEvent.Description ?? "");
+                                                string encodedType = HttpUtility.UrlEncode(upcomingEvent.Type);
+                                                string tooltipTitle = $"{encodedCampus}<br/>{(upcomingEvent.AllDay ? "All Day" : $"{upcomingEvent.StartTime} - {upcomingEvent.EndTime}")}<br/>{encodedDescription}";
+                                                string linkText = $"<span class='label label-dot label-xl label-{upcomingEvent.CalendarColor} mr-4'>&nbsp;</span><b>{encodedTitle.EllipsisAt(10)}</b> {upcomingEvent.StartDate} {upcomingEvent.StartTime}";
+                                            }
+                                            <span data-html="true"
+                                                  data-toggle="tooltip"
+                                                  data-placement="top"
+                                                  title="@Html.Raw(tooltipTitle)"
+                                                  onclick="updateUrl('@upcomingEvent.Id')">
+                                                @Html.AjaxModalLink(
+                                                    Html.Raw(linkText).ToString(),
+                                                    $"/calendar/_View?id={upcomingEvent.Id}&type={encodedType}", "", "", "", ""
+                                                )
+                                            </span>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div>No events are scheduled for today or tomorrow.</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card card-custom gutter-b">
+            <div class="accordion accordion-solid accordion-panel accordion-svg-toggle" id="accordionExample8">
+                <div class="card">
+                    <div class="card-header" id="headingOne8">
+                        <div class="card-title collapsed" data-toggle="collapse" data-target="#collapseOne8">
+                            <div class="card-label">
+                                Church Event Types
+                                @if (eventTypes.Any())
+                                {
+                                    <i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Drag an event type onto the calendar to add an event."></i>
+                                }
+                            </div>
+                            <span class="svg-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <polygon points="0 0 24 0 24 24 0 24"></polygon>
+                                        <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z" fill="#000000" fill-rule="nonzero"></path>
+                                        <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999) "></path>
+                                    </g>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="collapseOne8" class="collapse" data-parent="#accordionExample8">
+                        <div class="card-body mt-5">
+                            <div id="kt_calendar_external_events" class="fc-unthemed">
+                                @if (eventTypes.Any())
+                                {
+                                    foreach (var eventType in eventTypes)
+                                    {
+                                        <div class="btn btn-block text-left font-weight-bold btn-light-@eventType.CalendarColor fc-draggable-handle mb-5" style="cursor:grab;" data-color="@eventType.CalendarColor" id="@eventType.Id" data-id="@eventType.Id" data-type="@eventType.Type" data-description="@eventType.Description">@eventType.Type</div>
+                                    }
+                                    <div class="separator separator-dashed separator-border-2 mb-4"></div>
+                                    <div>
+                                        <a href="/churcheventtypes" class="ml-2">View Event Types</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p>You haven't added any church event types yet. <a href="/churcheventtypes">Create one</a> to get started.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9" id="calendar-main-content">
+        <div class="card card-custom card-stretch">
+            <div class="card-body">
+                <div id="kt_calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowscripts
+{
+    <script src="~/Content/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js?v=7.0.4"></script>
+    <script src="~/Scripts/mycalendar.js"></script>
+    <script>
+        $(document).ready(function () {
+            function adjustAccordionState() {
+                // Get the width of the window
+                var windowWidth = $(window).width();
+
+                // If the window size is medium (md) or larger, expand the accordions
+                if (windowWidth > 768) { // 768px is the breakpoint for md in Bootstrap
+                    $('#collapseOne1').collapse('show');
+                } else {
+                    $('#collapseOne1').collapse('hide');
+                }
+            }
+
+            // Adjust accordion state on page load
+            adjustAccordionState();
+
+            // Adjust accordion state on window resize
+            $(window).resize(function () {
+                adjustAccordionState();
+            });
+        });
+    </script>
+}

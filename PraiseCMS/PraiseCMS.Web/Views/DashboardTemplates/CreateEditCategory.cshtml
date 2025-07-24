@@ -1,0 +1,92 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.CreateEditWidgetCategoryVM
+
+@{
+    ViewBag.Title = "Create/Edit Category";
+}
+
+@if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            <a href="/dashboardtemplates" class="btn btn-light-primary btn-sm mr-2">Dashboards</a>
+            <a href="/dashboardtemplates/widgets" class="btn btn-light-primary btn-sm">Widgets</a>
+        </div>
+    }
+}
+
+<style>
+    .checkbox-inline {
+        flex-wrap: wrap;
+        line-height: 2;
+    }
+
+    .checkbox > span {
+        top: 3px !important;
+    }
+
+    .checkbox-inline .checkbox {
+        margin-left: 15px;
+        margin-bottom: 10px;
+        margin-right: 0 !important;
+    }
+</style>
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.WigetCategoryType.Id)
+            @Html.HiddenFor(x => x.WigetCategoryType.CreatedBy)
+            @Html.HiddenFor(x => x.WigetCategoryType.CreatedDate)
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Name</label>
+                <div class="col-lg-9">
+                    @Html.EditorFor(x => x.WigetCategoryType.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.WigetCategoryType.Name)
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Description</label>
+                <div class="col-lg-9">
+                    @Html.TextAreaFor(x => x.WigetCategoryType.Description, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.WigetCategoryType.Description)
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Roles</label>
+                <div class="col-lg-9">
+                    <div class="checkbox-inline row">
+                        @foreach (var role in Model.Roles.Where(x => x.Name != "Donor").ToList())
+                        {
+                            string isChecked = null;
+                            if (Model.WidgetCategoryRoles.IsNotNull() && Model.WidgetCategoryRoles.Count > 0 || Model.SelectedRoles.Count > 0)
+                            {
+                                if (Model.WidgetCategoryRoles.Any(x => x.RoleId == role.Id) || Model.SelectedRoles.Contains(role.Id))
+                                {
+                                    isChecked = "checked";
+                                }
+                            }
+                            <label class="checkbox">
+                                <input type="checkbox" name="SelectedRoles" value="@role.Id" @isChecked />
+                                <span></span>
+                                @role.Name
+                            </label>
+                        }
+                    </div>
+                    @Html.ValidationMessageFor(x => x.SelectedRoles)
+                </div>
+            </div>
+            <div class="inner-card-footer">
+                <button type="submit" class="btn btn-light-primary mr-2">Save Changes</button>
+                <a href="/dashboardtemplates/categories" class="btn btn-light-dark font-weight-bold">Cancel</a>
+            </div>
+        }
+    </div>
+</div>

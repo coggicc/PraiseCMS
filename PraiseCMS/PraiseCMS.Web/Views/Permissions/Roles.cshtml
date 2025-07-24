@@ -1,0 +1,29 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.ApplicationRoles>
+
+@{
+    ViewBag.Title = "Roles";
+
+    var systemRoles = Model.Where(x => string.IsNullOrEmpty(x.ChurchId)).ToList();
+    var churchRoles = Model.Where(x => !string.IsNullOrEmpty(x.ChurchId)).ToList();
+}
+
+@if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            <a href="/permissions" class="btn btn-light-dark btn-sm mr-2">Manage Permissions</a>
+            @Html.AjaxModalLink("Create Role", "/permissions/_createrole/", "Create Role", "Save", "btn btn-sm btn-light-primary", "")
+        </div>
+    }
+}
+
+@Html.Partial("_ViewRolePartial", new RoleTableViewModel { Roles = churchRoles, Title = "Church Roles", Description = "Roles specific to your church" })
+@Html.Partial("_ViewRolePartial", new RoleTableViewModel { Roles = systemRoles, Title = "System Roles" })
+
+<script type="text/javascript">
+    $(function () {
+        new KTCard('kt_card_1');
+        var cardTwo = new KTCard('kt_card_2');
+        toggleDetails();
+    });
+</script>

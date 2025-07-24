@@ -1,0 +1,346 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.PrayerRequestDetailsViewModel
+@{
+    var category = Model.PrayerRequestCategories.FirstOrDefault(x => x.Id.Equals(Model.PrayerRequest.CategoryId))?.Display ?? "[No Category Specified]";
+    var createdDate = Model.PrayerRequest.CreatedDate.ToShortDateYearString();
+
+    var statusIcon = "";
+    var statusColor = "";
+    switch (Model.PrayerRequest.FollowUpStatus)
+    {
+        case FollowUpStatuses.Incomplete:
+            statusIcon = "fas fa-times-circle";
+            statusColor = "danger";
+            break;
+        case FollowUpStatuses.AttemptedToContact:
+            statusIcon = "fas fa-times-circle";
+            statusColor = "warning";
+            break;
+        case FollowUpStatuses.Completed:
+            statusIcon = "fas fa-check-circle";
+            statusColor = "success";
+            break;
+        default:
+            break;
+    }
+
+    var methodIcon = "";
+    switch (Model.PrayerRequest.FollowUpMethod)
+    {
+        case FollowUpMethods.Email:
+            methodIcon = "fas fa-envelope";
+            break;
+        case FollowUpMethods.Phone:
+            methodIcon = "fas fa-phone";
+            break;
+        case FollowUpMethods.InPerson:
+            methodIcon = "fas fa-people-arrows";
+            break;
+        case FollowUpMethods.Other:
+            methodIcon = "fas fa-ellipsis-h";
+            break;
+        default:
+            break;
+    }
+
+    var profileImage = Model.Person != null ? Model.Person.ProfileImageURL : RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url);
+}
+<!--begin::Card-->
+<div class="card card-custom card-stretch">
+    <!--begin::Header-->
+    <div class="card-header align-items-center flex-wrap justify-content-between py-5 h-auto">
+        <!--begin::Left-->
+        <div class="d-flex align-items-center my-2">
+            <a href="#" class="btn btn-clean btn-icon btn-sm mr-6" data-toggle="tooltip" title="Back" data-inbox="back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <button id="detailsReadIcon" class="btn btn-default btn-icon btn-sm mr-2" data-id="@Model.PrayerRequest.Id" data-toggle="tooltip" title="Mark as @(Model.PrayerRequest.Read ? PrayerRequestStatuses.Unread : PrayerRequestStatuses.Read)" data-action="@(Model.PrayerRequest.Read ? PrayerRequestStatuses.Unread : PrayerRequestStatuses.Read)">
+                <span class="svg-icon svg-icon-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <rect x="0" y="0" width="24" height="24"></rect>
+                            <path d="M6,2 L18,2 C18.5522847,2 19,2.44771525 19,3 L19,12 C19,12.5522847 18.5522847,13 18,13 L6,13 C5.44771525,13 5,12.5522847 5,12 L5,3 C5,2.44771525 5.44771525,2 6,2 Z M7.5,5 C7.22385763,5 7,5.22385763 7,5.5 C7,5.77614237 7.22385763,6 7.5,6 L13.5,6 C13.7761424,6 14,5.77614237 14,5.5 C14,5.22385763 13.7761424,5 13.5,5 L7.5,5 Z M7.5,7 C7.22385763,7 7,7.22385763 7,7.5 C7,7.77614237 7.22385763,8 7.5,8 L10.5,8 C10.7761424,8 11,7.77614237 11,7.5 C11,7.22385763 10.7761424,7 10.5,7 L7.5,7 Z" fill="#000000" opacity="0.3"></path>
+                            <path d="M3.79274528,6.57253826 L12,12.5 L20.2072547,6.57253826 C20.4311176,6.4108595 20.7436609,6.46126971 20.9053396,6.68513259 C20.9668779,6.77033951 21,6.87277228 21,6.97787787 L21,17 C21,18.1045695 20.1045695,19 19,19 L5,19 C3.8954305,19 3,18.1045695 3,17 L3,6.97787787 C3,6.70173549 3.22385763,6.47787787 3.5,6.47787787 C3.60510559,6.47787787 3.70753836,6.51099993 3.79274528,6.57253826 Z" fill="#000000"></path>
+                        </g>
+                    </svg>
+                </span>
+            </button>
+            <button id="detailsPrayedOverIcon" class="btn btn-default btn-icon btn-sm mr-2" data-id="@Model.PrayerRequest.Id" data-toggle="tooltip" title="Mark as @(Model.PrayerRequest.PrayedOver ? "Not " : "")Prayed Over" data-action="@(Model.PrayerRequest.PrayedOver ? PrayerRequestStatuses.NotPrayedOver : PrayerRequestStatuses.PrayedOver)">
+                <span class="svg-icon svg-icon-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path d="M16.5,4.5 C14.8905,4.5 13.00825,6.32463215 12,7.5 C10.99175,6.32463215 9.1095,4.5 7.5,4.5 C4.651,4.5 3,6.72217984 3,9.55040872 C3,12.6834696 6,16 12,19.5 C18,16 21,12.75 21,9.75 C21,6.92177112 19.349,4.5 16.5,4.5 Z" fill="#000000" fill-rule="nonzero" />
+                        </g>
+                    </svg>
+                </span>
+            </button>
+            @if (Model.PrayerRequest.FollowUpRequired)
+            {
+                if (!Model.PrayerRequest.FollowUpCompleted)
+                {
+                    @Html.AjaxModalLink("<span class='btn btn-default btn-icon btn-sm mr-2'><span class='svg-icon svg-icon-md'><i class='fas fa-user-check text-hover-primary'></i></span></span>", $"/prayerRequests/FollowUp/{Model.PrayerRequest.Id}", "Add Follow-Up Details", "Save", "", "")
+                }
+            }
+        </div>
+        <!--end::Left-->
+        <!--begin::Right-->
+        <div class="d-flex align-items-center justify-content-end text-right my-2 d-print-none">
+            @*<span class="mr-2">Prev: @Model.PreviousId | Cur: @Model.PrayerRequest.Id | Next: @Model.NextId</span>
+                <span class="text-muted font-weight-bold mr-4">@Model.OrderNumber of @Model.TotalPrayerRequests</span>*@
+            @*@if (Model.OrderNumber > 1)
+                {
+                    <a id="previousButton" href="#" data-id="@Model.PreviousId" data-order-number="@Model.OrderNumber - 1" data-total-count="@Model.TotalPrayerRequests" data-previous-id="@Model.PreviousId" data-next-id="@Model.NextId" class="btn btn-default btn-icon btn-sm mr-2" data-toggle="tooltip" title="Previous message">
+                        <i class="ki ki-bold-arrow-back icon-sm"></i>
+                    </a>
+                }
+                @if (Model.OrderNumber < Model.TotalPrayerRequests)
+                {
+                    <a id="nextButton" href="#" data-id="@Model.NextId" data-order-number="@Model.OrderNumber + 1" data-total-count="@Model.TotalPrayerRequests" data-previous-id="@Model.PreviousId" data-next-id="@Model.NextId" class="btn btn-default btn-icon btn-sm mr-2" data-toggle="tooltip" title="Next message">
+                        <i class="ki ki-bold-arrow-next icon-sm"></i>
+                    </a>
+                }*@
+            @*<div class="dropdown" data-toggle="tooltip" title="Settings">
+                    <span class="btn btn-default btn-icon btn-sm" data-toggle="dropdown">
+                        <i class="ki ki-bold-more-hor icon-1x"></i>
+                    </span>
+                    <div class="dropdown-menu dropdown-menu-right p-0 m-0 dropdown-menu-md">
+                        <!--begin::Navigation-->
+                        <ul class="navi navi-hover py-5">
+                            <li class="navi-item">
+                                <a href="#" class="navi-link">
+                                    <span class="navi-icon">
+                                        <i class="flaticon2-drop"></i>
+                                    </span>
+                                    <span class="navi-text">New Group</span>
+                                </a>
+                            </li>
+                            <li class="navi-item">
+                                <a href="#" class="navi-link">
+                                    <span class="navi-icon">
+                                        <i class="flaticon2-list-3"></i>
+                                    </span>
+                                    <span class="navi-text">Contacts</span>
+                                </a>
+                            </li>
+                            <li class="navi-item">
+                                <a href="#" class="navi-link">
+                                    <span class="navi-icon">
+                                        <i class="flaticon2-rocket-1"></i>
+                                    </span>
+                                    <span class="navi-text">Groups</span>
+                                    <span class="navi-link-badge">
+                                        <span class="label label-light-primary label-inline font-weight-bold">new</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="navi-item">
+                                <a href="#" class="navi-link">
+                                    <span class="navi-icon">
+                                        <i class="flaticon2-bell-2"></i>
+                                    </span>
+                                    <span class="navi-text">Calls</span>
+                                </a>
+                            </li>
+                            <li class="navi-item">
+                                <a href="#" class="navi-link">
+                                    <span class="navi-icon">
+                                        <i class="flaticon2-gear"></i>
+                                    </span>
+                                    <span class="navi-text">Settings</span>
+                                </a>
+                            </li>
+                            <li class="navi-separator my-3"></li>
+                            <li class="navi-item">
+                                <a href="#" class="navi-link">
+                                    <span class="navi-icon">
+                                        <i class="flaticon2-magnifier-tool"></i>
+                                    </span>
+                                    <span class="navi-text">Help</span>
+                                </a>
+                            </li>
+                            <li class="navi-item">
+                                <a href="#" class="navi-link">
+                                    <span class="navi-icon">
+                                        <i class="flaticon2-bell-2"></i>
+                                    </span>
+                                    <span class="navi-text">Privacy</span>
+                                    <span class="navi-link-badge">
+                                        <span class="label label-light-danger label-rounded font-weight-bold">5</span>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <!--end::Navigation-->
+                    </div>
+                </div>*@
+        </div>
+        <!--end::Right-->
+    </div>
+    <!--end::Header-->
+    <!--begin::Body-->
+    <div class="card-body p-0">
+        <!--begin::Header-->
+        <div class="d-flex align-items-center justify-content-between flex-wrap card-spacer-x py-5">
+            <!--begin::Title-->
+            <div class="d-flex align-items-center mr-2 py-2">
+                <div class="font-weight-bold font-size-h5 mr-2">@category</div>
+                @if (Model.PrayerRequest.PrayedOver)
+                {
+                    <span class="label label-outline-dark label-md font-weight-bold label-inline mr-2" data-toggle="tooltip" data-placement="right" title="@Model.PrayerRequest.PrayedOverDate"><i class="fa fa-heart text-light-dark mr-2"></i> Prayed Over</span>
+                }
+                @if (Model.PrayerRequest.HighPriority)
+                {
+                    <span class="label label-outline-danger label-md font-weight-bold label-inline mr-2"><i class="fa fa-exclamation-circle text-danger mr-2"></i> High Priority</span>
+                }
+                @if (Model.PrayerRequest.Confidential)
+                {
+                    <span class="label label-outline-warning label-md font-weight-bold label-inline mr-2"><i class="fa fa-lock text-warning mr-2"></i> Confidential</span>
+                }
+                @if (Model.PrayerRequest.FollowUpRequired)
+                {
+                    <span class="label label-outline-info label-md font-weight-bold label-inline mr-2"> <i class="fas fa-user-check text-info mr-2"></i> Follow-Up Required</span>
+                }
+                @if (Model.PrayerRequest.Responded)
+                {
+                    <span class="label label-outline-success label-md font-weight-bold label-inline"><i class="fa fa-check-circle text-success mr-2"></i> Responded @Convert.ToDateTime(Model.PrayerRequest.RespondedDate).ToShortDateString()</span>
+                }
+            </div>
+            <!--end::Title-->
+            <!--begin::Toolbar-->
+            <div class="d-flex py-2">
+                @if (Model.PrayerRequest.CreatedBy.Equals(SessionVariables.CurrentUser.User.Id))
+                {
+                    @Html.AjaxModalLink("<i class='fas fa-pencil-alt'></i>", $"/prayerrequests/_EditPrayerRequest?id={Model.PrayerRequest.Id}", "Edit Prayer Request", "Save", "btn btn-default btn-icon btn-sm", "", "", "", false, ModalSizes.Large)
+                }
+                <button class="btn btn-default btn-icon btn-sm ml-2" data-toggle="tooltip" title="Print" onclick="window.print()">
+                    <span class="svg-icon svg-icon-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <rect x="0" y="0" width="24" height="24" />
+                                <path d="M16,17 L16,21 C16,21.5522847 15.5522847,22 15,22 L9,22 C8.44771525,22 8,21.5522847 8,21 L8,17 L5,17 C3.8954305,17 3,16.1045695 3,15 L3,8 C3,6.8954305 3.8954305,6 5,6 L19,6 C20.1045695,6 21,6.8954305 21,8 L21,15 C21,16.1045695 20.1045695,17 19,17 L16,17 Z M17.5,11 C18.3284271,11 19,10.3284271 19,9.5 C19,8.67157288 18.3284271,8 17.5,8 C16.6715729,8 16,8.67157288 16,9.5 C16,10.3284271 16.6715729,11 17.5,11 Z M10,14 L10,20 L14,20 L14,14 L10,14 Z" fill="#000000" />
+                                <rect fill="#000000" opacity="0.3" x="8" y="2" width="8" height="2" rx="1" />
+                            </g>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+            <!--end::Toolbar-->
+        </div>
+        <!--end::Header-->
+        <!--begin::Messages-->
+        <div class="mb-3">
+            <div class="toggle-on shadow-xs" data-inbox="message">
+                <div class="d-flex align-items-center card-spacer-x py-6">
+                    <span class="symbol symbol-50 mr-4">
+                        <span class="symbol-label" style="background-image: url('@profileImage')"></span>
+                    </span>
+                    <div class="d-flex flex-column flex-grow-1 flex-wrap mr-2">
+                        <div class="d-flex">
+                            @if (Model.Person.IsNotNullOrEmpty())
+                            {
+                                <span class="font-size-lg font-weight-bold mr-2">@Model.Person.Display</span>
+                                <span class="font-size-sm mr-2">@(!string.IsNullOrEmpty(Model.Person.PhoneNumber) ? Model.Person.PhoneNumber : "[No phone number provided]")</span>
+                                <span class="font-size-sm mr-2">@(!string.IsNullOrEmpty(Model.Person.Email) ? Model.Person.Email : "[No email provided]")</span>
+                            }
+                            else
+                            {
+                                <span class="font-size-lg font-weight-bold mr-2">No Person Assigned</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center" data-inbox="toolbar">
+                            @if (!Model.PrayerRequest.PrayedOver && Model.PrayerRequest.CreatedDate.Date < DateTime.Now.AddDays(-7).Date)
+                            {
+                                <span class="label label-light-danger label-pill label-inline label-lg font-weight-bold mr-2" data-toggle="tooltip" title="" data-original-title="Older than 7 days - Not prayed over">@(Model.PrayerRequest.CreatedDate.ToDateAndShortTimeString())</span>
+                            }
+                            else if (!Model.PrayerRequest.PrayedOver)
+                            {
+                                <span class="label label-light-primary label-pill label-inline label-lg font-weight-bold mr-2" data-toggle="tooltip" title="" data-original-title="Not prayed over">@(Model.PrayerRequest.CreatedDate.ToDateAndShortTimeString())</span>
+                            }
+
+                            @if (Model.PrayerRequest.PrayedOver)
+                            {
+                                <span class="label label-light-success label-pill label-inline label-lg font-weight-bold mr-2" data-toggle="tooltip" title="" data-original-title="Prayed Over">@(Model.PrayerRequest.CreatedDate.ToDateAndShortTimeString())</span>
+                            }
+                            <button data-id="@Model.PrayerRequest.Id" class="btn btn-icon btn-xs starred-button starred-@Model.PrayerRequest.Id" data-toggle="tooltip" data-placement="right" title="@Html.Raw(Model.PrayerRequest.Starred ? PrayerRequestStatuses.Starred : PrayerRequestStatuses.NotStarred)">
+                                @Html.Raw(Model.PrayerRequest.Starred ? "<i class='fas fa-star text-warning'></i>" : "<i class='far fa-star text-muted'></i>")
+                            </button>
+                            @*<span class="btn btn-clean btn-sm btn-icon mr-2" data-toggle="tooltip" data-placement="top" title="Reply">
+                                    <i class="flaticon2-reply-1 icon-1x"></i>
+                                </span>
+                                <span class="btn btn-clean btn-sm btn-icon mr-2" data-toggle="tooltip" data-placement="top" title="Star">
+                                    <i class="flaticon-star icon-1x"></i>
+                                </span>
+                                <span class="btn btn-clean btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Settings">
+                                    <i class="flaticon-more icon-1x"></i>
+                                </span>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="card-spacer-x py-3">
+                    <p>@Model.PrayerRequest.Message</p>
+                </div>
+                @if (Model.PrayerRequest.FollowUpRequired)
+                {
+                    var followUpStatus = !string.IsNullOrEmpty(Model.PrayerRequest.FollowUpStatus) ? Model.PrayerRequest.FollowUpStatus : FollowUpStatuses.Incomplete;
+                    var followUpMethod = !string.IsNullOrEmpty(Model.PrayerRequest.FollowUpMethod) ? Model.PrayerRequest.FollowUpMethod : "";
+                    var followUpPhoneNumber = Model.Person.PhoneNumber.IsNotNullOrEmpty() ? Model.Person.PhoneNumber : "[Not Found]";
+                    var followUpUser = Model.PrayerRequest.FollowUpUser.IsNotNullOrEmpty() ? Model.PrayerRequest.FollowUpUser.Display : "";
+                    var followUpDate = Model.PrayerRequest.FollowUpDate != null ? Convert.ToDateTime(Model.PrayerRequest.FollowUpDate).ToShortDateAndTimeString() : "";
+
+                    <div class="card-spacer-x py-3">
+                        <div class="row">
+                            <div class="col">
+                                <div class="p-6" style="border:4px solid #F3F6F9;">
+                                    <h6>Follow-Up Details</h6>
+                                    <div class="d-flex flex-wrap align-items-center py-2">
+                                        <div class="text-center mr-6">
+                                            <div class="font-weight-bold text-dark-50">Status</div>
+                                            <span data-toggle="tooltip" data-original-title="@followUpStatus"><i class="@statusIcon text-@statusColor"></i></span>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(followUpMethod))
+                                        {
+                                            <div class="text-center mr-6">
+                                                <div class="font-weight-bold text-dark-50">Method</div>
+                                                <span data-toggle="tooltip" data-original-title="@followUpMethod"><i class="@methodIcon"></i></span>
+                                            </div>
+                                            if (followUpMethod.Equals(FollowUpMethods.Phone))
+                                            {
+                                                <div class="text-center mr-6">
+                                                    <div class="font-weight-bold text-dark-50">Phone</div>
+                                                    <span>@followUpPhoneNumber</span>
+                                                </div>
+                                            }
+                                        }
+                                        @if (!string.IsNullOrEmpty(followUpUser))
+                                        {
+                                            <div class="text-center mr-6">
+                                                <div class="font-weight-bold text-dark-50">By:</div>
+                                                <span>@followUpUser</span>
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(followUpDate))
+                                        {
+                                            <div class="text-center">
+                                                <div class="font-weight-bold text-dark-50">Date:</div>
+                                                <span>@followUpDate</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <!--end::Messages-->
+        @*<!--begin::Reply-->
+            @Html.Partial("_ReplyMessage", Model)
+            <!--end::Reply-->*@
+    </div>
+    <!--end::Body-->
+</div>
+<!--end::Card-->

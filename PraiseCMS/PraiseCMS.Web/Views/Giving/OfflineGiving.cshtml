@@ -1,0 +1,166 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.OfflineGivingListView
+@{
+    ViewBag.Title = "Offline Giving";
+}
+@section leftsubheader{
+    @Html.Partial("_GivingSubheader")
+}
+@if (Model.Funds.Any())
+{
+    <div class="card card-custom gutter-b">
+        <div class="card-header">
+            <div class="card-title">
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label font-weight-bolder text-dark">Lump Sum Giving</span>
+                    <span class="text-muted mt-3 font-weight-bold font-size-sm">Giving that is NOT donor specific</span>
+                </h3>
+            </div>
+            <div class="card-toolbar">
+                @Html.AjaxModalLink("Add Lump Sum Giving", "/giving/createofflinegiving?type=" + OfflineGiftAmountTypes.LumpSum, "Add Lump Sum Giving", "Save", "needs-write module-1521435774e4281cb803c9422d98cf btn btn-light-primary font-weight-bold btn-sm backdropStatic mr-2", "", "", "", false, ModalSizes.Large)
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.OfflineGiving.Any(x => string.IsNullOrEmpty(x.PersonId)))
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Received Via</th>
+                                <th>Fund</th>
+                                <th>Campus</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OfflineGiving.Where(x => string.IsNullOrEmpty(x.PersonId)).OrderByDescending(x => x.DateReceived).Take(10))
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.AjaxModalLink(item.Amount.ToCurrencyString(), "/giving/editofflinegiving?id=" + item.Id + "&type=" + OfflineGiftAmountTypes.LumpSum, "Edit Offline Giving", "Save", "needs-write module-1521435774e4281cb803c9422d98cf", "", "/giving/deleteofflinegiving/" + item.Id)
+                                    </td>
+                                    <td>
+                                        @item.OfflinePaymentType
+                                    </td>
+                                    <td>
+                                        @Model.Funds.FirstOrDefault(x => x.Id.Equals(item.FundId)).Display
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.CampusId))
+                                        {
+                                            <span>@SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(item.CampusId)).Display</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.DateReceived.IsNotNullOrEmpty())
+                                        {
+                                            <span>@(Convert.ToDateTime(item.DateReceived).ToShortDateString())</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Not Provided</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No offline lump sum giving has been added yet.</p>
+            }
+        </div>
+    </div>
+    <div class="card card-custom gutter-b">
+        <div class="card-header">
+            <div class="card-title">
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label font-weight-bolder text-dark">Donor Giving</span>
+                    <span class="text-muted mt-3 font-weight-bold font-size-sm">Donor specific giving</span>
+                </h3>
+            </div>
+            <div class="card-toolbar">
+                @Html.AjaxModalLink("Add Donor Giving", "/giving/createofflinegiving?type=" + OfflineGiftAmountTypes.Donor, "Add Donor Giving", "Save", "needs-write module-1521435774e4281cb803c9422d98cf btn btn-light-primary font-weight-bold btn-sm backdropStatic mr-2", "", "", "", false, ModalSizes.Large)
+                @Html.AjaxModalLink("Add Bulk Donor Giving", "/giving/CreateMassOfflineGiving?type=" + OfflineGiftAmountTypes.Donor, "Bulk Donor Giving", "Submit", "needs-write module-1521435774e4281cb803c9422d98cf btn btn-light-primary font-weight-bold btn-sm backdropStatic", "", "", "", false, ModalSizes.XL)
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.OfflineGiving.Any(x => !string.IsNullOrEmpty(x.PersonId)))
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Received Via</th>
+                                <th>Fund</th>
+                                <th>Campus</th>
+                                <th>Donor</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OfflineGiving.Where(x => !string.IsNullOrEmpty(x.PersonId)).OrderByDescending(x => x.DateReceived).Take(50))
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.AjaxModalLink(item.Amount.ToCurrencyString(), "/giving/editofflinegiving?id=" + item.Id + "&type=" + OfflineGiftAmountTypes.Donor, "Edit Offline Giving", "Save", "needs-write module-1521435774e4281cb803c9422d98cf", "", "/giving/deleteofflinegiving/" + item.Id)
+                                    </td>
+                                    <td>
+                                        @item.OfflinePaymentType
+                                    </td>
+                                    <td>
+                                        @Model.Funds.FirstOrDefault(x => x.Id.Equals(item.FundId)).Display
+                                    </td>
+                                    <td>
+                                        @SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(item.CampusId)).Display
+                                    </td>
+                                    <td>
+                                        @if (Model.Donors.Any())
+                                        {
+                                            var donor = Model.Donors.FirstOrDefault(x => x.Id == item.PersonId);
+                                            if (donor != null && !string.IsNullOrEmpty(donor.Display))
+                                            {
+                                                <span>@donor.Display</span>
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.DateReceived.IsNotNullOrEmpty())
+                                        {
+                                            <span>@(Convert.ToDateTime(item.DateReceived).ToShortDateString())</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Not Provided</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No offline donor giving has been added yet.</p>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="p-10 bg-white">
+        <div class="alert alert-custom alert-notice alert-light-warning fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text">
+                <strong>Note:</strong> It looks like you haven't added any funds yet. You must create a fund so we know where to assign your offline giving. @Html.AjaxModalLink("Create a fund.", "/funds/_CreateFund", "Create Fund", "Save", "", "")
+            </div>
+        </div>
+    </div>
+}

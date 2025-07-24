@@ -1,0 +1,45 @@
+# Ignore build outputs
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Ignore NuGet packages (if restoring on build)
+packages/
+
+# Ignore user-specific Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore logs and crash dumps
+*.log
+*.crash
+*.cr/
+
+# Ignore Rider or ReSharper if used
+.idea/
+_ReSharper*/
+
+# Ignore backup files
+*.bak
+*.tmp
+~$*
+
+# Ignore OS-specific files
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Ignore ASP.NET temporary files
+# ASP.NET specific
+App_Data/

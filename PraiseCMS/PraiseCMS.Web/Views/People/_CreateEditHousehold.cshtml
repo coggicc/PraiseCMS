@@ -1,0 +1,17 @@
+﻿@model PraiseCMS.DataAccess.Models.Household
+<div id="household-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "household-div" }, new { @class = "kt-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+        <div class="form-group">
+            <label>Household Name:</label>
+            @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>

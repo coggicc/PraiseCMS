@@ -1,0 +1,95 @@
+﻿@model List<PraiseCMS.DataAccess.Models.ViewModels.TopDonationVM>
+@{
+    ViewBag.Title = "Top Donations - Past Five Years";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+@if (Model.Any())
+{
+    int index = 1; // Start index from 1
+    foreach (var donations in Model)
+    {
+        var cardId = $"kt_card_{index++}";
+        <div class="card card-custom gutter-b" id="@cardId">
+            <div class="card-header border-0 py-5">
+                <div class="card-title">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">@donations.Year</span>
+                        <span class="text-muted mt-3 font-weight-bold font-size-sm">@ViewBag.DonationRecords Largest Donations - Digital and Offline Giving</span>
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                        <i class="fas fa-chevron-down icon-nm"></i>
+                    </a>
+                    <a href="/Reports/ExportTopDonationsPastFiveYearsToCSV" class="btn btn-icon btn-sm btn-light-warning" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                        <i class="fas fa-file-export"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body pt-0 pb-3">
+                @if (donations.Donations.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                            <thead>
+                                <tr class="text-left text-uppercase">
+                                    <th style="min-width: 250px" class="pl-7">Donor</th>
+                                    <th style="min-width: 100px">Giving Type</th>
+                                    <th style="min-width: 100px">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in donations.Donations)
+                                {
+                                    <tr>
+                                        <td class="pl-7 py-8">
+                                            <span class="text-dark-75 d-block font-size-lg">@item.Donor.Display</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark-75 d-block font-size-lg">@item.GivingType</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark-75 d-block font-size-lg">@item.TotalAmount.ToCurrencyString()</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="tfoot-grey">
+                                <tr class="text-left text-uppercase">
+                                    <th style="min-width: 250px" class="pl-7">
+                                        <span class="text-dark-75">Totals</span>
+                                    </th>
+                                    <th style="min-width: 100px"></th>
+                                    <th style="min-width: 100px">@donations.Donations.Sum(x => x.TotalAmount).ToCurrencyString()</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p>No giving data available.</p>
+                }
+            </div>
+        </div>
+    }
+}
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            // Get all card elements
+            var cards = $(".card.card-custom");
+
+            // Loop through each card and initialize it
+            cards.each(function () {
+                var cardId = $(this).attr("id");
+                if (cardId) {
+                    new KTCard(cardId);
+                }
+            });
+        });
+    </script>
+}

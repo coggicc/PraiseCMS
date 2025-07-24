@@ -1,0 +1,571 @@
+﻿@model ChuchGivingAccountViewModel
+@using PraiseCMS.Shared.Methods
+
+@{
+    ViewBag.Title = "Church Giving Settings";
+}
+
+@section leftsubheader{
+    @Html.Partial("_SettingsSubHeader")
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+<style>
+    .form-control:disabled {
+        cursor: not-allowed !important;
+    }
+</style>
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model.Church)
+    <div class="flex-row-fluid ml-lg-8">
+        @if (ViewBag.MissingFieldsList != null && !string.IsNullOrEmpty(ViewBag.MissingFieldsList))
+        {
+            <div class="alert alert-custom alert-notice alert-light-danger fade show mb-5" role="alert">
+                <div class="alert-icon"><i class="fas fa-exclamation-"></i></div>
+                <div class="alert-text"><strong>Note:</strong> Please add the following to complete your giving setup: @ViewBag.MissingFieldsList</div>
+                <div class="alert-close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                    </button>
+                </div>
+            </div>
+        }
+        @if (Model.IsActive)
+        {
+            <div class="card card-custom gutter-b">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label font-weight-bolder text-dark">Giving Account Information</span>
+                            <span class="text-muted mt-3 font-weight-bold font-size-sm">Manage your giving account settings</span>
+                        </h3>
+                    </div>
+                    <div class="card-toolbar">
+                        <button data-toggle="tooltip" title="Change details" class="btn btn-light-primary mr-2 edit">Edit</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="view-details">
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Giving Account Info:</h3>
+                        <div class="alert alert-custom alert-notice alert-light-info fade show" role="alert">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-text"><strong>Important Notice:</strong> Your provided banking details are essential for successful giving deposits. Please ensure their accuracy to ensure smooth and reliable fund transfers for your church community.</div>
+                            <div class="alert-close">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true"><i class="la la-close"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                        {
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Merchant:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@(!string.IsNullOrEmpty(Model.Merchant) ? Model.Merchant : "You don't have a giving account yet. Please enter your account and routing numbers below.")</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Merchant Account Number:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@(!string.IsNullOrEmpty(Model.MerchantAccountId) ? Model.MerchantAccountId : "You don't have a giving account yet. Please enter your account and routing numbers below.")</p>
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Bank Account Type:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@(!string.IsNullOrEmpty(Model.BankAccountType) ? Model.BankAccountType : "")</p>
+                            </div>
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Account Number:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">****@Model.AccountNumber.SubstringIt(4)</p>
+                            </div>
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Routing Number:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">****@Model.RoutingNumber.SubstringIt(4)</p>
+                            </div>
+                        </div>
+                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                        {
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Nuvei Api Username:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@(!string.IsNullOrEmpty(Model.ApiUsername) ? Model.ApiUsername : "")</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Nuvei Api Password:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@(!string.IsNullOrEmpty(Model.ApiPassword) ? Model.ApiPassword : "")</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Nuvei Username:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@(!string.IsNullOrEmpty(Model.Username) ? Model.Username : "")</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Nuvei Password:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@(!string.IsNullOrEmpty(Model.Password) ? Model.Password : "")</p>
+                                </div>
+                            </div>
+                        }
+                        <div class="separator separator-dashed my-5"></div>
+                        @if (SessionVariables.CurrentChurch.HasMerchantAccount)
+                        {
+                            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Financial Contact Person:</h3>
+                            <div class="alert alert-custom alert-notice alert-light-info fade show" role="alert">
+                                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="alert-text"><strong>Note:</strong> Please note that the information provided for the financial contact person serves as the primary point of contact for any financial inquiries or assistance related to your church's giving account. Ensure the accuracy of this information for effective communication and support.</div>
+                                <div class="alert-close">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="la la-close"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Name:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@Model.RespContactDisplay</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Phone:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@Model.RespContactPhone</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Email:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@Model.RespContactEmail</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">DOB:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@Model.RespContactDOB</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">SSN:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@Model.RespContactSSNLastFourDisplay</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Driver's License Number:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@Model.RespContactDLN</p>
+                                </div>
+                            </div>
+                            <div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Address:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@Model.RespContactAddress</p>
+                                </div>
+                            </div>
+                            <div class="separator separator-dashed my-5"></div>
+                        }
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Merchant Processing Fees:</h3>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Allow Donor to Cover Merchant Fees:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@(Model.Church.AllowDonorCoverProcessingFee ? "Yes" : "No")</p>
+                            </div>
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Merchant Processing Fee<br /><small>(per transaction)</small>:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">Cards: @Model.CardProcessingFee.TrimZeroes()%<br />ACH: $@Model.ACHProcessingFee</p>
+                            </div>
+                        </div>
+                        @*<div class="form-group row my-2">
+                                <label class="col-4 col-form-label">Monthly Subscription Fee:</label>
+                                <div class="col-8">
+                                    <p class="form-control-static" style="margin-top:10px;">@(Model.Church.SubscriptionFee)</p>
+                                </div>
+                            </div>*@
+                    </div>
+                    <div class="edit-details" style="display:none;">
+                        @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data", id = "givingInfoForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(x => x.Church.Id)
+                            @Html.HiddenFor(x => x.Church.Name)
+                            @Html.HiddenFor(x => x.Church.IsActive)
+                            @Html.HiddenFor(x => x.Church.IsMultiSite)
+                            @Html.HiddenFor(x => x.Church.Logo)
+                            @Html.HiddenFor(x => x.Church.CreatedBy)
+                            @Html.HiddenFor(x => x.Church.CreatedDate)
+                            @Html.HiddenFor(x => x.Church.Phone)
+                            @Html.HiddenFor(x => x.Church.Email)
+                            @Html.HiddenFor(x => x.Church.SubscriptionFee)
+                            @Html.HiddenFor(x => x.Id)
+                            @Html.HiddenFor(x => x.Merchant)
+                            @Html.HiddenFor(x => x.MerchantAccountId)
+                            @Html.HiddenFor(x => x.ChurchId)
+                            @Html.HiddenFor(x => x.IsActive)
+                            @Html.HiddenFor(x => x.BusinessType)
+                            @Html.HiddenFor(x => x.Phone)
+                            @Html.HiddenFor(x => x.Email)
+                            @Html.HiddenFor(x => x.BusinessWebsite)
+                            @Html.HiddenFor(x => x.TaxId)
+                            @Html.HiddenFor(x => x.ApiUsername)
+                            @Html.HiddenFor(x => x.ApiPassword)
+                            if (!SessionVariables.CurrentUser.IsSuperAdmin)
+                            {
+                                @Html.HiddenFor(x => x.ACHProcessingFee)
+                                @Html.HiddenFor(x => x.CardProcessingFee)
+                            }
+
+                            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Giving Account Info:</h3>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>Bank Account Type:</label>
+                                    @Html.DropDownListFor(x => x.BankAccountType, BankAccountTypes.Items.ToSelectList("Select a bank account type...", x => x, x => x), new { @class = "form-control select2", name = "BankAccountType", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.BankAccountType, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>Account Number:</label>
+                                    @Html.EditorFor(x => x.AccountNumber, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.AccountNumber, "", new { @class = "text-danger", id = "validation_AccountNumber" })
+                                </div>
+                                <div id="confirmAccountNumberContainer" class="col-lg-6" style="display:none;">
+                                    <label>Confirm Account Number:</label>
+                                    <input type="text" id="ConfirmAccountNumber" class="form-control" required="" />
+                                    <label class="text-danger" id="validation_ConfirmAccountNumber"></label>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>Routing Number:</label>
+                                    @Html.EditorFor(x => x.RoutingNumber, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RoutingNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="separator separator-dashed my-5"></div>
+                            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Financial Contact Person:</h3>
+                            <p>
+                                Who is responsible for managing the church's financial accounts? This is typically a pastor, president, founder, executive director, etc.
+                            </p>
+                            <p class="small">
+                                USA Patriot Act: To help the government fight the funding of terrorism and money laundering activities, Federal law requires that we obtain, verify and record
+                                information that identifies each person who opens an account. Therefore, we may ask for your name, address, date of birth and other information that allows us
+                                to identify you. We also ask to see your driver's license or other identifying documents.
+                            </p>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>First Name:</label>
+                                    @Html.EditorFor(x => x.RespContactFirstName, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactFirstName, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Last Name:</label>
+                                    @Html.EditorFor(x => x.RespContactLastName, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactLastName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>Phone:</label>
+                                    @Html.EditorFor(x => x.RespContactPhone, new { htmlAttributes = new { @class = "form-control phone", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactPhone, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Email:</label>
+                                    @Html.EditorFor(x => x.RespContactEmail, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactEmail, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>DOB:</label>
+                                    @Html.EditorFor(x => x.RespContactDOB, new { htmlAttributes = new { placeholder = "MM/dd/yyyy", Value = !string.IsNullOrEmpty(Convert.ToString(Model.RespContactDOB)) ? Convert.ToDateTime(Model.RespContactDOB).ToString("MM'/'dd'/'yyyy") : "", @class = "form-control dateOfBirth numeric", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactDOB, "", new { @class = "text-danger", id = "validation_DOB" })
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>SSN:</label>
+                                    @Html.EditorFor(x => x.RespContactSSN, new { htmlAttributes = new { maxlength = "11", type = "text", @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactSSN, "", new { @class = "text-danger", id = "validation_SSN" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>Driver's License Number:</label>
+                                    @Html.EditorFor(x => x.RespContactDLN, new { htmlAttributes = new { maxlength = "20", type = "text", @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactDLN, "", new { @class = "text-danger", id = "validation_DLN" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-6">
+                                    <label>Address:</label>
+                                    @Html.EditorFor(x => x.RespContactAddress1, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactAddress1, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Apt/Unit/Suite:</label>
+                                    @Html.EditorFor(x => x.RespContactAddress2, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactAddress2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-4">
+                                    <label>City:</label>
+                                    @Html.EditorFor(x => x.RespContactCity, new { htmlAttributes = new { @class = "form-control", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactCity, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>State:</label>
+                                    @Html.DropDownListFor(x => x.RespContactState, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { @class = "form-control select2", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.RespContactState, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>Zip:</label>
+                                    @Html.EditorFor(x => x.RespContactZip, new { htmlAttributes = new { maxlength = "6", @class = "form-control numeric", required = "" } })
+                                    @Html.ValidationMessageFor(x => x.RespContactZip, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="separator separator-dashed my-5"></div>
+                            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Merchant Processing Fees:</h3>
+                            <div class="form-group row">
+                                <div class="col-lg-4">
+                                    <label>Allow Donor to Cover Merchant Fees <small>(Optional)</small>:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Donors may elect to cover your merchant fees should you enable this setting."></i></label>
+                                    <div class="checkbox-list">
+                                        <span class="switch switch-sm switch-icon">
+                                            <label>
+                                                @Html.CheckBoxFor(x => x.Church.AllowDonorCoverProcessingFee)
+                                                <span></span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>Credit/Debit Cards:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text">%</span></div>
+                                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                        {
+                                            @Html.EditorFor(x => x.CardProcessingFee, new { htmlAttributes = new { @class = "form-control amount" } })
+                                            @Html.ValidationMessageFor(x => x.CardProcessingFee, "", new { @class = "text-danger" })
+                                        }
+                                        else
+                                        {
+                                            <input type="text" name="ChurchMerchantAccount.CardProcessingFee" class="form-control" value="@Model.CardProcessingFee" style="background-color: #F3F6F9; cursor: not-allowed !important;" readonly="readonly" />
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>ACH/Bank Accounts:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                        {
+                                            @Html.EditorFor(x => x.ACHProcessingFee, new { htmlAttributes = new { @class = "form-control amount" } })
+                                            @Html.ValidationMessageFor(x => x.ACHProcessingFee, "", new { @class = "text-danger" })
+                                        }
+                                        else
+                                        {
+                                            <input type="text" name="ChurchMerchantAccount.ACHProcessingFee" class="form-control" value="@Model.ACHProcessingFee" style="background-color: #F3F6F9; cursor: not-allowed !important;" readonly="readonly" />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer edit-details" style="display:none;">
+                    <button type="button" id="submit_giving" class="btn btn-light-primary font-weight-bold mr-2">Save Changes</button>
+                    <a href="/settings/giving" class="btn btn-light-dark font-weight-bold">Cancel</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card card-custom">
+                <div class="card-header py-3">
+                    <div class="card-title align-items-start flex-column">
+                        <h3 class="card-label font-weight-bolder text-dark">Giving Account Information</h3>
+                        <span class="text-muted font-weight-bold font-size-sm mt-1">Set up your giving account</span>
+                    </div>
+                </div>
+                <div class="card-body view-details py-4">
+                    <p>Giving has not been set up for your church. It's easy to get started. We'll need your church's tax ID and banking information.</p>
+                    <a href="/onboarding/CreateMerchantAccount/@Model.Church.Id" class="btn btn-light-primary">Let's Get Started</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<input type="hidden" id="oldAccountNumber" value="@Model.AccountNumber" />
+@section belowScripts
+{
+    <script type="text/javascript">
+    $(function () {
+        var isEditMode = '@((bool?)TempData["IsEditMode"] ?? false)';
+        isEditMode = isEditMode.toLowerCase() === 'true';
+
+        $(".view-details").toggle(!isEditMode);
+        $(".edit-details").toggle(isEditMode);
+
+        $(".edit").click(function () {
+            $(".view-details").toggle();
+            $(".edit-details").toggle();
+
+            // Toggle the IsEditMode value
+            isEditMode = !isEditMode;
+
+            $(this).text(function (i, text) {
+                const title = isEditMode ? "Go Back" : "Change details";
+                $(this).attr("data-original-title", title);
+                return isEditMode ? "Cancel" : "Edit";
+            });
+        });
+
+        $("#Church_BillingSameAsPhysical").change(function (e) {
+            if ($(this).is(":checked")) {
+                $(".billing-address-field").val("").attr("disabled", "disabled");
+            }
+            else {
+                $(".billing-address-field").val("").removeAttr("disabled");
+            }
+        });
+
+        $("#Church_BillingSameAsPhysical").change();
+
+        $("#switch").click(function () {
+            $("#account-field").toggle("slow", function () { });
+        });
+
+        var input = document.getElementById("Church_ServiceAreaRequirements"), tagify = new Tagify(input, {
+            originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(",")
+        });
+
+        var inputTwo = document.getElementById("Church_NoteCategories"), tagify = new Tagify(inputTwo, {
+            originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(",")
+        });
+
+        $("input:radio[name='Church.IsMultiSite']").change(function (e) {
+            $(".multi-campus-details").hide();
+            if (this.checked && this.value == "False") {
+                $(".multi-campus-details").show();
+            }
+        });
+
+        $("#Church_IsMultiSite").change();
+
+        $(document).on("keyup", "#ChurchMerchantAccount_AccountNumber", function () {
+            var accountNumber = $(this).val();
+            var oldAccountNumber = $("#oldAccountNumber").val();
+            if (accountNumber == oldAccountNumber) {
+                $("#confirmAccountNumberContainer").hide();
+            } else {
+                $("#confirmAccountNumberContainer").show();
+            }
+        });
+
+        $(document).on("keyup", "#ChurchMerchantAccount_AccountNumber, #ConfirmAccountNumber", function () {
+            var accountNumber = $("#ChurchMerchantAccount_AccountNumber").val();
+            var confirmAccountNumber = $("#ConfirmAccountNumber").val();
+            $("#validation_ConfirmAccountNumber").text("");
+            if (accountNumber != "" && confirmAccountNumber == "") {
+                $("#validation_ConfirmAccountNumber").text("").text("Confirm Account Number is required.");
+            } else if (accountNumber != confirmAccountNumber) {
+                $("#validation_ConfirmAccountNumber").text("").text("Account Number and Confirm Account Number must match.");
+            }
+        });
+
+        $(document).on("keyup", "#ChurchMerchantAccount_RespContactSSN", function () {
+            $("#validation_SSN").text("");
+        });
+
+        $(document).on("keyup", "#ChurchMerchantAccount_RespContactDOB", function () {
+            $("#validation_DOB").text("");
+        });
+
+        $(document).on("keyup", "#ChurchMerchantAccount_RespContactDLN", function () {
+            $("#validation_DLN").text("");
+        });
+
+        $(document).on("click", "#submit_giving", function () {
+            var validateForm = true;
+            $("#validation_AccountNumber").text("");
+            $("#validation_DOB").text("");
+            $("#validation_SSN").text("");
+            $("#validation_ConfirmAccountNumber").text("");
+            var accountNo = $("#ChurchMerchantAccount_AccountNumber").val();
+            var confirmAccountNo = $("#ConfirmAccountNumber").val();
+            var oldAccountNumber = $("#oldAccountNumber").val();
+            $("#givingInfoForm").submit();
+            //if ($("#ChurchMerchantAccount_RespContactDOB").val()) {
+            //    let parse = Date.parse($("#ChurchMerchantAccount_RespContactDOB").val());
+            //    if (!parse) {
+            //        $("#validation_DOB").text("Please enter a valid date of birth.");
+            //        validateForm = false;
+            //        return false;
+            //    }
+            //}
+
+            //if ($("#ChurchMerchantAccount_RespContactSSN").val()) {
+            //    const ssnValue = $("#ChurchMerchantAccount_RespContactSSN").val();
+            //    // Remove non-numeric characters
+            //    const cleanedSSN = ssnValue.replace(/\D/g, "");
+            //    if (cleanedSSN.length !== 9) {
+            //        $("#ChurchMerchantAccount_RespContactSSN").focus();
+            //        $("#validation_SSN").text("Please enter a valid Social Security Number with 9 digits and two hyphens.");
+            //        validateForm = false;
+            //        return false;
+            //    }
+            //}
+
+            //if (!$("#ChurchMerchantAccount_RespContactDLN").val()) {
+            //    $("#ChurchMerchantAccount_RespContactDLN").focus();
+            //    $("#validation_DL").text("Please enter your driver's license number.");
+            //    validateForm = false;
+            //    return false;
+            //}
+
+            //if (accountNo === oldAccountNumber) {
+            //    $("#givingInfoForm").submit();
+            //} else {
+            //    if (accountNo === "") {
+            //        $("#validation_AccountNumber").text("Please enter an account number.");
+            //        $("#kt_scrolltop").click();
+            //        validateForm = false;
+            //    }
+            //    if (confirmAccountNo === "") {
+            //        $("#validation_ConfirmAccountNumber").text("Please confirm your account number.");
+            //        $("#kt_scrolltop").click();
+            //        validateForm = false;
+            //    }
+            //}
+
+            //if (validateForm) {
+            //    if (accountNo === confirmAccountNo) {
+            //        $("#givingInfoForm").submit();
+            //    }
+            //    else {
+            //        $("#validation_ConfirmAccountNumber").text("Please verify the account number fields match.");
+            //        $("#kt_scrolltop").click();
+            //    }
+            //}
+        });
+    });
+    </script>
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

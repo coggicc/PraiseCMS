@@ -1,0 +1,46 @@
+﻿@model HandleErrorInfo
+@{
+    ViewBag.Title = "Error";
+    Layout = "~/Views/Shared/_ErrorLayout.cshtml";
+}
+
+<style>
+    .error-details {
+        display: none;
+    }
+</style>
+
+<div class="d-flex flex-column flex-root">
+    <div class="error error-6 d-flex flex-row-fluid bgi-size-cover bgi-position-center" style="background-image: url(https://app.praisecms.com/Content/assets/media/error/bg6.jpg);">
+        <div class="flex-row-fluid text-center">
+            <div class="col-lg-8 offset-lg-2">
+                <h1 class="error-title font-weight-boldest text-white mb-12" style="margin-top: 6rem;">Oops...</h1>
+                <p class="display-4 font-weight-bold text-white">
+                    It looks like something went wrong. We've been notified and will check it out.
+                </p>
+                <p class="display-4 my-10 font-weight-bold text-white">
+                    Return to the <a href="@Url.Action("Index", "Home")" class="text-secondary">dashboard</a> or <a href="https://www.praisecms.com/contact" class="text-secondary">contact us</a>.
+                </p>
+                <div class="mb-10">
+                    <button class="btn btn-outline-secondary font-weight-bold btn-sm text-white show-details">View Error</button>
+                </div>
+                @if (Model != null && Model.Exception != null && !string.IsNullOrEmpty(Model.Exception.Message))
+                {
+
+                    <p class="display-4 font-weight-bold text-white error-details">
+                        <small>
+                            <span class="font-weight-bold">Error:</span> @Html.Raw(Model.Exception.Message.Replace("\n", "<br />"))
+                        </small>
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $(".show-details").click(function () {
+            $(".error-details").toggle();
+        });
+    });
+</script>

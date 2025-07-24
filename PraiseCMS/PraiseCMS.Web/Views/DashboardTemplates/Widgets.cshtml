@@ -1,0 +1,135 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.WidgetViewModel
+
+@{
+    ViewBag.Title = "Dashboard Widgets";
+}
+
+@if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            <a href="/dashboardtemplates" class="btn btn-light-primary btn-sm mr-2">Dashboards</a>
+            <a href="/dashboardtemplates/categories" class="btn btn-light-primary btn-sm">Categories</a>
+        </div>
+    }
+}
+
+<style type="text/css">
+    .fa.fa-info-circle {
+        font-size: 12px;
+    }
+
+    .report__toggle {
+        margin-right: 5px;
+    }
+</style>
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+        {
+            <div class="card-toolbar">
+                <a href="/dashboardtemplates/createeditwidget" class="btn btn-light-primary btn-sm">Create New</a>
+            </div>
+        }
+    </div>
+    <div class="card-body mt-4 pt-4 pb-4">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Name</th>
+                        <th class="text-center">Location</th>
+                        <th>Description</th>
+                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                        {
+                            <th style="text-align:center">Actions</th>
+                        }
+                    </tr>
+                </thead>
+                @if (Model.Widgets.Any())
+                {
+                    foreach (var category in Model.WidgetCategoryTypes.OrderBy(x => x.Name))
+                    {
+                        <tbody>
+                            <tr class="font-weight-bolder bg-light">
+                                <td>
+                                    <a href="javascript:;" class="report__toggle" toggle-state="open"><i class="fa fa-minus-square"></i></a>
+                                    @category.Name
+                                </td>
+                                <td></td>
+                                <td></td>
+                                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                        </tbody>
+                        <tbody class="report_body_toggle">
+                            @{
+                                var widgetIds = Model.WidgetCategories.Where(x => x.CategoryTypeId == category.Id).Select(x => x.WidgetId).ToList();
+                                if (widgetIds.Count > 0 && widgetIds.IsNotNull())
+                                {
+                                    var widgets = Model.Widgets.Where(x => widgetIds.Contains(x.Id)).OrderBy(x => x.Name).ToList();
+                                    foreach (var item in widgets)
+                                    {
+                                        <tr>
+                                            <td width="250">
+                                                @item.Name
+                                                @Html.AjaxPlainModalLink("<i class='far fa-question-circle ml-2' data-toggle='tooltip' title='Preview'></i>", $"/dashboardtemplates/getinfo/{item.Id}", item.Name, "", "", "", "")
+                                            </td>
+                                            <td class="text-center">
+                                                @item.Location
+                                            </td>
+                                            <td>
+                                                @item.Description
+                                            </td>
+                                            @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                            {
+                                                <td class="text-center" width="120">
+                                                    <a href="/dashboardtemplates/createeditwidget/@item.Id">Edit</a> |
+                                                    <a class="delete_prompt" href="/dashboardtemplates/deletewidget/@item.Id">Delete</a>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3">You don't have any available widgets for this category.</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    }
+                }
+            </table>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("click", ".report__toggle", function () {
+                var $el = $(this);
+                if ($el.attr("toggle-state") == "open") {
+                    $el.find("i").removeClass("fa-minus-square").addClass("fa-plus-square");
+                    $el.attr("toggle-state", "close");
+                }
+                else {
+                    $el.find("i").removeClass("fa-plus-square").addClass("fa-minus-square");
+                    $el.attr("toggle-state", "open");
+                }
+                $el.closest("tbody").next(".report_body_toggle").toggle(250);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,115 @@
+﻿@using System.Configuration
+
+@{
+    ViewBag.Title = "Offline Giving";
+}
+
+<header class="header online-payment-header section color-1 alpha-8">
+    <div id="stripes">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="container overflow-hidden bring-to-front">
+        <div class="row">
+            <div class="col-md-6">
+                <h1 class="color-1 bold">
+                    Offline Giving
+                    <span class="d-block light">managing cash and check donations is a breeze</span>
+                </h1>
+                <p class="lead">Track offline giving by fund, campus, and donor. Quickly apply donations by person or in bulk with just a few clicks.</p>
+                <nav class="nav mt-5">
+                    <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="nav-link mr-3 btn btn btn-rounded btn-1">Sign up free</a>
+                </nav>
+                <p>No credit card required. Cancel anytime.</p>
+            </div>
+            <div class="col-md-6">
+                <img src="~/Content/img/bg/online-payment.svg" class="img-hero img-responsive absolute-md" alt="">
+            </div>
+        </div>
+    </div>
+</header>
+<section class="section">
+    <div class="container-wide pt-5">
+        <div class="section-heading text-center">
+            <h2>
+                You Know Your Church<br>
+                <span class="bold">Now Know Your Data</span>
+            </h2>
+        </div>
+        <div class="row gap-y align-items-center text-center text-lg-left">
+            <div class="col-10 col-lg-4 mx-auto">
+                <div class="row gap-y text-center text-md-left">
+                    <div class="col-md-6">
+                        <i class="fas fa-piggy-bank fa-3x color-4"></i>
+                        <p class="my-0 bold lead color--4">Giving Funds</p>
+                        <p>Apply donations to funds such as tithes & offerings, missions, building projects and more. See how your giving stacks up with previous time periods.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <i class="fas fa-chart-line fa-3x color-4"></i>
+                        <p class="my-0 bold lead color--4">Donation Types</p>
+                        <p>Offering plate, drop-off, and mailed. View analytics on how how every donation is received.</p>
+                    </div>                    
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 pr-0">
+                <img src="~/Content/img/screens/dash/2.png" alt="" class="img-responsive shadow" data-aos="fade-left">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section b-b b-t bg-6">
+    <div class="container">
+        <div class="section-heading text-center">
+            <h2>Giving Tools for Pros</h2>
+            <p class="lead color-2">Import data at the click of a mouse</p>
+        </div>
+        <div class="row align-items-end">
+            <div class="col-lg-6">
+                <h2 class="light">
+                    Apply donations quickly<br>
+                    <span class="bold">Donor & Lump Sum Giving</span>
+                </h2>
+                <p class="lead color-2">Add donations for a worship service or for a single individual. Import multiple checks at one time or split up a donation across different funds.</p>                
+                <hr class="mt-5 mb-4">
+                <ol id="sw-nav-tools" class="nav nav-process nav-circle nav-fill">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#" data-step="1">
+                            <small class="mt-4 absolute">Lump Sum</small>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-step="2">
+                            <small class="mt-4 absolute">Donor Specific</small>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-step="3">
+                            <small class="mt-4 absolute">Bulk Donor</small>
+                        </a>
+                    </li>                    
+                </ol>
+            </div>
+            <div class="col-lg-6 ml-lg-auto">
+                <div class="browser shadow mt-4 mt-md-0" data-aos="fade-left">
+                    <div class="swiper-container" data-sw-navigation="#sw-nav-tools">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img src="~/Content/img/screens/dash/1.png" alt="" class="img-responsive">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="~/Content/img/screens/dash/2.png" alt="" class="img-responsive">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="~/Content/img/screens/dash/3.png" alt="" class="img-responsive">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

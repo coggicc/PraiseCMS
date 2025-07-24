@@ -1,0 +1,82 @@
+﻿.active-day {
+    background: #DCDCDC !important;
+    color: #000000 !important;
+}
+
+.datepicker tbody tr > td.day.active {
+    background: #3699FF !important;
+    color: #ffffff !important;
+}
+
+.datepicker table tr td.disabled, .datepicker table tr td.disabled:hover {
+    cursor: not-allowed !important;
+}
+
+.icon-background {
+    color: #22b9ff;
+}
+
+.field-validation-error {
+    color: #F64E60;
+    white-space: nowrap;
+}
+
+.form-control-error {
+    border: 1px solid red !important;
+}
+
+.hideDiv {
+    display: none !important;
+}
+
+.font-weight-400 {
+    font-weight: 400 !important;
+    color: #464E5F !important;
+}
+
+.card-type {
+    padding: 0 !important;
+}
+
+.card-type-span {
+    width: 100%;
+    border-bottom-right-radius: 0.85rem !important;
+    border-top-right-radius: 0.85rem !important;
+    font-weight: bold;
+    font-size: x-large;
+    height: 67px;
+    background-color: #ffffff;
+}
+
+.card-number {
+    border-bottom-right-radius: 0rem !important;
+    border-top-right-radius: 0rem !important;
+}
+
+.resend-code-msg-div {
+    height: 25px !important;
+    font-size: 15px;
+    color: #6eb16e;
+}
+
+.select2-selection__arrow:before {
+    content: "" !important;
+}
+
+.checkBox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.w-30 {
+    width: 30% !important
+}
+
+.w-70 {
+    width: 70% !important
+}
+
+#processingFee-div {
+    display: none;
+}

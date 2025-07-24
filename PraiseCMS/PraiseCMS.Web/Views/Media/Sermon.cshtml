@@ -1,0 +1,181 @@
+﻿@model PraiseCMS.DataAccess.Models.SermonView
+
+@{
+    ViewBag.Title = Model.Sermon.Title;
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="text-primary fa fa-bible"></i>
+            </span>
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-4">
+                <div class="card">
+                    @{var image = !string.IsNullOrEmpty(Model.Sermon.Image) ? "~/Uploads/sermons/" + Model.Sermon.Image : "~/Content/assets/media/products/product1.jpg"; }
+                    <img class="card-img-top" src="@Url.Content(image)" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="font-weight-bold font-size-h4">@Model.Sermon.Title | <small>@Model.Sermon.CreatedDate.ToShortDateString()</small></p>
+                        <p class="font-weight-bold font-size-h5">Series: @(!string.IsNullOrEmpty(Model.Series.Title) ? Model.Series.Title : "Not Provided")</p>
+                        <p class="text-muted">Topic: @(!string.IsNullOrEmpty(Model.Topic.Title) ? Model.Topic.Title : "Not Provided")</p>
+                        <p class="">@Html.AjaxModalLink("Edit Sermon", "/media/_editsermon/" + Model.Sermon.Id, "Edit Sermon", "Save", "btn btn-light-primary", "", "/media/deletesermon/" + Model.Sermon.Id)</p>
+                        <div class="separator separator-dashed my-5"></div>
+                        @if (Model.Notes != null)
+                        {
+                            <p class=""><a href="/media/sermonnotes/sermonId=@Model.Sermon.Id">View Notes</a></p>
+                        }
+                        else
+                        {
+                            <p class=""><button class="btn btn-secondary" id="blankTempBtn">Blank Notes</button></p>
+                            <p class=""><button class="btn btn-secondary" id="stdNotesBtn">Standard Notes</button></p>
+                            <p class=""><button class="btn btn-secondary" id="stdFilledNotesBtn">Standard Filled Notes</button></p>
+                        }
+                        <p class=""><a href="@Url.Action("SermonNotesList", new { sermonid = Model.Sermon.Id })" class="btn btn-secondary"><i class='la la-list-ul'></i>View Standard Notes</a></p>
+                        <p class=""><a href="@Url.Action("SermonFilledNotesList", new { sermonid = Model.Sermon.Id })" class="btn btn-secondary"><i class='la la-list-ul'></i>View Fill Notes</a></p>
+                        <p class=""><a href="@Url.Action("SermonBlankNotesList", new { sermonid = Model.Sermon.Id })" class="btn btn-secondary"><i class='la la-list-ul'></i>View Blank Notes</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modelarea"></div>
+<style>
+    .modal-dialog {
+        max-width: 60% !important;
+    }
+</style>
+
+<div class="modal fade" id="StandardNotesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class=" row ml-auto">
+                    @*<form action="/ExportMedia/Print" method="post" target="_blank" id="printform">
+                            <input type="hidden" name="Message" id="printMsg" value="" />
+                            <input type="button" id="printsubmit" class="btn btn-danger mr-4" value="Print" />
+                        </form>*@
+                    <form action="/ExportMedia/ExportStandardNotePDF" method="post">
+                        <input type="submit" class="btn btn-danger mr-4" value="PDF" />
+                    </form>
+                </div>
+            </div>
+            @using (Ajax.BeginForm("AddBlankTemplate", RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "sermonnotes-div" }, new { @class = "kt-form" }))
+            {
+                <div class="modal-body">
+
+                    <div id="_StandardNotesDiv">
+
+                    </div>
+                    <div class="modal-footer">
+                        @*<button type="button" class="btn btn-light-dark font-weight-bold" id="btnsubmit">Save</button>*@
+                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="StandardFilledNotesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class=" row ml-auto">
+                    @*<form action="/ExportMedia/Print" method="post" target="_blank" id="printform">
+                            <input type="hidden" name="Message" id="printMsg" value="" />
+                            <input type="button" id="printsubmit" class="btn btn-danger mr-4" value="Print" />
+                        </form>*@
+
+                    <form action="/ExportMedia/ExportStandardFilledNotePDF" method="post">
+                        <input type="submit" class="btn btn-danger mr-4" value="PDF" />
+                    </form>
+                </div>
+            </div>
+            @using (Ajax.BeginForm("AddBlankTemplate", RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "sermonnotes-div" }, new { @class = "kt-form" }))
+            {
+                <div class="modal-body">
+
+                    <div id="_StandardFilledNotesDiv">
+
+                    </div>
+                    <div class="modal-footer">
+                        @*<button type="button" class="btn btn-light-dark font-weight-bold" id="btnsubmit">Save</button>*@
+                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Html.HiddenFor(x => x.Sermon.ChurchId)
+@Html.HiddenFor(x => x.Sermon.Id)
+
+<script>
+    $("#stdNotesBtn").click(function () {
+        $.ajax({
+            url: "@Url.Action("SermonNotes","media", new {sermonId = Model.Sermon.Id })",
+            type: "get",
+            success: function (data) {
+                $("#_StandardNotesDiv").html('');
+                $("#_StandardNotesDiv").html(data);
+                $("#StandardNotesModal").modal('show');
+            },
+        });
+    });
+
+    $("#stdFilledNotesBtn").click(function () {
+        $.ajax({
+            url: "@Url.Action("SermonFilledNotes","media", new {sermonId = Model.Sermon.Id })",
+            type: "get",
+            success: function (data) {
+                $("#_StandardFilledNotesDiv").html('');
+                $("#_StandardFilledNotesDiv").html(data);
+                $("#StandardFilledNotesModal").modal('show');
+            },
+        });
+    });
+
+    $("#addNoteBtn").click(function () {
+           $.ajax({
+            url: "@Url.Action("_addsermonnotes","media",new {sermonId= Model.Sermon.Id })",
+            type: "get",
+            success: function (data) {
+                $('#modelarea').html(data);
+                $("#AddNoteModal").modal('show');
+            },
+        });
+    });
+
+    $("#addFilledNoteBtn").click(function () {
+           $.ajax({
+            url: "@Url.Action("_AddFilledSermonNotes", "media",new {sermonId= Model.Sermon.Id })",
+            type: "get",
+            success: function (data) {
+                $('#modelarea').html(data);
+                $("#AddFilledNoteModal").modal('show');
+            },
+        });
+    });
+
+    $("#blankTempBtn").click(function () {
+       // alert(@Model.Sermon.ChurchId);
+           $.ajax({
+            url: "@Url.Action("GetTemplate","media")",
+               type: "post",
+               data: { churchID: $("#Sermon_ChurchId").val(), sermonID: $("#Sermon_Id").val()},
+            success: function (data) {
+                $('#modelarea').html(data);
+                $("#BlankTemplateModal").modal('show');
+            },
+        });
+    });
+</script>

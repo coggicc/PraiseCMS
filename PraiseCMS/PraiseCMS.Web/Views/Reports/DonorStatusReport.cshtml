@@ -1,0 +1,171 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.DonorStatusReportViewModel
+@{
+    ViewBag.Title = "Donor Status Report";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-primary card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-users fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.TotalDonorCount</span>
+                <span class="font-weight-bold text-white font-size-sm">Total Donors</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-success card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-user fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.FirstTimeDonorsCount</span>
+                <span class="font-weight-bold text-white font-size-sm">1st-Time Donors</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-danger card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-sync-alt fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.RepeatDonorCount</span>
+                <span class="font-weight-bold text-white font-size-sm">Repeat Donors</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Donations by Donor Status</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving for the Past 12 Months</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportDonorStatusReportToCSV" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="34%" class="pl-7">Donor Status</th>
+                        <th width="22%" class="text-center">Count</th>
+                        <th width="22%" class="text-center">%</th>
+                        <th width="22%" class="text-right pr-5">Avg. Donation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">One-Time</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.FirstTimeDonorsCount</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.FirstTimePercentage.ToFormattedPercentage()</span>
+                        </td>
+                        <td class="text-right pr-6">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.FirstTimeAverageDonation.ToCurrencyString()</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">Two-Time<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="People that gave twice"></i></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.SecondTimeDonorsCount</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.SecondTimePercentage.ToFormattedPercentage()</span>
+                        </td>
+                        <td class="text-right pr-6">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.SecondTimeAverageDonation.ToCurrencyString()</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">Occasional<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="People that gave between three and twelve times"></i></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.OccasionalDonorsCount</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.OccasionalPercentage.ToFormattedPercentage()</span>
+                        </td>
+                        <td class="text-right pr-6">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.OccasionalAverageDonation.ToCurrencyString()</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">Regular<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="People that gave at least twelve times"></i></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.RegularDonorsCount</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.RegularPercentage.ToFormattedPercentage()</span>
+                        </td>
+                        <td class="text-right pr-6">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.RegularAverageDonation.ToCurrencyString()</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">Recurring<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="People that have an active recurring gift scheduled"></i></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.RecurringDonorsCount</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.RecurringPercentage.ToFormattedPercentage()</span>
+                        </td>
+                        <td class="text-right pr-6">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.RecurringAverageDonation.ToCurrencyString()</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">Inactive<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="People that gave previously but not in the past twelve months"></i></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.InActiveDonorsCount</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.InActivePercentage.ToFormattedPercentage()</span>
+                        </td>
+                        <td class="text-right pr-6">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.InActiveAverageDonation.ToCurrencyString()</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th width="34%" class="pl-7">Totals</th>
+                        <th width="22%" class="text-center">@Model.TotalDonorCount</th>
+                        <th width="22%" class="text-center">@Model.TotalPercentage.ToFormattedPercentage()</th>
+                        <th width="22%" class="text-right pr-6">@Model.TotalAverageDonation.ToCurrencyString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+        });
+    </script>
+}

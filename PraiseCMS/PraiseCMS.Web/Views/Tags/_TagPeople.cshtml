@@ -1,0 +1,70 @@
+﻿@model PraiseCMS.DataAccess.Models.TagDetailsViewModel
+
+<div class="card-header border-0 py-5">
+    <h3 class="card-title align-items-start flex-column">
+        <span class="card-label font-weight-bolder text-dark">People</span>
+        <span class="text-muted mt-3 font-weight-bold font-size-sm">@Model.People.Count @(Model.People.Count == 1 ? "person": "people") assigned</span>
+    </h3>
+    <div class="card-toolbar">
+        @Html.AjaxModalLink("Add People", $"/tags/AddPeopleToTag?tagId={Model.Tag.Id}", "Add People to Tag", "Save", "mr-2 btn btn-sm btn-light-primary backdropStatic", "", "", "", false, ModalSizes.Large)
+    </div>
+</div>
+<div class="card-body pt-0 pb-3">
+    <div class="table-responsive">
+        <table id="tag-people-list-table" class="table table-head-custom table-head-bg table-borderless table-vertical-center @Html.Raw(Model.People.Count() > 10 ? "" : "border-0")">
+            <thead>
+                <tr>
+                    <th class="p-0" width="10%"></th>
+                    <th class="p-0"></th>
+                    <th class="p-0" width="10%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var person in Model.People.OrderBy(q => q.Display))
+                {
+                    <tr>
+                        <td class="pl-0 py-4">
+                            <div class="symbol symbol-50 symbol-light mr-4">
+                                <span class="symbol-label">
+                                    <img src="@person.ProfileImageURL" class="h-100 align-self-end" alt="">
+                                </span>
+                            </div>
+                        </td>
+                        <td class="pl-0">
+                            <div>
+                                @if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+                                {
+                                    if (person.UserId != null)
+                                    {
+                                        <a href="/users/userprofile?Id=@person.UserId&type=user" data-toggle="tooltip" data-original-title="View profile" class="text-muted text-hover-primary font-weight-bold">@person.Display</a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/users/userprofile?Id=@person.Id&type=person" data-toggle="tooltip" data-original-title="View profile" class="text-muted text-hover-primary font-weight-bold">@person.Display</a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted font-weight-bold">@person.Display</span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-right pr-0">
+                            <a href="/tags/removepersonfromtag?personId=@person.Id&tagId=@Model.Tag.Id" class="removeTagPeople text-dark-50 text-hover-danger mr-3" data-toggle="tooltip" data-original-title="Remove @person.Display">
+                                <i class="far fa-times-circle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            setDatatable();
+        });
+    </script>
+}

@@ -1,0 +1,100 @@
+﻿@{
+    @*What is the point of this subscription stuff here?*@
+    //var activePlan = SessionVariables.Subscriptions?.FirstOrDefault(q => q.IsActive);
+    //SubscriptionPlan.PlanId = activePlan?.PlanTypeId;
+
+    var layoutModel = ViewBag.LayoutViewModel as LayoutViewModel;
+
+    var brandColor = "#22b9ff";
+    var themeColor = layoutModel?.ThemeColor ?? "light.css";
+    var containerSize = layoutModel?.ContainerSize ?? "container";
+    var hasSidebarAccess = layoutModel?.HasSidebarAccess ?? false;
+    var sidebarClasses = layoutModel?.SidebarClasses ?? "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="">
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title | Praise CMS</title>
+    <meta name="description" content="Praise Church Management Software">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700|Roboto:300,400,500,600,700">
+    <link href="~/Content/assets/plugins/custom/jstree/jstree.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/plugins/global/plugins.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/plugins/custom/prismjs/prismjs.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/style.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/header/base/@themeColor" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/header/menu/@themeColor" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/brand/@themeColor" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/aside/@themeColor" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/plugins/custom/jqvmap/jqvmap.bundle.css" rel="stylesheet" />
+    <link href="~/Content/assets/js/pages/custom/jquery-ui/jquery-ui.bundle.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" rel="stylesheet" />
+    <link href="~/Content/assets/css/datatables.min.css" rel="stylesheet" />
+    <link href="~/Content/assets/css/custom.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="~/Content/assets/image/favicon.ico" type="image/x-icon" />
+    <script src="~/Content/assets/plugins/global/plugins.bundle.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SVWX6ZHYYQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "G-SVWX6ZHYYQ");
+    </script>
+    <style>
+        #kt_brand {
+            background-color: @brandColor;
+        }
+    </style>
+</head>
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed page-loading @sidebarClasses">
+    @Html.Partial("_PageLoader")
+    @Html.Partial("_MobileHeader")
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Page-->
+        <div class="d-flex flex-row flex-column-fluid page">
+            @if (hasSidebarAccess)
+            {
+                @Html.Partial("_Aside")
+            }
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+                @Html.Partial("_Header")
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <div class="subheader py-2 py-lg-4 subheader-solid d-print-none" id="kt_subheader">
+                        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+                            <div class="d-flex align-items-center flex-wrap mr-2">
+                                @RenderSection("mobileOnlyMenu", required: false)
+                                <h5 class="text-dark font-weight-bold mt-2 mb-2 mr-5">@ViewBag.Title</h5>
+                                @if ((bool?)ViewBag.ShowDateRangePicker == true)
+                                {
+                                    <div class="subheader-separator subheader-separator-ver mt-2 mb-2 mr-4 bg-gray-200"></div>
+                                    <span class="text-muted font-weight-bold mr-4">@ViewBag.Subtitle</span>
+                                }
+                                @RenderSection("leftsubheader", required: false)
+                            </div>
+                            <div class="d-flex align-items-center">
+                                @if (ViewBag.ShowDateRangePicker == true)
+                                {
+                                    @Html.Partial("~/Views/Reports/_DateRangeHeader.cshtml")
+                                }
+                                @RenderSection("subheader", required: false)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="@containerSize">
+                        @Html.Partial("_Alert")
+                        @RenderBody()
+                    </div>
+                </div>
+                @Html.Partial("_BodyFooter")
+            </div>
+        </div>
+    </div>
+    @*@Html.Partial("_QuickPanel")
+        @Html.Partial("_Chat")*@
+    @Html.Partial("_Footer")
+    @RenderSection("belowScripts", required: false)
+</body>
+</html>

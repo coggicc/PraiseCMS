@@ -1,0 +1,170 @@
+﻿@model PraiseCMS.DataAccess.Models.HouseholdMemberViewModel
+@{
+    var familRoles = !Convert.ToBoolean(ViewBag.hasHead) ? FamilyRoles.Items.ToList() : FamilyRoles.Items.Where(q => !q.Equals(FamilyRoles.HeadOfHousehold)).ToList();
+}
+<div id="addMemberForm-div">
+    <p>Select an existing person or add a new one.</p>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "addMemberForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Member.Id)
+        @Html.HiddenFor(x => x.Member.HouseholdId)
+        @Html.HiddenFor(x => x.Member.IsActive)
+        @Html.HiddenFor(x => x.Member.CreatedBy)
+        @Html.HiddenFor(x => x.Member.CreatedDate)
+        @Html.HiddenFor(x => x.Mode)
+        <div class="system">
+            <label>Name:</label>
+            <div class="form-group row">
+                <div class="@Html.Raw(RouteHelpers.CurrentAction.ContainsIgnoreCase("edit")? "col-lg-12" : "col-lg-10")">
+                    @Html.DropDownListFor(x => x.Member.PersonId, Model.Peoples.ToSelectList("Select a person...", x => x.Display, x => x.Id), new { @class = "form-control select2", style = "width:100%;" })
+                    @Html.ValidationMessageFor(x => x.Member.PersonId, "", new { @class = "text-danger" })
+                </div>
+                @if (!RouteHelpers.CurrentAction.ContainsIgnoreCase("edit"))
+                {
+                    <div class="col-lg-2">
+                        <button data-toggle="tooltip" title="Add new person" style="float:right" type="button" class="btn btn-light-primary font-weight-bold mr-2" onclick="toggle()"><i class="fas fa-user-plus"></i></button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="manual" style="display:none">
+            <div class="row">
+                <div class="form-group col-lg">
+                    <label>First Name:</label>
+                    @Html.EditorFor(x => x.People.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.People.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg">
+                    <label>Last Name:</label>
+                    @Html.EditorFor(x => x.People.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.People.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg">
+                    <label>Email:</label>
+                    @Html.EditorFor(x => x.People.Email, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg">
+                    <label>Phone:</label>
+                    @Html.EditorFor(x => x.People.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone" } })
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg">
+                    <button style="float:right" type="button" class="btn btn-light-primary font-weight-bold mr-2" onclick="toggle()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="system">
+            <label>Family Role:</label>
+            <div class="form-group row">
+                <div class="col-lg-12">
+                    @Html.DropDownListFor(x => x.Member.FamilyRole, familRoles.ToSelectList(x => x).OrderBy(x => x.Text), "Select a role...", new { @class = "form-control select2", style = "width:100%;" })
+                    @Html.ValidationMessageFor(x => x.Member.FamilyRole, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    var validation = [];
+    $(function () {
+        validationStep();
+    });
+
+    $("#addMemberForm").submit(function (e) {
+        e.preventDefault(e);
+        validation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                document.getElementById('addMemberForm').submit();
+            }
+            setTimeout(function () {
+                StopLoading();
+            });
+        });
+    });
+    function validationStep() {
+        const form = document.getElementById('addMemberForm');
+        validation.push(FormValidation.formValidation(form,
+        {
+            fields: {
+                'Member.PersonId': {
+                    validators: {
+                        callback: {
+                            message: 'Please select a person',
+                            callback: function (input) {
+                                let mode = form.querySelector('[name="Mode"]').value;
+                                if (mode === '@PeopleSelectionMode.System') {
+                                    let personId = form.querySelector('[name="Member.PersonId"]').value;
+                                    return personId ? true : false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                },
+                'People.FirstName': {
+                    validators: {
+                        callback: {
+                            message: 'First name is required',
+                            callback: function (input) {
+                                let mode = form.querySelector('[name="Mode"]').value;
+                                if (mode === '@PeopleSelectionMode.Manual') {
+                                    let fName = form.querySelector('[name="People.FirstName"]').value;
+                                    return fName ? true : false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                },
+                'People.LastName': {
+                    validators: {
+                        callback: {
+                            message: 'Last name is required',
+                            callback: function (input) {
+                                let mode = form.querySelector('[name="Mode"]').value;
+                                if (mode === '@PeopleSelectionMode.Manual') {
+                                    let lName = form.querySelector('[name="People.LastName"]').value;
+                                    return lName ? true : false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger,
+                bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+            }
+        }));
+    }
+    function toggle() {
+        const mode = $('#Mode').val();
+        if (mode==='@PeopleSelectionMode.Manual') {
+            $('.manual').hide();
+            $('.system').show();
+            $('#People_Email').val("");
+            $('#People_LastName').val("");
+            $('#People_FirstName').val("");
+            $('#People_PhoneNumber').val("");
+            $('#Mode').val('@PeopleSelectionMode.System');
+        } else if (mode === '@PeopleSelectionMode.System') {
+            $('.manual').show();
+            $('.system').hide();
+            $('#Member_PersonId').val("");
+            $('#Mode').val('@PeopleSelectionMode.Manual');
+        }
+    }
+</script>

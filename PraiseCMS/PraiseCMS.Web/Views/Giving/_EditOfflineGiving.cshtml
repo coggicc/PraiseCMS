@@ -1,0 +1,217 @@
+﻿@model PraiseCMS.DataAccess.Models.OfflineGivingView
+
+<div id="manual-gift-div">
+    @if (TempData.ContainsKey(TempDataKeys.AlertMessage))
+    {
+        var message = TempData[TempDataKeys.AlertMessage]?.ToString();
+        var messageType = TempData.ContainsKey(TempDataKeys.AlertMessageType) ? TempData[TempDataKeys.AlertMessageType]?.ToString() : "";
+        var messageIcon = TempData.ContainsKey(TempDataKeys.AlertMessageIcon) ? TempData[TempDataKeys.AlertMessageIcon]?.ToString() : "";
+        <div class="alert alert-custom alert-notice @messageType fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="@messageIcon"></i></div>
+            <div class="alert-text">@Html.Raw(message)</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i class="ki ki-close"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    }
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "manual-gift-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.OfflineGiving.Id)
+        @Html.HiddenFor(x => x.OfflineGiving.ChurchId)
+        @Html.HiddenFor(x => x.OfflineGiving.CreatedBy)
+        @Html.HiddenFor(x => x.OfflineGiving.CreatedDate)
+        @Html.HiddenFor(x => x.OfflineGivingType)
+        @Html.HiddenFor(x => x.Mode)
+
+        if (!string.IsNullOrEmpty(Model.OfflineGivingType) && Model.OfflineGivingType.Equals(OfflineGiftAmountTypes.LumpSum))
+        {
+            <div class="alert alert-custom alert-notice alert-light-primary mb-5 fade show" role="alert">
+                <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="alert-text"><strong>Note:</strong> Use this form to add giving in bulk or if you are unable to apply giving to a specific donor.</div>
+                <div class="alert-close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                    </button>
+                </div>
+            </div>
+        }
+        if (!string.IsNullOrEmpty(Model.OfflineGivingType) && Model.OfflineGivingType.Equals(OfflineGiftAmountTypes.Donor))
+        {
+            <div class="alert alert-custom alert-notice alert-light-primary mb-5 fade show" role="alert">
+                <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="alert-text"><strong>Note:</strong> This form allows giving to be applied to a single donor. Select an existing donor or add a new one.</div>
+                <div class="alert-close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                    </button>
+                </div>
+            </div>
+            <div id="system">
+                <label>Donor:</label>
+                <div class="form-group row">
+                    <div class="@Html.Raw(RouteHelpers.CurrentAction.ContainsIgnoreCase("edit")? "col-lg-12" : "col-lg-10")">
+                        @Html.DropDownListFor(x => x.OfflineGiving.PersonId, Model.People.ToSelectList("Select a donor...", x => x.Display, x => x.Id), new { @class = "form-control select2", style = "width:100%;" })
+                        @Html.ValidationMessageFor(x => x.OfflineGiving.PersonId, "", new { @class = "text-danger" })
+                    </div>
+                    @if (!RouteHelpers.CurrentAction.ContainsIgnoreCase("edit"))
+                    {
+                        <div class="col-lg-2">
+                            <button data-toggle="tooltip" title="Add new donor" style="float:right" type="button" class="btn btn-light-primary font-weight-bold mr-2" onclick="toggle()"><i class="fas fa-user-plus"></i></button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div id="manual" style="display:none">
+                <div class="row">
+                    <div class="form-group col-lg">
+                        <label>First Name:</label>
+                        @Html.EditorFor(x => x.Person.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Person.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg">
+                        <label>Last Name:</label>
+                        @Html.EditorFor(x => x.Person.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Person.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg">
+                        <label>Email:</label>
+                        @Html.EditorFor(x => x.Person.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg">
+                        <label>Phone:</label>
+                        @Html.EditorFor(x => x.Person.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone" } })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg">
+                        <button style="float:right" type="button" class="btn btn-light-primary font-weight-bold mr-2" onclick="toggle()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="form-group row col-lg">
+            <label>Amount</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fa fa-dollar-sign"></i></span>
+                </div>
+                @Html.TextBoxFor(x => x.Amount, "{0:#.##}", new { @class = "form-control currency amount numeric" })
+            </div>
+            @Html.ValidationMessageFor(x => x.Amount, "", new { @class = "text-danger" })
+        </div>
+
+        if (!string.IsNullOrEmpty(Model.OfflineGivingType) && Model.OfflineGivingType.Equals(OfflineGiftAmountTypes.Donor))
+        {
+            <div class="form-group row col-lg">
+                <label>Payment Method:</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.OfflinePaymentMethod, OfflinePaymentMethods.Items.ToSelectList(x => x), new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.OfflinePaymentMethod, "", new { @class = "text-danger" })
+            </div>
+
+            <div id="check-number-div" class="form-group row col-lg" style="display:none">
+                <label>Check #:</label>
+                @Html.TextBoxFor(x => x.OfflineGiving.CheckNumber, new { @class = "form-control numeric" })
+                <span class="form-text text-muted">Add a check number if applicable.</span>
+                @Html.ValidationMessageFor(x => x.OfflineGiving.CheckNumber, "", new { @class = "text-danger" })
+            </div>
+        }
+
+        <div class="form-group row col-lg">
+            <label>Fund:</label>
+            @Html.DropDownListFor(x => x.OfflineGiving.FundId, Model.Funds.ToSelectList(x => x.Display, x => x.Id), "Select a fund...", new { @class = "form-control select2", style = "width:100%;" })
+            @Html.ValidationMessageFor(x => x.OfflineGiving.FundId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group row col-lg">
+            <label>Gift Received Via:</label>
+            @Html.DropDownListFor(x => x.OfflineGiving.OfflinePaymentType, OfflinePaymentTypes.Items.ToSelectList(x => x), "Select how the gift was received...", new { @class = "form-control select2", style = "width:100%;" })
+        </div>
+
+        <div class="form-group row col-lg">
+            <label>Campus:</label>
+            @Html.DropDownListFor(x => x.OfflineGiving.CampusId, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id).OrderBy(x => x.Text), "Select a campus...", new { @class = "form-control select2", style = "width:100%;" })
+            @Html.ValidationMessageFor(x => x.OfflineGiving.CampusId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group row col-lg">
+            <label>Date Received:</label>
+            @Html.EditorFor(x => x.OfflineGiving.DateReceived, new { htmlAttributes = new { Value = !string.IsNullOrEmpty(Convert.ToString(Model.OfflineGiving.DateReceived)) ? Convert.ToDateTime(Model.OfflineGiving.DateReceived).ToString("MM'/'dd'/'yyyy") : "", @class = "form-control datepicker", style = "width: 100%;", placeholder = "MM/DD/YYYY", autocomplete = "off" } })
+            @Html.ValidationMessageFor(x => x.OfflineGiving.DateReceived, "", new { @class = "text-danger" })
+        </div>
+
+        @*<div class="form-group row col-lg">
+                <label>Event/Service:</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.EventTimeId, Constants.ButtonColors.ToSelectList(x => x.Value, x => x.Key).OrderBy(x => x.Text), "Select an event/service time...", new { @class = "form-control select2", style = "width:100%;" })
+                <span class="form-text text-muted">Choose the event/service and time the gift was made, if applicable.</span>
+            </div>*@
+    }
+</div>
+<script type="text/javascript">
+    $(function () {
+        if ('@Model.Mode' === '@PeopleSelectionMode.Manual') {
+            $('#manual').show();
+            $('#system').hide();
+        } else {
+            $('#Person_LastName').val("FirstName");
+            $('#Person_FirstName').val("LastName");
+        }
+       if ($('#OfflineGiving_OfflinePaymentMethod').val() === '@OfflinePaymentMethods.Check') {
+            $('#check-number-div').show();
+        } else {
+            $('#check-number-div').hide();
+            $('#OfflineGiving_CheckNumber').val('');
+        }
+    });
+
+    $('.amount').on('input propertychange paste', function (e) {
+        var reg = /^0+/gi;
+        if (this.value.match(reg)) {
+            this.value = this.value.replace(reg, '');
+        }
+    });
+
+    $(document).on('change', '#OfflineGiving_OfflinePaymentMethod', function (e) {
+        if ($(this).val() === '@OfflinePaymentMethods.Check') {
+            $('#check-number-div').show();
+        } else {
+            $('#check-number-div').hide();
+            $('#OfflineGiving_CheckNumber').val('');
+        }
+    });
+
+    function toggle() {
+        const mode = $('#Mode').val();
+        if (mode==='@PeopleSelectionMode.Manual') {
+            $('#manual').hide();
+            $('#system').show();
+
+            $('#Person_LastName').val("FirstName");
+            $('#Person_FirstName').val("LastName");
+
+            $('#Mode').val('@PeopleSelectionMode.System');
+        } else if (mode === '@PeopleSelectionMode.System') {
+            $('#manual').show();
+            $('#system').hide();
+            $('#OfflineGiving_PersonId').val("");
+
+            $('#Person_Email').val("");
+            $('#Person_LastName').val("");
+            $('#Person_FirstName').val("");
+            $('#Person_PhoneNumber').val("");
+            $('#Mode').val('@PeopleSelectionMode.Manual');
+        }
+    }
+</script>

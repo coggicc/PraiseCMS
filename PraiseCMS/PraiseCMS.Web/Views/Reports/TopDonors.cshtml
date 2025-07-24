@@ -1,0 +1,83 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.ViewModels.TopDonorsVM>
+@{
+    ViewBag.Title = "Top Donors";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Top Donors</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Largest 25 Donors - Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+            <a href="/Reports/ExportTopDonorsToCSV?dateRange=@ViewBag.DateRange" class="btn btn-icon btn-sm btn-light-warning" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                    <thead>
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">Donor</th>
+                            <th style="min-width: 100px">Total</th>
+                            <th style="min-width: 100px">Digital</th>
+                            <th style="min-width: 100px">Offline</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="pl-7 py-8">
+                                    <span class="text-dark-75 d-block font-size-lg">@item.Donor.Display</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@item.TotalAmount.ToCurrencyString()</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@item.DigitalGivingAmount.ToCurrencyString()</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@item.OfflineGivingAmount.ToCurrencyString()</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="tfoot-grey">
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">
+                                <span class="text-dark-75">Totals</span>
+                            </th>
+                            <th style="min-width: 100px">@Model.Sum(x => x.TotalAmount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.Sum(x => x.DigitalGivingAmount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.Sum(x => x.OfflineGivingAmount).ToCurrencyString()</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>No giving has been applied to a specific donor.</p>
+        }
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+        });
+    </script>
+}

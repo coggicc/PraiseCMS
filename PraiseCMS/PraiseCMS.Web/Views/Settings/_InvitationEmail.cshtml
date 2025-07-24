@@ -1,0 +1,63 @@
+﻿@model PraiseCMS.DataAccess.Models.InvitationEmailModel
+
+@using (Html.BeginForm("InvitationEmail", "settings", FormMethod.Post, new { @class = "form", id = "invitationForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(x => x.InvitedBy)
+    <div class="form-group">
+        <label>To:</label>
+        @Html.TextBoxFor(x => x.Email, new { type = "email", @class = "form-control", placeholder = "example@mail.com" })
+        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>First Name:</label>
+        @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control name", placeholder = "" })
+        @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Last Name:</label>
+        @Html.TextBoxFor(x => x.LastName, new { @class = "form-control name", placeholder = "" })
+        @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Message:</label>
+        @Html.TextAreaFor(x => x.Message, new { @class = "form-control", placeholder = "", style = "height: 100px;" })
+        @Html.ValidationMessageFor(x => x.Message, "", new { @class = "text-danger" })
+    </div>
+}
+@section belowScripts
+{
+    <script type="text/javascript">
+        var _validations = [];
+        let _form = document.getElementById('invitationForm');
+        $(function () {
+            $("#Message").val("Hey, " + $('#InvitedBy').val() + " would like to invite you to use Praise, a complete church management software solution. Click below to start your free trial.");
+            _validations.push(FormValidation.formValidation(
+                _form,
+                {
+                    fields: {
+                        'FirstName': { validators: { notEmpty: { message: 'First name is required' } } },
+                        'LastName': { validators: { notEmpty: { message: 'Last name is required' } } },
+                        'Message': { validators: { notEmpty: { message: 'Please enter a message.' } } },
+                        'Email': { validators: { notEmpty: { message: 'Email is required' }, emailAddress: { message: 'Please enter a valid email address' } } },
+                    },
+                    plugins: {
+                        trigger: new FormValidation.plugins.Trigger(),
+                        bootstrap: new FormValidation.plugins.Bootstrap({
+                            eleValidClass: '',
+                        })
+                    }
+                }
+            ));
+        });
+        $("#invitationForm").submit(function (e) {
+            e.preventDefault();
+            _validations[0].validate().then(function (status) {
+                if (status === 'Valid') {
+                    _form.submit();
+                }
+            });
+        });
+    </script>
+}

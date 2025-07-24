@@ -1,0 +1,58 @@
+﻿@model MessageRequestDashboardViewModel
+
+@{
+    ViewBag.Title = "Message Request Dashboard";
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.MessageRequests.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Message Request Topic</th>
+                            <th>Submitted Date</th>
+                            <th>Archived</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.MessageRequests)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Message))
+                                    {
+                                        <span>@item.Message (Custom Request)</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@(item.SelectedCategory != null ? item.SelectedCategory.Name : "")</span>
+                                    }
+                                </td>
+                                <td>
+                                    @item.CreatedDate.ToShortDateString()
+                                </td>
+                                <td>
+                                    @(item.Archived ? "Yes" : "No")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>No message requests have been received.</p>
+        }
+    </div>
+</div>

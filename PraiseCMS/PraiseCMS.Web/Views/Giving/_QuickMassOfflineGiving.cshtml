@@ -1,0 +1,378 @@
+﻿@model PraiseCMS.DataAccess.Models.MassOfflineGivingViewModel
+<style>
+    .dataTables_empty {
+        text-align: center !important;
+    }
+</style>
+<div id="bulk-giving-form">
+    <div id="alert-container"></div>
+    @Html.Partial("~/Views/Shared/_Alert.cshtml")
+
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "bulk-giving-form" }))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.OfflineGiving.ChurchId)
+        @Html.HiddenFor(x => x.OfflineGiving.CreatedBy)
+        @Html.HiddenFor(x => x.OfflineGiving.CreatedDate)
+        @Html.HiddenFor(x => x.OfflineGivingType)
+        <div class="alert alert-custom alert-notice alert-light-primary mb-5 fade show" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="alert-text"><strong>Note:</strong> Use this form to add giving in bulk. Group your giving by fund, campus, payment method, and how it was received. Lastly, enter the amounts and donors for each grouping.</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-3">
+                <label>Fund:</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.FundId, Model.Funds.ToSelectList(x => x.Display, x => x.Id), "Select a fund...", new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.FundId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-lg-3">
+                <label>Gift Received Via:</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.OfflinePaymentType, OfflinePaymentTypes.Items.ToSelectList(x => x), "Select how the gift was received...", new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.OfflinePaymentType, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-lg-3">
+                <label>Campus:</label>
+                @Html.DropDownListFor(x => x.OfflineGiving.CampusId, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id, x => SessionVariables.Campuses.Count() == 1 && x.Id == SessionVariables.Campuses.First().Id), "Select a campus...", new { @class = "form-control select2" })
+                @Html.ValidationMessageFor(x => x.OfflineGiving.CampusId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-lg-3">
+                <label>Date Received:</label>
+                <div class="input-group date">
+                    @Html.TextBoxFor(x => x.OfflineGiving.DateReceived, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.OfflineGiving.DateReceived, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <table id="payments" class="table table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl w-100 border-0">
+            <thead>
+                <tr>
+                    <td><label>Amount*</label></td>
+                    <td style="max-width: 100px;"><label>Check # <small>(optional)</small></label></td>
+                    <td><label>Donor*</label></td>
+                    <td class="text-right" width="5%"><label></label></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" name="amount" placeholder="$0.00" class="form-control currency amount numeric" />
+                            </div>
+                        </div>
+                    </td>
+                    <td style="max-width: 100px;">
+                        <div class="form-group">
+                            <input type="text" maxlength="15" placeholder="Optional" class="form-control checkNumber numeric" />
+                        </div>
+                    </td>
+                    <td id="person-list">
+                        <div class="form-group">
+                            <select name="donor" class="form-control select2 donor" style="width:100%;">
+                                <option>Select a donor...</option>
+                                @foreach (var person in Model.People)
+                                {
+                                    <option value="@person.Id">@person.DisplayWithAddress</option>
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <a onclick="removePayment(this)" class="btn btn-light-dark btn-sm font-weight-bold" title="Remove gift"><i class="fa fa-times pr-0"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    <div class="form-group" style="padding-left: 1rem;">
+        <a onclick="addPayment()" class="btn btn-light-primary font-weight-bold btn-sm" data-toggle="tooltip" title="Add another gift"><i class="fas fa-plus pr-0"></i></a>
+        <button data-toggle="tooltip" title="Add new donor" type="button" class="btn btn-light-primary btn-sm font-weight-bold ml-2" onclick="addNewPerson()"><i class="fas fa-user-plus pr-0"></i></button>
+    </div>
+    <div class="new-person" style="display:none;">
+        <div class="separator separator-dashed my-5"></div>
+        <h6 class="pb-4">Add New Donor</h6>
+        <form name="new-person" id="new-person">
+            <div class="row">
+                <div class="form-group col-lg">
+                    @Html.EditorFor(x => x.Person.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name" } })
+                    @Html.ValidationMessageFor(x => x.Person.FirstName, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-lg">
+                    @Html.EditorFor(x => x.Person.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = "Last Name" } })
+                    @Html.ValidationMessageFor(x => x.Person.LastName, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-lg">
+                    @Html.EditorFor(x => x.Person.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email (optional)" } })
+                </div>
+                <div class="form-group col-lg">
+                    @Html.EditorFor(x => x.Person.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone", placeholder = "Phone (optional)" } })
+                </div>
+                <div class="form-group col-lg-2">
+                    <button type="button" class="btn btn-light-primary btn-sm font-weight-bold mr-2" onclick="saveNewPerson()">Save</button>
+                    <button type="button" data-toggle="tooltip" title="Cancel" class="btn btn-light-dark btn-sm font-weight-bold mr-2" onclick="hideNewPerson()"><i class="fa fa-times pr-0"></i></button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<script src="~/Scripts/datatables.min.js"></script>
+<script type="text/javascript">
+    var paymentsDataTable;
+    var validation=[];
+    var pValidation=[];
+    var peopleOptions ="<option>Select a donor...</option>";
+    $(function () {
+        validationStep();
+        personValidation();
+
+        paymentsDataTable = $('#payments').dataTable({
+            responsive: true,
+            bFilter: false,
+            bInfo: false,
+            bPaginate: false,
+            bLengthChange: false,
+            bAutoWidth: false,
+            searching: false,
+            ordering: false,
+            pageLength: 100,
+            orderable: false,
+            language: {"emptyTable": "Click <a onclick='addPayment()' href='#'>here</a> to add a new record"}
+        });
+
+        $.each(@Html.Raw(Json.Encode(Model.People)), function (key, value) {
+            peopleOptions += '<option value="' + value.Id + '">' + value.DisplayWithAddress + '</option>';
+        });
+    });
+
+    $('.amount').on('input propertychange paste', function (e) {
+        var reg = /^0+/gi;
+        if (this.value.match(reg)) {
+            this.value = this.value.replace(reg, '');
+        }
+    });
+
+    function addNewPerson() {
+        $('.new-person').show();
+    }
+
+    function hideNewPerson() {
+        $('.new-person').hide();
+        document.getElementById("new-person").reset();
+    }
+
+    function saveNewPerson() {
+        $("#alert-container").html('');
+        pValidation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                $.ajax({
+                    type: "POST",
+                    url: '/People/CreatePerson',
+                    data: $('#new-person').serialize(),
+                    success: function (result) {
+                        if (result.Success) {
+                            hideNewPerson();
+                            peopleOptions += '<option value="' + result.Model.Id + '">' + result.Model.Display + '</option>';
+                            $('select[name="donor"]').append($("<option></option>").attr("value", result.Model.Id).text(result.Model.DisplayWithAddress));
+                            $.each($('select[name="donor"]'), function (key, data) {
+                                if (!data.value || (data.value && data.value ==='Select a donor...')) {
+                                    data.value = result.Model.Id;
+                                }
+                            });
+                            let html = '<div class="alert alert-custom alert-notice alert-light-success fade show mb-5" role="alert"><div class="alert-icon"><i class="fas fa-check-circle"></i></div><div class="alert-text">The new donor has been created and selected below.</div><div class="alert-close"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="ki ki-close"></i></span></button></div></div>';
+                            $("#alert-container").prepend(html);
+                        } else {
+                            ShowErrorAlert(result.Message);
+                        }
+                    },
+                    error: function (result) {
+                        ShowErrorAlert(result.Message);
+                    }
+                });
+            }
+            setTimeout(function () {
+                StopLoading();
+                $('#Person_FirstName').focus();
+            });
+        });
+    }
+
+    function addPayment() {
+        let col_1 = '<div class="form-group"><input type="text" name="amount" placeholder="$0.00" class="form-control currency amount numeric"/></div></div>';
+        let col_2 = '<div class="form-group"><input type="text" maxlength="15" placeholder="Optional" class="form-control checkNumber numeric"/></div>';
+        let col_3 = '<div class="form-group"><select name="donor" class="form-control select2 donor" style="width:100%;">' + peopleOptions +'</select></div>';
+        let col_4 = '<div class="form-group"><a class="btn btn-light-dark btn-sm font-weight-bold" onclick="removePayment(this)"><i class="fa fa-times pr-0"></i></a></div>';
+        paymentsDataTable.fnAddData([col_1, col_2, col_3, col_4]);
+        paymentsDataTable.fnDraw();
+    }
+
+    function removePayment(btn) {
+        let parent = $(btn).parents('tr');
+        paymentsDataTable.fnDeleteRow(parent);
+        paymentsDataTable.fnDraw();
+    }
+
+    function validationStep() {
+        const form = document.getElementById('bulk-giving-form');
+        validation.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'OfflineGiving.DateReceived': {
+                        validators: {
+                            notEmpty: { message: 'Please enter the date received' },
+                            date: {
+                                format: 'MM/DD/YYYY',
+                                message: 'Please enter a valid date.',
+                            }
+                        }
+                    },
+                    'OfflineGiving.OfflinePaymentType': { validators: { notEmpty: { message: 'Please select a payment type' } } },
+                    'OfflineGiving.CampusId': { validators: { notEmpty: { message: 'Please select a campus' } } },
+                    'OfflineGiving.FundId': { validators: { notEmpty: { message: 'Please select a fund' } } },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+    }
+
+    function personValidation() {
+        const form = document.getElementById('new-person');
+        pValidation.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'Person.FirstName': { validators: { notEmpty: { message: 'First name is required' } } },
+                    'Person.LastName': { validators: { notEmpty: { message: 'Last name is required' } } },
+                    'Person.Email': { validators: { emailAddress: { message: 'Please enter a valid email address.' } } },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+    }
+
+    $("#bulk-giving-form").submit(function (e) {
+       e.preventDefault();
+        validation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                submit();
+            }
+            setTimeout(function () {
+                StopLoading();
+                $('#Fund_Name').focus();
+            });
+        });
+    });
+
+    $("#new-person").submit(function (e) {
+        e.preventDefault();
+    });
+
+    function submit() {
+        $("#alert-container").html("");
+        var success = true;
+        var paymentsArray = [];
+        var rows = paymentsDataTable.fnGetNodes();
+        if (!rows.length) {
+            Swal.fire({
+                text: "Please add at least one record of the donor giving before save.",
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn font-weight-bold btn-light"
+                }
+            });
+            return false;
+        }
+        for (var i = 0; i < rows.length; i++) {
+            let amount = $(rows[i]).find(".amount").val();
+            if (!amount) {
+                success = false;
+                $(rows[i]).find(".amount").addClass('is-invalid');
+            }
+            let checkNumber = $(rows[i]).find(".checkNumber").val();
+            let donor = $(rows[i]).find(".donor").val();
+            if (!donor || donor === 'Select a donor...') {
+                success = false;
+                $(rows[i]).find(".donor").next().children().children('.select2-selection').css('border', '1px solid #F64E60');
+            }
+            let payment = { "Amount": amount, "CheckNumber": checkNumber, "Person": donor };
+            paymentsArray.push(payment);
+        }
+        if (!success) {
+            Swal.fire({
+                text: "Please fill out all of the required fields.",
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn font-weight-bold btn-light"
+                }
+            });
+            return false;
+        }
+        let offlineGiving = {
+            "FundId": $('#OfflineGiving_FundId').val(),
+            "ChurchId": $('#OfflineGiving_ChurchId').val(),
+            "CampusId": $('#OfflineGiving_CampusId').val(),
+            "OfflinePaymentType": $('#OfflineGiving_OfflinePaymentType').val(),
+            "DateReceived": $('#OfflineGiving_DateReceived').val(),
+            "CreatedBy": $('#OfflineGiving_CreatedBy').val(),
+            "CreatedDate": $('#OfflineGiving_CreatedDate').val()
+        };
+        let form = {
+            "OfflineGiving": offlineGiving,
+            "Payments": paymentsArray
+        };
+        $.ajax({
+            type: "POST",
+            url: '/Giving/CreateMassOfflineGiving',
+            data: form,
+            success: function (result) {
+                if (result.Success) {
+                    location.reload();
+                } else {
+                    ShowErrorAlert(result.Message);
+                }
+            },
+            error: function (result) {
+                ShowErrorAlert(result.Message);
+            }
+        });
+    }
+
+    $(document).on('keyup', '.amount', function (e) {
+        if ($(this).val()) {
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    $(document).on('change', '.donor', function (e) {
+        if ($(this).val() && $(this).val() !=='Select a donor...') {
+            $(this).next().children().children('.select2-selection').css('border', '1px solid #E5EAEE');
+        }
+    });
+
+    function validateForm(self) {
+        if ($(self).val()) {
+            $(self).removeClass('is-invalid');
+            var msg = $(self).parent('.form-group').children('.fv-plugins-message-container');
+            msg.html('');
+        }
+    }
+</script>

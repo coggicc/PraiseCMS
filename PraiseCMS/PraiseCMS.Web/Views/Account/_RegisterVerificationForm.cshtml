@@ -1,0 +1,42 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SignUpViewModel
+@using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+{
+    @Html.AntiForgeryToken()
+    @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+    @*@Html.ValidationMessage("LoginViewModel")*@
+    <input type="hidden" id="RegisterVia" name="RegisterVia" value="@Model.RegisterVia" />
+    <input type="hidden" id="ResponseStatus" name="ResponseStatus" value="@Model.ResponseStatus" />
+    @*@Html.HiddenFor(x => x.ValidateCaptcha)*@
+    @Html.HiddenFor(x => x.PlanType)
+    <div class="registration-email">
+        <div class="mb-10">
+            <h3>Creating your account is quick and easy!</h3>
+            <div class="text-muted font-weight-bold">Let's start with your email address.</div>
+        </div>
+        <div class="form-group mt-5 mb-5">
+            <label class="text-muted" style="float:left;">Email Address</label>
+            @Html.TextBoxFor(x => x.Email, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "Email", placeholder = "Enter your email address" })
+        </div>
+    </div>
+    <div class="registration-mobile" style="display:none;">
+        <div class="mb-10">
+            <h3>Creating your account is quick and easy!</h3>
+            <div class="text-muted font-weight-bold">Let's start with your phone number.</div>
+        </div>
+        <div class="form-group mt-5 mb-5">
+            <label class="text-muted" style="float:left;">Phone Number</label>
+            @Html.TextBoxFor(x => x.Phone, new { @class = "form-control h-auto form-control-solid py-4 px-8 phone", name = "Phone", placeholder = "(XXX) XXX-XXXX", autocomplete = "off" })
+            <span class="form-text text-muted">We will send you a text message to confirm your number.</span>
+        </div>
+    </div>
+
+    @*if (!Utilities.HasCookies("recapcha"))
+        {
+            <div class="form-group d-flex flex-wrap flex-center mt-5">
+                <div class="g-recaptcha" data-sitekey="@ApplicationCache.Instance.SiteConfiguration.ReCaptchaSiteKey"></div>
+            </div>
+        }*@
+    <div class="form-group d-flex flex-wrap flex-center mt-5">
+        <button type="button" class="btn btn-primary btn_continue font-weight-bold" style="width:100%;">Continue</button>
+    </div>
+}

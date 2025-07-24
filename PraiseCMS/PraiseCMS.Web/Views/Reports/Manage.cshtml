@@ -1,0 +1,85 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ReportListView
+@{
+    ViewBag.Title = "Manage Reports";
+}
+@section subheader{
+    <a href="/reports/categories" class="btn btn-light-primary">Manage Categories</a>
+}
+@foreach (var category in Model.ReportCategories.OrderByDescending(x => x.Name == "Custom").ThenBy(x => x.Name))
+{
+    <div class="card card-custom gutter-b">
+        <div class="card-header">
+            <div class="card-title">
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label font-weight-bolder text-dark"> @category.Name Reports</span>
+                    <span class="text-muted mt-3 font-weight-bold font-size-sm">@(!string.IsNullOrEmpty(category.Description) ? " - " + category.Description : "")</span>
+                </h3>
+            </div>
+            <div class="card-toolbar">
+                @Html.AjaxModalLink("<i class='fas fa-pencil-alt'></i>", "/reports/EditCategory/" + category.Id, "Edit Category", "Save", "btn btn-sm btn-light-primary", "")
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.Reports.Any(x => x.ReportCategoryId.Equals(category.Id)))
+            {
+                <div class="table-responsive">
+                    <table class="table table-st riped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Reports.Where(x => x.ReportCategoryId.Equals(category.Id)))
+                            {
+                                var hasFavorite = Model.FavoriteReports.Any() && Model.FavoriteReports.FirstOrDefault(x => x.ReportId.Equals(item.Id)) != null;
+                                var favoriteClass = hasFavorite ? "success" : "primary";
+                                <tr>
+                                    <td style="width:90px;">
+                                        <a href="/reports/viewreport?Id=@item.Id">@item.Name</a>
+                                        @(!string.IsNullOrEmpty(item.Description) ? " - " + item.Description : "")
+                                    </td>
+                                    <td style="width:10%; text-align:center;">
+                                        <a href="/reports/editreport/@item.Id" class="mr-2" title="Edit Report"><i class="fas fa-pencil-alt"></i></a>
+                                        <a data-ajax="true" data-ajax-method="get" href="/reports/_favorite?id=@Url.Encode(item.Id)" class="btn btn-xs btn-icon btn-light-@favoriteClass pulse pulse-@favoriteClass favorite-@item.Id.HtmlFriendly()" title="Favorite this report (to see on my dashboard)">
+                                            <i class="fa fa-star"></i>
+                                            @if (hasFavorite)
+                                            {
+                                                <span class="pulse-ring"></span>
+                                            }
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                if (category.Name == "Custom")
+                {
+                    <div class="row">
+                        <div class="col-md-7">
+                            <h5 class="mt-md-10 mt-lg-14" style="font-size:30px;">Custom Reports</h5>
+                            <p style="font-size:18px;">Create a custom report to track just about anything.</p>
+                            <a href="/reports/createreport?categoryId=@category.Id" class="btn btn-light-primary font-weight-bold">Create Report</a>
+                        </div>
+                        <div class="col-md-5">
+                            <img src="~/Content/assets/image/chart_example.png" class="img-fluid" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>You don't have any reports for this category yet.</p>
+                }
+            }
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a href="/reports/createreport?categoryId=@category.Id&name=@category.Name" class="btn btn-light-primary font-weight-bold">Create Report</a>
+        </div>
+    </div>
+}

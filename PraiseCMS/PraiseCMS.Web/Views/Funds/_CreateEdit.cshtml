@@ -1,0 +1,309 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.OnboardFundViewModel
+
+@{
+    var closedHiddenMessage = "This fund is ";
+
+    if (Model.Fund.Closed && Model.Fund.Hidden)
+    {
+        closedHiddenMessage += "closed and hidden. No giving can be assigned to this fund.";
+    }
+    else if (Model.Fund.Closed)
+    {
+        closedHiddenMessage += "closed. No giving can be assigned to this fund.";
+    }
+    else if (Model.Fund.Hidden)
+    {
+        closedHiddenMessage += "hidden.";
+    }
+    var readOnly = Model.Fund.Name.EqualsIgnoreCase(GivingFunds.General) || Model.Fund.Name.EqualsIgnoreCase(GivingFunds.TithesAndOfferings) ? "readonly" : "";
+}
+
+<style>
+    .datepicker table tr td.disabled, .datepicker table tr td.disabled:hover {
+        cursor: not-allowed;
+    }
+
+    .form-control[readonly] {
+        background-color: #F3F6F9;
+    }
+</style>
+
+<div id="fund-div">
+
+    @if (!SessionVariables.CurrentChurch.HasMerchantAccount)
+    {
+        <div class="alert alert-custom alert-notice alert-light-warning fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text"><strong>Note:</strong> Digial giving has not been enabled for your church. <a href="/onboarding/CreateMerchantAccount/@SessionVariables.CurrentChurch.Id">Enable Digital Giving Today</a>.</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+
+    @if (Model.Fund.Hidden || Model.Fund.Closed)
+    {
+        <div class="alert alert-custom alert-notice alert-light-dark fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text"><strong>Note:</strong> @closedHiddenMessage</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "fund-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Fund.Id)
+        @Html.HiddenFor(x => x.Fund.ChurchId)
+        @Html.HiddenFor(x => x.Fund.DesignationId)
+        @Html.HiddenFor(x => x.Fund.CreatedBy)
+        @Html.HiddenFor(x => x.Fund.CreatedDate)
+        @Html.HiddenFor(x => x.Fund.Description)
+
+        if (RouteHelpers.Creating && Model.CommonFunds.IsNotNullOrEmpty() && Model.CommonFunds.Any())
+        {
+            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Common Funds:</h3>
+            <p>Here are a few funds we recommend implementing. The @GivingFunds.General and @GivingFunds.TithesAndOfferings funds are required, but feel free to deselect the other funds if they don't fit your needs.</p>
+            <div class="form-group">
+                <div class="checkbox-list">
+                    @foreach (var item in GivingFunds.Items)
+                    {
+                        <label class="checkbox @Html.Raw(item == GivingFunds.TithesAndOfferings || item == GivingFunds.General ? "text-dark-50" : "")">
+                            <input class="cbx_funds" @Html.Raw(item == GivingFunds.TithesAndOfferings || item == GivingFunds.General ? "disabled" : "") type="checkbox" name="CommonFunds" checked value="@item"> @item
+                            <span @Html.Raw(item == GivingFunds.TithesAndOfferings || item == GivingFunds.General ? "style='background-color: #80808F !important;'" : "")></span>
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="separator separator-dashed my-5"></div>
+            <input type="hidden" name="IsCommonFunds" id="IsCommonFunds" value="true" />
+        }
+        else
+        {
+            <input type="hidden" name="IsCommonFunds" id="IsCommonFunds" />
+        }
+
+        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Custom Funds:</h3>
+        <p>Want a customized fund? Assign a name, description, and tax status to get started.</p>
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" name="Fund.Name" id="Fund_Name" class="form-control" value="@Model.Fund.Name" placeholder="Give your fund a name." @Html.Raw(readOnly) />
+            @Html.ValidationMessageFor(x => x.Fund.Name, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label>Description:</label>
+            <textarea rows="3" name="Fund.Description" id="Fund_Description" class="form-control" placeholder="Give your fund a description." @Html.Raw(readOnly)>@Model.Fund.Description</textarea>
+            @Html.ValidationMessageFor(x => x.Fund.Description, "", new { @class = "text-danger" })
+        </div>
+        if (!Model.Fund.Name.EqualsIgnoreCase(GivingFunds.General) && !Model.Fund.Name.EqualsIgnoreCase(GivingFunds.TithesAndOfferings))
+        {
+            <div class="form-group row">
+                <label class="col-5 col-form-label">Tax Deductible:</label>
+                <div class="col-7">
+                    <span class="switch switch-icon">
+                        <label>
+                            @Html.CheckBoxFor(x => x.Fund.IsTaxDeductible, new { name = "istaxdeductible", @checked = "checked" })
+                            <span></span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(q => q.Fund.IsTaxDeductible)
+        }
+
+        if (SessionVariables.CurrentChurch.HasMerchantAccount)
+        {
+            <div class="form-group row">
+                <label class="col-5 col-form-label">Accept Digital Giving:</label>
+                <div class="col-7">
+                    <span class="switch switch-icon">
+                        <label>
+                            @Html.CheckBoxFor(x => x.Fund.IsDigitalAllowed, new { name = "isdigitalallowed", @checked = "checked" })
+                            <span></span>
+                        </label>
+                    </span>
+                </div>
+                <div class="col-12">
+                    <p>This specifies that you want your fund to be eligible for digital giving. Uncheck it to use with offline giving only.</p>
+                </div>
+            </div>
+        }
+
+        if (SessionVariables.CurrentChurch.HasMerchantAccount)
+        {
+            <div class="form-group row">
+                <label class="col-5 col-form-label">Generate QR Code:</label>
+                <div class="col-7">
+                    <span class="switch switch-icon">
+                        <label>
+                            <input type="checkbox" name="GenerateQRCode" value="true" id="GenerateQRCode" @Html.Raw(Model.Fund.QRCodeLink.IsNotNullOrEmpty() ? "checked" : "") />
+                            <span></span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+        }
+
+        <div class="form-group row">
+            <label class="col-5 col-form-label">Default Fund:</label>
+            <div class="col-7">
+                <span class="switch switch-icon">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Fund.IsDefaultFund, new { name = "isddefaultfund" })
+                        <span></span>
+                    </label>
+                </span>
+            </div>
+            <div class="col-12">
+                <p>Designating this fund as the default giving option ensures it will be automatically selected in giving forms. Each church can only have one default fund selected.</p>
+            </div>
+        </div>
+
+        if (SessionVariables.CurrentChurch.HasMerchantAccount)
+        {
+            <div class="form-group">
+                <label class="col-form-label">Thank You Note Text: <i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom thank you note that will display when someone gives digitally. Note: If one is not provided, then the default message found on the church settings page will display."></i></label>
+                <div>
+                    @Html.TextAreaFor(x => x.Fund.GivingThankYouText, new { @class = "form-control", rows = "5" })
+                    @Html.ValidationMessageFor(x => x.Fund.GivingThankYouText, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+
+        if (!Model.Fund.Name.EqualsIgnoreCase(GivingFunds.General) && !Model.Fund.Name.EqualsIgnoreCase(GivingFunds.TithesAndOfferings))
+        {
+            <div class="separator separator-dashed my-5"></div>
+            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Optional Fields:</h3>
+            <p>Leave these blank unless you are sure they apply to your needs.</p>
+            <div class="form-group">
+                <label>Expiration Date:</label>
+                <div class="input-group date">
+                    @Html.EditorFor(x => x.Fund.ExpirationDate, new { htmlAttributes = new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" } })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.Fund.ExpirationDate, "", new { @class = "text-danger" })
+                <span class="form-text text-muted">Only select a date if you want your fund to expire. Expired funds will not be able to receive gifts.</span>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-5 col-form-label">Closed:</label>
+                <div class="col-lg-7">
+                    <span class="switch switch-icon">
+                        <label>
+                            @if (Model.EnableCloseOrHidden)
+                            {
+                                @Html.CheckBoxFor(x => x.Fund.Closed, new { @class = "form-control" })
+                                <span></span>
+                            }
+                            else
+                            {
+                                @Html.CheckBoxFor(x => x.Fund.Closed, new { @class = "form-control", disabled = "disabled", })
+                                <span data-toggle="tooltip" title="At least one fund should be active publicly" data-placement="right"></span>
+                            }
+                        </label>
+                    </span>
+                </div>
+                <div class="col-12">
+                    <p>Select this if you no longer want the fund to receive donations. Note: Expired funds cannot be reopened.</p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-5 col-form-label">Hidden:</label>
+                <div class="col-lg-7">
+                    <span class="switch switch-icon">
+                        <label>
+                            @if (Model.EnableCloseOrHidden)
+                            {
+                                @Html.CheckBoxFor(x => x.Fund.Hidden, new { @class = "form-control" })
+                                <span></span>
+                            }
+                            else
+                            {
+                                @Html.CheckBoxFor(x => x.Fund.Hidden, new { @class = "form-control", disabled = "disabled", })
+                                <span data-toggle="tooltip" title="At least one fund should be active publicly" data-placement="right"></span>
+                            }
+                        </label>
+                    </span>
+                </div>
+                <div class="col-12">
+                    <p>Select this if you do not want the fund to appear in the list of available funds shown to your donors. This can be used internally to assign giving.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(q => q.Fund.ExpirationDate)
+            @Html.HiddenFor(q => q.Fund.Hidden)
+            @Html.HiddenFor(q => q.Fund.Closed)
+        }
+    }
+</div>
+<script type="text/javascript">
+    var validation = [];
+    $(function () {
+        validationStep();
+        ClassicEditor
+            .create(document.querySelector('#Fund_GivingThankYouText'))
+            .catch(error => {
+                console.error(error);
+            });
+    });
+
+    $("#fund-form").submit(function (e) {
+        e.preventDefault(e);
+        validation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                StopLoading();
+                document.getElementById('fund-form').submit();
+            }
+            setTimeout(function () {
+                StopLoading();
+                $('#Fund_Name').focus();
+            });
+        });
+    });
+
+    function validationStep() {
+        const form = document.getElementById('fund-form');
+        validation.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'Fund.Name': {
+                        validators: {
+                            callback: {
+                                message: 'Please enter the fund name first.',
+                                callback: function (input) {
+                                    const val = form.querySelector('[name="IsCommonFunds"]').value;
+                                    if (!val) {
+                                        return input.value ? true : false;
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+    }
+</script>

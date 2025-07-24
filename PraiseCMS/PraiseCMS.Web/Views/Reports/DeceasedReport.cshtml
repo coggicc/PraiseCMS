@@ -1,0 +1,67 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Person>
+@{
+    ViewBag.Title = "Deceased Report";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">@ViewBag.Title</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Church family deaths</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+            <a href="/Reports/ExportDeceasedReportToCSV?dateRange=@ViewBag.DateRange" class="btn btn-icon btn-sm btn-light-warning" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                    <thead>
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 100px"></th>
+                            <th style="min-width: 100px">Name</th>
+                            <th style="min-width: 100px">Deceased Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="symbol symbol-circle symbol-50 symbol-light mr-2 mt-2">
+                                        <img src="@item.ProfileImageURL" class="h-100 align-self-end" alt="">
+                                    </div>
+                                </td>
+                                <td>@item.Display</td>
+                                <td>@item.DeceasedDate.ToShortDateString()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>There were no deaths reported for the given date range.</p>
+        }
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+        });
+    </script>
+}

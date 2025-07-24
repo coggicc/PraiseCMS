@@ -1,0 +1,66 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SignUpViewModel
+
+@{
+    bool isEmail = Model.RegisterVia == RegisterVia.Email;
+}
+
+@using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "registration-form", role = "form", name = "registration-form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.IsValid)
+    <input type="hidden" value="false" name="ValidateCaptcha" id="ValidateCaptcha" />
+    @*@Html.HiddenFor(x => x.RegisterVia, new { id = "register_via" })*@
+    <input type="hidden" id="RegisterVia" name="RegisterVia" value="@Model.RegisterVia" />
+    <input type="hidden" id="ResponseStatus" name="ResponseStatus" value="@Model.ResponseStatus" />
+    @Html.HiddenFor(x => x.PlanType)
+    if (isEmail)
+    {
+        @Html.HiddenFor(x => x.Email)
+    }
+    else
+    {
+        @Html.HiddenFor(x => x.Phone)
+    }
+    <div class="mb-10">
+        <h3>Create Your Account</h3>
+        <div class="text-muted font-weight-bold">Enter your details to begin.</div>
+    </div>
+    <div class="form-group mb-5">
+        <label class="text-muted" style="float:left;">First Name</label>
+        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "FirstName", placeholder = "Enter your first name" })
+    </div>
+    <div class="form-group mb-5">
+        <label class="text-muted" style="float:left;">Last Name</label>
+        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "LastName", placeholder = "Enter your last name" })
+    </div>
+    if (Model.RegisterVia == RegisterVia.Email)
+    {
+        @Html.HiddenFor(x => x.Email)
+        <div class="form-group mb-5">
+            <label class="text-muted" style="float:left;">Phone</label>
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control h-auto form-control-solid py-4 px-8 phone", name = "Phone", placeholder = "(XXX) XXX-XXXX", autocomplete = "off" })
+            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "field-validation-error" })
+        </div>
+        <div class="form-group mb-5">
+            <label class="text-muted" style="float:left;">Password</label>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "Password", placeholder = "Enter your password", autocomplete = "off" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-validation-error" })
+        </div>
+        <div class="form-group mb-5">
+            <label class="text-muted" style="float:left;">Confirm Password</label>
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "ConfirmPassword", placeholder = "Enter your password again" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-validation-error" })
+        </div>
+    }
+    if (Model.RegisterVia == RegisterVia.PhoneNumber)
+    {
+        @Html.HiddenFor(x => x.Phone)
+        <div class="form-group mb-5">
+            @Html.TextBoxFor(m => m.Email, "", new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "Email", placeholder = "Email", autocomplete = "off" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-validation-error" })
+        </div>
+    }
+    <div class="form-group d-flex flex-wrap flex-center mt-5">
+        <button type="button" class="btn_continue btn btn-primary font-weight-bold" style="width:100%;">Continue</button>
+    </div>
+}

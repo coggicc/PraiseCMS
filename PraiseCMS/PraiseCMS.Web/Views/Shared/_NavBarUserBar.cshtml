@@ -1,0 +1,113 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@if (SessionVariables.CurrentUser.IsNotNull())
+{
+    <div class="dropdown">
+        <div class="topbar-item" data-toggle="dropdown" data-offset="0px,0px" aria-expanded="false">
+            <div class="btn btn-icon w-auto btn-clean d-flex align-items-center btn-lg px-2">
+                <span class="text-muted font-weight-bold font-size-base d-none d-md-inline mr-1">Hi,</span>                
+                    @if (!string.IsNullOrEmpty(SessionVariables.CurrentUser.User.FirstName))
+                    {
+                        <span class="text-dark-50 font-weight-bolder font-size-base d-none d-md-inline mr-3">@SessionVariables.CurrentUser.User.FirstName</span>
+                    }
+                    @if (!string.IsNullOrEmpty(SessionVariables.CurrentUser.Settings.ProfileImage))
+                    {
+                        <span class="symbol symbol-35 symbol-light-success">
+                            <img alt="@SessionVariables.CurrentUser.User.Display" src="@Html.AmazonLink(SessionVariables.CurrentUser.Settings.ProfileImage,"Uploads/ProfileImages")" />
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="symbol symbol-35 symbol-light-success">
+                            <img alt="User Image" src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" />
+                        </span>
+                    }
+                @*}
+                else
+                {
+                    <span class="symbol symbol-35 symbol-light-success">
+                        <img alt="User Image" src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" />
+                    </span>
+                }*@
+            </div>
+        </div>
+        <div class="dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg p-0" style="">
+            <div class="d-flex align-items-center p-8 rounded-top">
+                <div class="symbol symbol-md mr-3 flex-shrink-0">
+                    @if (!string.IsNullOrEmpty(SessionVariables.CurrentUser.Settings.ProfileImage))
+                    {
+                        <img alt="@SessionVariables.CurrentUser.User.Display" src="@Html.AmazonLink(SessionVariables.CurrentUser.Settings.ProfileImage,"Uploads/ProfileImages")" />
+                    }
+                    else
+                    {
+                        <img alt="User Image" src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" />
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(SessionVariables.CurrentUser.User.Display))
+                {
+                    <div class="text-dark m-0 flex-grow-1 mr-3 font-size-h5">
+                        @SessionVariables.CurrentUser.User.Display
+                    </div>
+                }
+            </div>
+            <div class="separator separator-solid"></div>
+            <div class="navi navi-spacer-x-0 pt-5">
+                <a href="/users/userprofile?userid=@SessionVariables.CurrentUser.User.Id" class="navi-item px-8">
+                    <div class="navi-link">
+                        <div class="navi-icon mr-2">
+                            <i class="flaticon2-calendar-3 text-primary"></i>
+                        </div>
+                        <div class="navi-text">
+                            <div class="font-weight-bold">My Profile</div>
+                            <div class="text-muted">
+                                Account settings and more
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                @*<a href="/metronic/demo1/custom/apps/user/profile-3.html" class="navi-item px-8">
+                        <div class="navi-link">
+                            <div class="navi-icon mr-2">
+                                <i class="flaticon2-mail text-warning"></i>
+                            </div>
+                            <div class="navi-text">
+                                <div class="font-weight-bold">My Messages</div>
+                                <div class="text-muted">Inbox and tasks</div>
+                            </div>
+                        </div>
+                    </a>*@
+                @*<a href="/metronic/demo1/custom/apps/user/profile-2.html" class="navi-item px-8">
+                        <div class="navi-link">
+                            <div class="navi-icon mr-2">
+                                <i class="flaticon2-rocket-1 text-danger"></i>
+                            </div>
+                            <div class="navi-text">
+                                <div class="font-weight-bold">My Activities</div>
+                                <div class="text-muted">Logs and notifications</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/metronic/demo1/custom/apps/userprofile-1/overview.html" class="navi-item px-8">
+                        <div class="navi-link">
+                            <div class="navi-icon mr-2">
+                                <i class="flaticon2-hourglass text-primary"></i>
+                            </div>
+                            <div class="navi-text">
+                                <div class="font-weight-bold">My Tasks</div>
+                                <div class="text-muted">latest tasks and projects</div>
+                            </div>
+                        </div>
+                    </a>*@
+                <div class="navi-separator mt-3"></div>
+                <div class="navi-footer px-8 py-5">
+                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-light-primary font-weight-bold">Sign Out</a>
+                    }
+                    @*<a href="/metronic/demo1/custom/user/login-v2.html" target="_blank" class="btn btn-clean font-weight-bold">Upgrade Plan</a>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}

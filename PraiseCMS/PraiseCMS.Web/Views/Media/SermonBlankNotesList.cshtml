@@ -1,0 +1,56 @@
+﻿@model List<PraiseCMS.DataAccess.Models.ViewModels.SermonNotesListViewModel>
+
+@{
+    ViewBag.Title = "Sermon Blank Notes";
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="text-primary fa fa-bible"></i>
+            </span>
+            <h3 class="card-label">
+                @Model.Select(x => x.SermonTitle).FirstOrDefault()
+            </h3>
+        </div>
+        <div class="card-toolbar">
+
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-4 mb-4">
+                    <div class="card">
+                        @{var image = "~/Content/assets/media/stock-600x400/img-1.jpg"; }
+                        <img class="card-img-top" src="@Url.Content(image)" alt="Card image cap">
+                        <div class="card-body">
+                            <p>Created: @item.CreatedDate.ToShortDateString()</p>
+                            <p class="text-muted"><button class="btn btn-secondary" onclick="noteDetail(this)" id=@item.NoteID data-sermonID="@item.SermonID" data-toggle="modal" data-target="#ShowSermonModal"><i class='la la-sticky-note'></i>View Notes</button></p>
+                            <p class="text-muted"><button onclick="EditNote(this)" id=@item.NoteID class="btn btn-outline-dark"><i class='la la-edit'></i>Edit Notes</button></p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div id="modelarea"></div>
+
+<script>
+    function noteDetail(id) {
+        var noteID = $(id).attr("id");
+        var sermonID=$(id).attr("data-sermonID");
+           $.ajax({
+            url: "@Url.Action("GetBlankTemplate", "media")",
+               type: "get",
+               data: {noteId:noteID,sermonID:sermonID},
+            success: function (data) {
+                $('#modelarea').html(data);
+                $("#ShowNoteModal").modal('show');
+            }
+        });
+    };
+</script>

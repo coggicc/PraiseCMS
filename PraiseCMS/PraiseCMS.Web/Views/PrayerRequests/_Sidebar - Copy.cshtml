@@ -1,0 +1,180 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@{
+    var db = new ApplicationDbContext();
+    var categories = db.PrayerRequestCategories.ToList();
+    var prayerRequests = db.PrayerRequests.Where(x => x.ChurchId.Equals(SessionVariables.CurrentChurch.Id) && !x.PrayedOver).ToList();
+    var categoryTypeId = !string.IsNullOrEmpty(Request.QueryString["categoryId"]) ? Request.QueryString["categoryId"] : "";
+}
+<div class="card card-custom">
+    <div class="card-body px-5">
+        <div class="card-scroll">
+            <div class="navi navi-hover navi-active navi-link-rounded navi-bold navi-icon-center navi-light-icon">
+                <div class="navi-item my-2">
+                    <a href="/PrayerRequests/Index" data-key="" class="navi-link @(string.IsNullOrEmpty(ViewBag.PrayerRequestType) ? "active" : "")">
+                        <span class="navi-icon mr-4">
+                            <i class="fas fa-inbox text-primary"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">Inbox</span>
+                        <span class="navi-label">
+                            <span class="label label-rounded label-light-primary font-weight-bolder" data-toggle="tooltip" title="Not Prayed Over">@Model.NotPrayedOverCount</span>
+                        </span>
+                    </a>
+                </div>
+                <div class="navi-item my-2">
+                    <a href="/PrayerRequests/Index?request=@PrayerRequestStatuses.Starred" data-key="@PrayerRequestStatuses.Starred" class="pointer navi-link @(ViewBag.PrayerRequestType==PrayerRequestStatuses.Starred ? "active" : "" )">
+                        <span class="navi-icon mr-4">
+                            <i class="fas fa-star text-warning"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">Starred</span>
+                    </a>
+                </div>
+                <div class="navi-item my-2">
+                    <a href="/PrayerRequests/Index?request=@PrayerRequestStatuses.Unread" data-key="@PrayerRequestStatuses.Unread" class="pointer navi-link @(ViewBag.PrayerRequestType==PrayerRequestStatuses.Unread ? "active" : "" )">
+                        <span class="navi-icon mr-4">
+                            <i class="fas fa-envelope text-dark"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">Unread</span>
+                    </a>
+                </div>
+                <div class="navi-item my-2">
+                    <a href="/PrayerRequests/Index?request=@PrayerRequestStatuses.HighPriority" data-key="@PrayerRequestStatuses.HighPriority" class="navi-link @(ViewBag.PrayerRequestType==PrayerRequestStatuses.HighPriority ? "active" : "" )">
+                        <span class="navi-icon mr-4">
+                            <i class="fa fa-exclamation-circle text-danger"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">High Priority</span>
+                    </a>
+                </div>
+                <div class="navi-item my-2 module-6665228816f1c3c861f3814bc4a909">
+                    <a href="/PrayerRequests/Index?request=@PrayerRequestStatuses.Confidential" data-key="@PrayerRequestStatuses.Confidential" class="navi-link @(ViewBag.PrayerRequestType==PrayerRequestStatuses.Confidential ? "active" : "" )">
+                        <span class="navi-icon mr-4">
+                            <i class="fa fa-lock text-warning"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">Confidential</span>
+                    </a>
+                </div>
+                <div class="navi-item my-2">
+                    <a href="/PrayerRequests/Index?request=@PrayerRequestStatuses.FollowUpRequired" data-key="@PrayerRequestStatuses.FollowUpRequired" class="navi-link @(ViewBag.PrayerRequestType==PrayerRequestStatuses.FollowUpRequired ? "active" : "" )">
+                        <span class="navi-icon mr-4">
+                            <i class="fas fa-user-check text-info"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">Follow-Up Required</span>
+                    </a>
+                </div>
+                <div class="navi-item my-2">
+                    <a href="/PrayerRequests/Index?request=@PrayerRequestStatuses.Responded" data-key="@PrayerRequestStatuses.Responded" class="navi-link @(ViewBag.PrayerRequestType==PrayerRequestStatuses.Responded ? "active" : "" )">
+                        <span class="navi-icon mr-4">
+                            <i class="fa fa-check-circle text-success"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">Responded</span>
+                    </a>
+                </div>
+                <div class="navi-item my-2">
+                    <a href="/PrayerRequests/Index?request=@PrayerRequestStatuses.PrayedOver" data-key="@PrayerRequestStatuses.PrayedOver" class="navi-link @(ViewBag.PrayerRequestType==PrayerRequestStatuses.PrayedOver ? "active" : "" )">
+                        <span class="navi-icon mr-4">
+                            <i class="fa fa-heart text-light-dark"></i>
+                        </span>
+                        <span class="navi-text font-weight-bolder font-size-lg">Prayed Over</span>
+                    </a>
+                </div>
+                <div class="navi-section mt-7 mb-2 font-size-h6 font-weight-bold"><span>Categories <i class="far fa-question-circle ml-2 cursor-pointer text-hover-info" data-toggle="tooltip" data-original-title="View Not Prayed Over by Category"></i></span></div>
+                @if (categories.Any())
+                {
+                    var uncategorizedCount = prayerRequests.Count(x => string.IsNullOrEmpty(x.CategoryId));
+                    foreach (var category in categories.OrderBy(x => x.Display))
+                    {
+                        var count = prayerRequests.Count(x => !string.IsNullOrEmpty(x.CategoryId) && x.CategoryId.Equals(category.Id));
+
+                        <div class="navi-item my-2">
+                            <a href="/prayerrequests?categoryId=@category.Id" class="navi-link @(categoryTypeId.Equals(category.Id) ? "active" : "")">
+                                <span class="navi-icon mr-4">
+                                    <span class="svg-icon svg-icon-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                <polygon points="0 0 24 0 24 24 0 24" />
+                                                <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z" fill="#000000" fill-rule="nonzero" />
+                                                <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999)" />
+                                            </g>
+                                        </svg>
+                                    </span>
+                                </span>
+                                <span class="navi-text font-weight-bolder font-size-lg">@category.Display</span>
+                                @if (count > 0)
+                                {
+                                    <span class="navi-label">
+                                        <span class="label label-rounded label-light-primary font-weight-bold" data-toggle="tooltip" title="@count Not Prayed Over">@count</span>
+                                    </span>
+                                }
+                            </a>
+                        </div>
+                    }
+                    <div class="navi-item my-2">
+                        <a href="/prayerrequests?categoryId=uncategorized" class="navi-link @(categoryTypeId.Equals("uncategorized") ? "active" : "")">
+                            <span class="navi-icon mr-4">
+                                <span class="svg-icon svg-icon-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <polygon points="0 0 24 0 24 24 0 24" />
+                                            <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z" fill="#000000" fill-rule="nonzero" />
+                                            <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999)" />
+                                        </g>
+                                    </svg>
+                                </span>
+                            </span>
+                            <span class="navi-text font-weight-bolder font-size-lg">Uncategorized</span>
+                            @if (uncategorizedCount > 0)
+                            {
+                                <span class="navi-label">
+                                    <span class="label label-rounded label-light-primary font-weight-bold" data-toggle="tooltip" title="@uncategorizedCount Not Prayed Over">@uncategorizedCount</span>
+                                </span>
+                            }
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        @if (SessionVariables.CurrentUser != null && !SessionVariables.CurrentUser.IsSuperAdmin)
+        {
+            foreach (var module in SessionVariables.CurrentUser.Modules)
+            {
+                var accessLevel = Utilities.GetAccessLevel(module.Id, SessionVariables.CurrentUser.AllPermissions);
+                if (accessLevel.Equals(Operations.NoAccess))
+                {
+                        <text>
+                          $(".module-@module.Id").hide();
+                        </text>
+                    }
+                    else if (accessLevel.Equals(Operations.ReadOnly))
+                    {
+                        <text>
+                            //Modify links nested in a div (or somesuch)
+                            $(".needs-write.module-@module.Id a").attr("href", "/error/noaccess").removeClass("save-progress").addClass("disabled");
+                            $(".needs-write.module-@module.Id a.ajax-modal").attr("href", "/error/_noaccess").data("title", "Access Denied").data("save-button", "").removeClass("save-progress").addClass("disabled");
+
+                            //Modify the actual links
+                            $("a.needs-write.module-@module.Id").attr("href", "/error/noaccess").removeClass("save-progress").addClass("disabled");
+                            $("a.ajax-modal.needs-write.module-@module.Id").attr("href", "/error/_noaccess").data("title", "Access Denied").data("save-button", "").removeClass("save-progress").addClass("disabled");
+                            $("button.needs-write.module-@module.Id").attr("href", "/error/noaccess").removeClass("save-progress").addClass("disabled");
+                        </text>
+                    }
+
+                    @*check that current plan has permission to access the module*@
+                    if (Convert.ToDateTime(HttpContext.Current.Session["PlanPermissionsTimeout"]) < DateTime.Now || SessionVariables.PlanPermissions.IsNullOrEmpty())
+                    {
+                        SessionVariables.SetPlanPermissions();
+                    }
+                    var permission = Utilities.GetPermissionByPlan(module.Id, SessionVariables.PlanPermissions);
+                    if (permission.Equals(Operations.NoAccess))
+                    {
+                        <text>
+                         $(".module-@module.Id").hide();
+                        </text>
+                    }
+                }
+            }
+    });
+</script>

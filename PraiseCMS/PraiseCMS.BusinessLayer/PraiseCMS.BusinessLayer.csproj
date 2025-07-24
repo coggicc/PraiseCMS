@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{53B1CC7E-B860-4B2D-95FD-75C9CA01FF6E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PraiseCMS.BusinessLayer</RootNamespace>
+    <AssemblyName>PraiseCMS.BusinessLayer</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ProdDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ProdDebug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.4\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AccountOperations.cs" />
+    <Compile Include="AttachmentOperations.cs" />
+    <Compile Include="AttendanceOperations.cs" />
+    <Compile Include="BlogCategoryOperations.cs" />
+    <Compile Include="BlogTagOperations.cs" />
+    <Compile Include="BlogPostOperations.cs" />
+    <Compile Include="BaptismOperations.cs" />
+    <Compile Include="CalendarOperations.cs" />
+    <Compile Include="CampusOperations.cs" />
+    <Compile Include="ChurchEventOperationsOld.cs" />
+    <Compile Include="ChurchEventTypeOperations.cs" />
+    <Compile Include="ChurchMerchantAccountOperations.cs" />
+    <Compile Include="ChurchOperations.cs" />
+    <Compile Include="CommunicationGroupOperations.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="LatLongOperations.cs" />
+    <Compile Include="IPBlacklistOperations.cs" />
+    <Compile Include="IPWhitelistOperations.cs" />
+    <Compile Include="EmailTemplateOperations.cs" />
+    <Compile Include="DenominationOperations.cs" />
+    <Compile Include="EmailOperations.cs" />
+    <Compile Include="EquipmentOperation.cs" />
+    <Compile Include="EventOperations.cs" />
+    <Compile Include="ChurchEventOperations.cs" />
+    <Compile Include="HouseholdOperations.cs" />
+    <Compile Include="FundOperations.cs" />
+    <Compile Include="LeadsOperations.cs" />
+    <Compile Include="LogOperations.cs" />
+    <Compile Include="NoteOperations.cs" />
+    <Compile Include="PaymentOperations.cs" />
+    <Compile Include="PermissionOperations.cs" />
+    <Compile Include="MessageRequestOperations.cs" />
+    <Compile Include="FloorOperations.cs" />
+    <Compile Include="BuildingOperations.cs" />
+    <Compile Include="SearchOperations.cs" />
+    <Compile Include="SubscriptionOperations.cs" />
+    <Compile Include="PrayerRequestOperations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportOperations.cs" />
+    <Compile Include="Repository\IGenericRepository.cs" />
+    <Compile Include="Repository\GenericRepository.cs" />
+    <Compile Include="GivingOperations.cs" />
+    <Compile Include="RoleOperations.cs" />
+    <Compile Include="OfflineGivingOperations.cs" />
+    <Compile Include="PersonOperations.cs" />
+    <Compile Include="RoomOperations.cs" />
+    <Compile Include="NotificationOperations.cs" />
+    <Compile Include="SalvationOperations.cs" />
+    <Compile Include="ScheduledPaymentOperations.cs" />
+    <Compile Include="MediaOperations.cs" />
+    <Compile Include="ServeTeamOperations.cs" />
+    <Compile Include="ServiceAreaOperations.cs" />
+    <Compile Include="ModuleOperations.cs" />
+    <Compile Include="SmallGroupCategoryTypeOperations.cs" />
+    <Compile Include="SmallGroupOperations.cs" />
+    <Compile Include="SupportOperations.cs" />
+    <Compile Include="TagCommunication.cs" />
+    <Compile Include="TagOperations.cs" />
+    <Compile Include="TaskOperations.cs" />
+    <Compile Include="UserOperations.cs" />
+    <Compile Include="UserMerchantAccountOperations.cs" />
+    <Compile Include="PaymentMethodAccountOperations.cs" />
+    <Compile Include="UserSettingOperations.cs" />
+    <Compile Include="DashboardTemplateOperations.cs" />
+    <Compile Include="Work.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PraiseCMS.API\PraiseCMS.API.csproj">
+      <Project>{3BFD8ACE-0189-4B11-A110-1AA07952C366}</Project>
+      <Name>PraiseCMS.API</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PraiseCMS.DataAccess\PraiseCMS.DataAccess.csproj">
+      <Project>{adcb302b-c6fb-461f-b6b3-e3bd3b0f4023}</Project>
+      <Name>PraiseCMS.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PraiseCMS.Shared\PraiseCMS.Shared.csproj">
+      <Project>{DB83F98F-870A-4262-90D6-7008C6B40CDB}</Project>
+      <Name>PraiseCMS.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

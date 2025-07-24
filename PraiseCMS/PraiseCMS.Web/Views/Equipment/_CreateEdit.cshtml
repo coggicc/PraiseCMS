@@ -1,0 +1,61 @@
+﻿@model PraiseCMS.DataAccess.Models.EquipmentView
+
+@if (Model.EquipmentCategories.Any())
+{
+    <div id="equipment-div">
+        @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "equipment-div" }, new { @class = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.Equipment.Id)
+            @Html.HiddenFor(x => x.Equipment.ChurchId)
+            @Html.HiddenFor(x => x.Equipment.CreatedBy)
+            @Html.HiddenFor(x => x.Equipment.CreatedDate)
+            <div class="form-group">
+                <label>Name:</label>
+                @Html.EditorFor(x => x.Equipment.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Equipment.Name, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label>Category:</label>
+                @Html.DropDownListFor(x => x.Equipment.EquipmentCategoryId, Model.EquipmentCategories.ToSelectList(x => x.Display, x => x.Id), "Select a category...", new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.Equipment.EquipmentCategoryId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                @Html.EditorFor(x => x.Equipment.Type, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Equipment.Type, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label>Barcode</label>
+                @Html.EditorFor(x => x.Equipment.Barcode, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Equipment.Barcode, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label>Image</label>
+                @Html.EditorFor(x => x.Equipment.Image, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Equipment.Image, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                @Html.TextAreaFor(x => x.Equipment.Description, new { @class = "form-control", rows = "5" })
+                @Html.ValidationMessageFor(x => x.Equipment.Description, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 col-form-label">Is Active?</label>
+                <div class="col-lg-9">
+                    <span class="switch switch-icon">
+                        <label>
+                            @Html.CheckBoxFor(x => x.Equipment.Active, new { name = "Active" })
+                            <span></span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>You don't have any equipment categories yet. Please <a href="/equipment/categories">add</a> one before adding equipment.</p>
+}

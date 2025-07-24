@@ -1,0 +1,215 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Relationship>
+
+@{
+    var people = TempData.ContainsKey("people") ? ((List<Person>)TempData["people"]).OrderBy(x => x.Display).ToList() : new List<Person>();
+}
+
+<style>
+    .dataTables_empty {
+        text-align: center !important;
+    }
+</style>
+
+<div id="add-relationship-div" style="top: -35px;position: relative;margin-bottom: -35px;">
+    <div id="alert-container"></div>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "add-relationship-form" }))
+    {
+        <input type="hidden" id="personId" value="@ViewBag.PersonId" />
+        <table id="relationship-table" class="table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl w-100 border-0">
+            <thead>
+                <tr>
+                    <td style="border-bottom: 0;" class="pt-0" width="45%"></td>
+                    <td style="border-bottom: 0;" class="pt-0" width="45%"></td>
+                    <td style="border-bottom: 0;" class="pt-0" width="10%"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <select name="relative" class="form-control select2 relative" style="width:100%;">
+                                        <option>Select a person...</option>
+                                        @foreach (var person in people)
+                                        {
+                                            <option @Html.Raw(person.Id.Equals(item.RelativePersonId) ? "selected" : "") value="@person.Id">@person.Display</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="text" value="@item.Relation" name="relation" placeholder="Relationship" class="form-control relation" />
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <a onclick="removeRelation(this)" class="btn btn-light-dark btn-sm font-weight-bold"><i class="fa fa-times pr-0"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <select name="relative" class="form-control select2 relative" style="width:100%;">
+                                    <option>Select a person...</option>
+                                    @foreach (var person in people)
+                                    {
+                                        <option value="@person.Id">@person.Display</option>
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" name="relation" placeholder="Relationship" class="form-control relation" />
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <a onclick="removeRelation(this)" class="btn btn-light-dark btn-sm font-weight-bold"><i class="fa fa-times pr-0"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    <div style="padding-left: 1rem;">
+        <a onclick="addRelation()" class="btn btn-light-primary font-weight-bold btn-sm" data-toggle="tooltip" title="Add another relationship"><i class="fas fa-plus pr-0"></i></a>
+    </div>
+</div>
+
+<script src="~/Scripts/datatables.min.js"></script>
+<script type="text/javascript">
+    var dataTable;
+    var peopleOptions = "<option>Select a person...</option>";
+
+    $(function () {
+        dataTable = $('#relationship-table').dataTable({
+            responsive: true,
+            bFilter: false,
+            bInfo: false,
+            bPaginate: false,
+            bLengthChange: false,
+            bAutoWidth: false,
+            searching: false,
+            ordering: false,
+            pageLength: 100,
+            orderable: false,
+            language: { "emptyTable": "You don't have any relationships yet but you can <a onclick='addRelation()' href='#'>add one</a>."}
+        });
+
+        $.each(@Html.Raw(Json.Encode(people)), function (key, value) {
+            peopleOptions += '<option value="' + value.Id + '">' + value.Display + '</option>';
+        });
+    });
+
+    function addRelation() {
+        let col_1 = '<div class="form-group"><select name="relative" class="form-control select2 relative" style="width:100%;">' + peopleOptions +'</select></div>';
+        let col_2 = '<div class="form-group"><div class="input-group"><input type="text" name="relation" placeholder="Relationship" class="form-control relation" /></div></div>';
+        let col_3 = '<div class="form-group"><a class="btn btn-light-dark btn-sm font-weight-bold" onclick="removeRelation(this)"><i class="fa fa-times pr-0"></i></a></div>';
+        dataTable.fnAddData([col_1, col_2, col_3]);
+        dataTable.fnDraw();
+    }
+
+    function removeRelation(btn) {
+        let parent = $(btn).parents('tr');
+        dataTable.fnDeleteRow(parent);
+        dataTable.fnDraw();
+    }
+
+    $("#add-relationship-form").submit(function (e) {
+        e.preventDefault();
+        $("#alert-container").html("");
+        var success = true;
+        var relationshipsArray = [];
+        var rows = dataTable.fnGetNodes();
+        if (!rows.length) {
+            Swal.fire({
+                text: "Please add at least one relationship before saving.",
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn font-weight-bold btn-light"
+                }
+            });
+            setTimeout(function () {
+                StopLoading();
+            });
+
+            return false;
+        }
+        for (let i = 0; i < rows.length; i++) {
+            let relation = $(rows[i]).find(".relation").val();
+            if (!relation) {
+                success = false;
+                $(rows[i]).find(".relation").addClass('is-invalid');
+            }
+            let relative = $(rows[i]).find(".relative").val();
+            if (!relative || relative === 'Select a person...') {
+                success = false;
+                $(rows[i]).find(".relative").next().children().children('.select2-selection').css('border', '1px solid #F64E60');
+            }
+            let userRelation = { "Relation": relation, "RelativePersonId": relative, "PersonId": $("#personId").val() };
+            relationshipsArray.push(userRelation);
+        }
+        if (!success) {
+            Swal.fire({
+                text: "Please fill out all of the required fields.",
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn font-weight-bold btn-light"
+                }
+            });
+            setTimeout(function () {
+                StopLoading();
+            });
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: '/Users/AddRelationship',
+            data: { model: relationshipsArray },
+            success: function (result) {
+                if (result.Success) {
+                    $('#ajax-modal').modal('toggle');
+                    Notify("success", "SUCCESS", Constants.SavedMessage);
+                    setTimeout(function () {
+                        location.reload(true);
+                    }, 1000);
+                } else {
+                    ShowErrorAlert(result.Message);
+                }
+            },
+            error: function (result) {
+                ShowErrorAlert(result.Message);
+            }
+        });
+    });
+    $(document).on('keyup', '.relation', function (e) {
+        if ($(this).val()) {
+            $(this).removeClass('is-invalid');
+        }
+    });
+    $(document).on('change', '.relative', function (e) {
+        if ($(this).val() && $(this).val() !=='Select a person...') {
+            $(this).next().children().children('.select2-selection').css('border', '1px solid #E5EAEE');
+        }
+    });
+</script>

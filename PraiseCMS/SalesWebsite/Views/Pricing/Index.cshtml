@@ -1,0 +1,370 @@
+﻿@using System.Configuration
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .feature-list {
+        font-size: 18px;
+        line-height: 2;
+    }
+
+        .feature-list i {
+            color: #3699FF;
+        }
+</style>
+<header class="page header color-1 overlay alpha-8 image-background cover overlay gradient gradient-43" style="background-image: url('../../Content/img/bg/waves.jpg')">
+    <div class="divider-shape">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none" class="shape-waves" style="left: 0; transform: rotate3d(0,1,0,180deg);">
+            <path class="shape-fill shape-fill-1" d="M790.5,93.1c-59.3-5.3-116.8-18-192.6-50c-29.6-12.7-76.9-31-100.5-35.9c-23.6-4.9-52.6-7.8-75.5-5.3c-10.2,1.1-22.6,1.4-50.1,7.4c-27.2,6.3-58.2,16.6-79.4,24.7c-41.3,15.9-94.9,21.9-134,22.6C72,58.2,0,25.8,0,25.8V100h1000V65.3c0,0-51.5,19.4-106.2,25.7C839.5,97,814.1,95.2,790.5,93.1z" />
+        </svg>
+    </div>
+    <div class="container" style="">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Free giving tools</h1>
+                <p class="lead color-1">Try Praise Premium risk free for @ConfigurationManager.AppSettings["FreeTrialDays"] days. No contracts. Cancel anytime.</p>
+            </div>
+        </div>
+    </div>
+</header>
+<section class="">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mt-5">
+                <div class="card text-center">
+                    <div class="pricing card-header p-5 bg-light d-flex align-items-center flex-column">
+                        <h4 class="bold">Basic</h4>
+                        <div style="font-family: Poppins, sans-serif;font-size: 3.25rem;">FREE</div>
+                        <p>Elevate your giving experience with our digital tools, including streamlined donations, fund allocation, and powerful givign reports.</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Digital Giving (Debit/Credit Cards &amp; ACH)</li>
+                        <li class="list-group-item">Giving Funds</li>
+                        <li class="list-group-item">Giving Reports</li>
+                    </ul>
+                    <div class="card-body"><a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-rounded btn-outline-primary py-3 px-5">Sign up Free</a></div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-5">
+                <div class="card text-center">
+                    <div class="pricing card-header p-5 bg-primary color-1 d-flex align-items-center flex-column">
+                        <h4 class="bold text-contrast">Premium</h4>
+                        <div class="pricing-value"><span class="price text-contrast">39</span></div>
+                        <p>Enhance your church operations with our digital tools, encompassing digital and offline giving options, comprehensive reporting, unlimited giving fund management, church family administration, and priority support.</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Digital Giving (Debit/Credit Cards &amp; ACH)</li>
+                        <li class="list-group-item">Offline Giving (Cash &amp; Checks)</li>
+                        <li class="list-group-item">Robust Reporting &amp; Analytics</li>
+                        <li class="list-group-item">Unlimited Giving Funds</li>
+                        <li class="list-group-item">Church Family Management</li>
+                        <li class="list-group-item">Priority Support</li>
+                    </ul>
+                    <div class="card-body"><a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-rounded btn-accent py-3 px-5">Start Free Trial</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><!-- ./Plans features -->
+@*<section>
+    <div class="container">
+        <div class="section-heading text-center">
+            <h2 class="bold">All our plans include</h2>
+            <p class="lead text-secondary">Get access to a ton of features out of the box</p>
+        </div>
+        <div class="row gap-y text-center text-md-left">
+            <div class="col-md-4">
+                <i data-feather="headphones" width="36" height="36" class="stroke-info me-2 m-0"></i>
+                <h5 class="bold my-3">First class support</h5>
+                <p class="my-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci atque beatae dicta dolores hic porro quam voluptatibus.</p>
+            </div>
+            <div class="col-md-4">
+                <i data-feather="box" width="36" height="36" class="stroke-info me-2 m-0"></i>
+                <h5 class="bold my-3">Code snippets</h5>
+                <p class="my-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci atque beatae dicta dolores hic porro quam voluptatibus.</p>
+            </div>
+            <div class="col-md-4">
+                <i data-feather="headphones" width="36" height="36" class="stroke-info me-2 m-0"></i>
+                <h5 class="bold my-3">Full documentation</h5>
+                <p class="my-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci atque beatae dicta dolores hic porro quam voluptatibus.</p>
+            </div>
+            <div class="col-md-4">
+                <i data-feather="lock" width="36" height="36" class="stroke-info me-2 m-0"></i>
+                <h5 class="bold my-3">Total control of your code</h5>
+                <p class="my-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci atque beatae dicta dolores hic porro quam voluptatibus.</p>
+            </div>
+            <div class="col-md-4">
+                <i data-feather="airplay" width="36" height="36" class="stroke-info me-2 m-0"></i>
+                <h5 class="bold my-3">Responsive design</h5>
+                <p class="my-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci atque beatae dicta dolores hic porro quam voluptatibus.</p>
+            </div>
+            <div class="col-md-4">
+                <i data-feather="monitor" width="36" height="36" class="stroke-info me-2 m-0"></i>
+                <h5 class="bold my-3">Browser support</h5>
+                <p class="my-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci atque beatae dicta dolores hic porro quam voluptatibus.</p>
+            </div>
+        </div>
+    </div>
+</section>--><!-- ./FAQs -->
+<section class="section bg-light edge bottom-right b-t">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Do you have <span class="bold">questions?</span></h2>
+                <p class="lead">Not sure how this template can help you? Wonder why you need to buy our theme?</p>
+                <p class="text-muted">Here are the answers to some of the most common questions we hear from our appreciated customers</p>
+            </div>
+            <div class="col-md-8">
+                <div class="accordion accordion-clean" id="faqs-accordion">
+                    <div class="card mb-3">
+                        <div class="card-header"><a href="#" class="card-title btn" data-bs-toggle="collapse" data-bs-target="#v1-q1"><i class="fas fa-angle-down angle"></i> What does the package include?</a></div>
+                        <div id="v1-q1" class="collapse show" data-bs-parent="#faqs-accordion">
+                            <div class="card-body">When you buy Dashcore, you get all you see in the demo but the images. We include SASS files for styling, complete JS files with comments, all HTML variations. Besides we include all mobile PSD mockups.</div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header"><a href="#" class="card-title btn collapsed" data-bs-toggle="collapse" data-bs-target="#v1-q2"><i class="fas fa-angle-down angle"></i> What is the typical response time for a support question?</a></div>
+                        <div id="v1-q2" class="collapse" data-bs-parent="#faqs-accordion">
+                            <div class="card-body">Since you report us a support question we try to make our best to find out what is going on, depending on the case it could take more or les time, however a standard time could be minutes or hours.</div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header"><a href="#" class="card-title btn collapsed" data-bs-toggle="collapse" data-bs-target="#v1-q3"><i class="fas fa-angle-down angle"></i> What do I need to know to customize this template?</a></div>
+                        <div id="v1-q3" class="collapse" data-bs-parent="#faqs-accordion">
+                            <div class="card-body">Our documentation give you all you need to customize your copy. However you will need some basic web design knowledge (HTML, Javascript and CSS)</div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header"><a href="#" class="card-title btn collapsed" data-bs-toggle="collapse" data-bs-target="#v1-q4"><i class="fas fa-angle-down angle"></i> Can I suggest a new feature?</a></div>
+                        <div id="v1-q4" class="collapse" data-bs-parent="#faqs-accordion">
+                            <div class="card-body">Definitely <span class="bold">Yes</span>, you can contact us to let us know your needs. If your suggestion represents any value to both we can include it as a part of the theme or you can request a custom build by an extra cost. Please note it could take some time in order for the feature to be implemented.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="pricing block bg-1">
+    <div class="container pt-8">
+        <div class="section-heading text-center">
+            <h2>Pricing built for churches of all sizes</h2>
+        </div>
+        <div class="border">
+            <div class="row py-5">
+                <div class="col-sm-5 mx-auto">
+                    <h4>Basic Plan Features</h4>
+                    <ul class="feature-list list-unstyled mt-4">
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Digital Giving
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Giving Funds
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Giving Reports
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-5 mx-auto text-center">
+                    <p class="pricing-value">
+                        <span>Free</span>
+                    </p>
+                    <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-rounded btn-accent py-3 px-5">Sign up Free</a>
+                    <p>No Setup Costs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="pricing block bg-1">
+    <div class="container pt-1">
+        <div class="section-heading text-center">
+            <p class="pt-4" style="font-size:24px;">Enjoy every feature of the Praise platform with our paid plan. No cancelation fees ever.</p>
+        </div>
+        <div class="border">
+            <div class="row py-5">
+                <div class="col-sm-5 mx-auto">
+                    <h4>Premium Plan Features</h4>
+                    <ul class="feature-list list-unstyled mt-4">
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Digital Giving
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Offline Giving (Cash & Checks)
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Robust Reporting & Analytics
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Prayer Requests
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Unlimited Giving Funds
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Church Family Management
+                        </li>
+                        <li>
+                            <i class="fas fa-check mr-2 text-blue"></i>Priority Support
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-5 mx-auto text-center">
+                    <p class="pricing-value">
+                        <span class="price font-xl">33.33<sup style="font-style:italic;">*</sup></span>
+                    </p>
+                    <p>*Billed annually, $39.99/mo if billed monthly</p>
+                    <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-rounded btn-accent py-3 px-5">Start Free Trial</a>
+                    <p>No Setup Costs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>*@
+@*<section>
+        <div class="container">
+            <div class="section-heading text-center">
+                    <h2 class="mb-2">Pricing built for churches of all sizes</h2>
+                    <p class="lead color-2">Try Praise CMS, risk free for 14 days. No credit card required!</p>
+                    <hr />
+                    <p class="pt-4 font-weight-bold" style="font-size:24px;">Every feature in the Praise CMS platform is included with each plan, all for one low monthly price.  No cancelation fees ever.</p>
+                </div>
+            <div class="row">
+                <div class="col-md-4 mt-3">
+                    <div class="card text-center">
+                        <div class="pricing card-header bg-6-gradient d-flex align-items-center flex-column">
+                            <h4 style="text-decoration:underline;">Church Plants</h4>
+                            <div class="pricing-value">
+                                <span class="price bold">39.99</span>
+                            </div>
+                            <p>Leverage agile frameworks to provide a robust synopsis for high level overviews.</p>
+                        </div>
+                        <div class="card-body">
+                            <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>
+                            <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-rounded btn-accent">Start Free Trial</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mt-3">
+                    <div class="card text-center">
+                        <div class="pricing card-header bg-3-gradient color-1 d-flex align-items-center flex-column">
+                            <h4 style="text-decoration:underline;">Established Church</h4>
+                            <div class="pricing-value">
+                                <span class="price bold">99.99</span>
+                            </div>
+                            <p>Leverage agile frameworks to provide a robust synopsis for high level overviews.</p>
+                        </div>
+                        <div class="card-body">
+                            <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>
+                            <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-rounded btn-accent">Start Free Trial</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mt-3">
+                    <div class="card text-center">
+                        <div class="pricing card-header bg-6-gradient d-flex align-items-center flex-column">
+                            <h4 style="text-decoration:underline;">Mega Chuch</h4>
+                            <div class="pricing-value">
+                                <span class="small bold">Contact Us</span>
+                            </div>
+                            <p>Unlimited Users for one low price</p>
+                        </div>
+                        <div class="card-body">
+                            <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>
+                            <a href="#" class="btn btn-rounded btn-accent">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>*@
+<section id="features" class="section">
+    <div class="container pb-5">
+        <div class="section-heading mb-6 text-center">
+            <h2>Core Features</h2>
+        </div>
+        <div class="row gap-y text-center text-md-left">
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-dollar-sign fa-2x color-4 mb-2"></i>
+                <h5 class="bold">Giving</h5>
+                <p class="color-2">A simplistic, stress-free tithing experience for you and your donors. Recurring and one-time giving made easy. Import cash and check donations quickly.</p>
+                <a href="/features/giving">Learn More</a>
+            </div>
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-praying-hands fa-2x color-4 mb-2"></i>
+                <h5 class="bold">Prayer Requests</h5>
+                <p class="color-2">Receive prayer requests online via your existing website or add them through Praise.</p>
+                <a href="/features/prayerrequests">Learn More</a>
+            </div>
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-chart-line fa-2x color-4 mb-2"></i>
+                <h5 class="bold">Analytics & Reporting</h5>
+                <p class="color-2">Real-time reporting designed to maximize member generosity.  Learn about who is giving and how often they give.</p>
+                <a href="/features/analytics">Learn More</a>
+            </div>
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-users fa-2x color-4 mb-2"></i>
+                <h5 class="bold">People</h5>
+                <p class="color-2">Manage individuals, households, and users.</p>
+                <a href="/features/people">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+@*<section class="section bg-6">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h2>
+                        Do you have
+                        <span class="bold">questions</span>
+                    </h2>
+                    <p class="lead">Collaboratively administrate empowered markets via plug-and-play networks.</p>
+                    <p class="text-muted">Dynamically procrastinate B2C users after installed base benefits. Dramatically visualize customer directed convergence without revolutionary ROI.</p>
+                </div>
+                <div class="col-md-8">
+                    <div class="accordion accordion-clean" id="common-faqs-accordion">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <a href="#" class="card-title btn" data-toggle="collapse" data-target="#q1">What does the package include?</a>
+                            </div>
+                            <div id="q1" class="collapse show" data-parent="#common-faqs-accordion">
+                                <div class="card-body">
+                                    Podcasting operational change management inside of workflows to establish a framework. Taking seamless key performance indicators offline to maximise the long tail. Keeping your eye on the ball while performing a deep dive on the start-up mentality to derive convergence on cross-platform integration.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <a href="#" class="card-title btn" data-toggle="collapse" data-target="#q2">What is the typical response time for a support question?</a>
+                            </div>
+                            <div id="q2" class="collapse" data-parent="#common-faqs-accordion">
+                                <div class="card-body">Taking seamless key performance indicators offline to maximise the long tail. Keeping your eye on the ball while performing a deep dive on the start-up mentality to derive convergence on cross-platform integration.</div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <a href="#" class="card-title btn" data-toggle="collapse" data-target="#q3">What do I need to know to customize my account?</a>
+                            </div>
+                            <div id="q3" class="collapse" data-parent="#common-faqs-accordion">
+                                <div class="card-body">Keeping your eye on the ball while performing a deep dive on the start-up mentality to derive convergence on cross-platform integration.</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <a href="#" class="card-title btn" data-toggle="collapse" data-target="#q4">Can I suggest a new feature?</a>
+                            </div>
+                            <div id="q4" class="collapse" data-parent="#common-faqs-accordion">
+                                <div class="card-body">
+                                    Taking seamless key performance indicators offline to maximise the long tail. Keeping your eye on the ball while performing a deep dive on the start-up mentality to derive convergence on cross-platform integration.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>*@

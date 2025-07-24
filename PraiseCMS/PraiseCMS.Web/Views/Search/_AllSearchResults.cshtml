@@ -1,0 +1,184 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.SearchResults>
+<style>
+    .icon {
+        font-size: 18px !important;
+    }
+
+    .category a {
+        color: #3699FF !important;
+    }
+
+    .empty {
+        text-align: center;
+        margin: 10%;
+    }
+</style>
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.category</h3>
+        </div>
+        <div class="col-xxl-4 d-flex align-items-center justify-content-center">
+            <div class="input-group input-group-lg input-group-solid my-2">
+                <input type="text" class="form-control pl-4" placeholder="Search..." id="filterKeyword" value="@ViewBag.query">
+                <input type="hidden" id="category" value="@ViewBag.category">
+                <div class="input-group-append">
+                    <span class="input-group-text pr-3">
+                        <a class="pointer mr-3" id="clearSearchBtn" @(string.IsNullOrEmpty(ViewBag.query) ? "style=display:none;" : "") data-toggle="tooltip" title="" data-original-title="Clear search">
+                            <i class="fas fa-times  icon-sm"></i>
+                        </a>
+                        <a class="pointer" onclick="getByKeyword()" data-toggle="tooltip" data-original-title="Search"><i class="fa fa-search"></i></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body pt-3 pb-0">
+        @if (Model != null && Model.Any())
+        {
+            var categories = Model.OrderBy(c => c.Category).ThenBy(n => n.Name).GroupBy(q => q.Category).ToList();
+
+            foreach (var category in categories)
+            {
+                <div class="font-size-sm text-primary font-weight-bolder text-uppercase mb-4 category">
+                    @switch (category.Key)
+                    {
+                        case "Users":
+                            <a href="/users" class="font-weight-bold text-dark text-hover-primary">
+                                @category.Key
+                            </a>
+                            break;
+                        case "Calender Events":
+                            <a href="/calender" class="font-weight-bold text-dark text-hover-primary">
+                                @category.Key
+                            </a>
+                            break;
+                        case "Events":
+                            <a href="/churchevents" class="font-weight-bold text-dark text-hover-primary">
+                                @category.Key
+                            </a>
+                            break;
+                        case "Event Types":
+                            <a href="/churcheventtypes" class="font-weight-bold text-dark text-hover-primary">
+                                @category.Key
+                            </a>
+                            break;
+                        case "Equipment":
+                            <a href="/equipment" class="font-weight-bold text-dark text-hover-primary">
+                                @category.Key
+                            </a>
+                            break;
+                        case "Equipment Categories":
+                            <a href="/equipment/categories" class="font-weight-bold text-dark text-hover-primary">
+                                @category.Key
+                            </a>
+                            break;
+                        case "Reports":
+                            <a href="/reports" class="font-weight-bold text-dark text-hover-primary">
+                                @category.Key
+                            </a>
+                            break;
+                    }
+                </div>
+                <div class="mb-10">
+                    @foreach (var item in category)
+                    {
+                        switch (item.Category)
+                        {
+                            case "Users":
+                                <div class="d-flex align-items-center flex-grow-1 mb-2">
+                                    <div class="symbol symbol-30 bg-transparent flex-shrink-0">
+                                        @if (!string.IsNullOrEmpty(item.Image))
+                                        {
+                                            <img src="@Html.AmazonLink(item.Image,"Uploads/ProfileImages")" alt="Avatar">
+                                        }
+                                        else
+                                        {
+                                            <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" alt="Avatar">
+                                        }
+                                    </div>
+                                    <div class="d-flex flex-column ml-3 mt-2 mb-2">
+                                        <a href="@item.Url" class="font-weight-bold text-dark text-hover-primary">
+                                            @item.Name
+                                        </a>
+                                    </div>
+                                </div>
+                                break;
+                            case "Calender Events":
+                                <div class="d-flex align-items-center flex-grow-1 mb-2">
+                                    <div class="symbol symbol-30 bg-transparent flex-shrink-0">
+                                        <i class="far fa-calendar-alt icon"></i>
+                                    </div>
+                                    <div class="d-flex flex-column ml-3 mt-2 mb-2">
+                                        <span>@Html.AjaxModalLink($"{item.Name}", $"/calendar/_View?id={item.Url}&type={"church"}&isGlobal=true", "Event", "", "font-weight-bold text-dark text-hover-primary", "", "", "")</span>
+                                        <span hidden>@Html.AjaxModalLink("<i class='fa fa-pencil-alt' style='font-size: 1rem;'></i>Edit", $"/calendar/_editEvent?id={item.Url}", "Edit Event", "Update", "btn btn-light-primary font-weight-bold", "", $"/calendar/deleteevent?id={item.Url}", $"editModalGlobal-{item.Url}")</span>
+                                    </div>
+                                </div>
+                                break;
+                            @*case "Equipment":
+                                    <div class="d-flex align-items-center flex-grow-1 mb-2">
+                                        <div class="symbol symbol-30 bg-transparent flex-shrink-0">
+                                            <i class="fa fa-toolbox icon"></i>
+                                        </div>
+                                        <div class="d-flex flex-column ml-3 mt-2 mb-2">
+                                            @Html.AjaxModalLink(item.Name, "/equipment/_editequipment/" + item.Url, "Edit Equipment", "Update", "font-weight-bold text-dark text-hover-primary", "", "/equipment/deleteequipment/" + item.Url, "", false, ModalSizes.Default)
+                                        </div>
+                                    </div>
+                                    break;
+                                case "Equipment Categories":
+                                    <div class="d-flex align-items-center flex-grow-1 mb-2">
+                                        <div class="symbol symbol-30 bg-transparent flex-shrink-0">
+                                            <i class="fa fa-toolbox icon"></i>
+                                        </div>
+                                        <div class="d-flex flex-column ml-3 mt-2 mb-2">
+                                            @Html.AjaxModalLink(item.Name, "/equipment/_editequipmentcategory/" + item.Url, "Edit Category", "Update", "font-weight-bold text-dark text-hover-primary", "", "/equipment/deleteequipmentcategory/" + item.Url, "", false, ModalSizes.Default)
+                                        </div>
+                                    </div>
+                                    break;*@
+                            case "Event Types":
+                                <div class="d-flex align-items-center flex-grow-1 mb-2">
+                                    <div class="symbol symbol-30 bg-transparent flex-shrink-0">
+                                        <i class="far fa-calendar-alt icon"></i>
+                                    </div>
+                                    <div class="d-flex flex-column ml-3 mt-2 mb-2">
+                                        @Html.AjaxModalLink(item.Name, "/churcheventtypes/_editchurcheventtype/" + item.Url, "Edit Event Type", "Update", "font-weight-bold text-dark text-hover-primary", "", "/churcheventtypes/delete/" + item.Url)
+                                    </div>
+                                </div>
+                                break;
+                            case "Events":
+                                <div class="d-flex align-items-center flex-grow-1 mb-2">
+                                    <div class="symbol symbol-30 bg-transparent flex-shrink-0">
+                                        <i class="far fa-calendar-alt icon"></i>
+                                    </div>
+                                    <div class="d-flex flex-column ml-3 mt-2 mb-2">
+                                        <a href="@item.Url" class="font-weight-bold text-dark text-hover-primary">
+                                            @item.Name
+                                        </a>
+                                    </div>
+                                </div>
+                                break;
+                            case "Reports":
+                                <div class="d-flex align-items-center flex-grow-1 mb-2">
+                                    <div class="symbol symbol-30 bg-transparent flex-shrink-0">
+                                        <i class="far fa-chart-bar icon"></i>
+                                    </div>
+                                    <div class="d-flex flex-column ml-3 mt-2 mb-2">
+                                        <a href="@item.Url" class="font-weight-bold text-dark text-hover-primary">
+                                            @item.Name
+                                        </a>
+                                    </div>
+                                </div>
+                                break;
+                        }
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty">
+                <span class="font-weight-bold text-muted">There are no records matching your search.</span>
+            </div>
+        }
+    </div>
+</div>

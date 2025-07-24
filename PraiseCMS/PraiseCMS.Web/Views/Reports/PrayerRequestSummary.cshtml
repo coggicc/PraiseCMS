@@ -1,0 +1,184 @@
+﻿@model PraiseCMS.DataAccess.Models.PrayerRequestsSummary
+@{
+    ViewBag.Title = "Prayer Requests Summary";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-primary card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-praying-hands fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.StatusCounts[StatusKeys.TotalRequests].YTD</span>
+                <span class="font-weight-bold text-white font-size-sm">Total Prayer Requests - YTD</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-danger card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-exclamation-circle fa-2x  text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.StatusCounts[StatusKeys.HighPriorityRequests].YTD</span>
+                <span class="font-weight-bold text-white font-size-sm">High Priority - YTD</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-warning card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-lock fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.StatusCounts[StatusKeys.ConfidentialRequests].YTD</span>
+                <span class="font-weight-bold text-white font-size-sm">Confidential - YTD</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-info card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-user-check fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.StatusCounts[StatusKeys.FollowUpRequiredRequests].YTD</span>
+                <span class="font-weight-bold text-white font-size-sm">Follow-Up Required - YTD</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Requests by Type</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportPrayerRequestsByTypeToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th style="min-width: 250px" class="pl-7">Type</th>
+                        <th style="min-width: 100px" class="text-center">Total</th>
+                        <th style="min-width: 100px" class="text-center">Total Not Prayed Over</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">High Priority</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.StatusCounts[StatusKeys.HighPriorityRequests].ByDate</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="@(Model.StatusCounts[StatusKeys.HighPriorityNotPrayedOver].ByDate > 1 ? "text-danger" : "text-dark-75") d-block font-size-lg">@Model.StatusCounts[StatusKeys.HighPriorityNotPrayedOver].ByDate</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">Confidential</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.StatusCounts[StatusKeys.ConfidentialRequests].ByDate</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="@(Model.StatusCounts[StatusKeys.ConfidentialNotPrayedOver].ByDate > 1 ? "text-danger" : "text-dark-75") d-block font-size-lg">@Model.StatusCounts[StatusKeys.ConfidentialNotPrayedOver].ByDate</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pl-5 py-8">
+                            <span class="text-dark-75 d-block font-size-lg">Follow-Up Required</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-dark-75 d-block font-size-lg">@Model.StatusCounts[StatusKeys.FollowUpRequiredRequests].ByDate</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="@(Model.StatusCounts[StatusKeys.FollowUpRequiredNotPrayedOver].ByDate > 1 ? "text-danger" : "text-dark-75") d-block font-size-lg">@Model.StatusCounts[StatusKeys.FollowUpRequiredNotPrayedOver].ByDate</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th style="min-width: 250px" class="pl-7">Total</th>
+                        <th style="min-width: 100px" class="text-center">@Model.StatusCounts[StatusKeys.TotalRequests].ByDate</th>
+                        <th style="min-width: 100px" class="text-center @(Model.StatusCounts[StatusKeys.TotalNotPrayedOver].ByDate > 1 ? "text-danger" : "text-dark-75")">@Model.StatusCounts[StatusKeys.TotalNotPrayedOver].ByDate</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_2">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Requests by Category</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportPrayerRequestsByCategoryToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th style="min-width: 250px" class="pl-7">Category</th>
+                        <th style="min-width: 100px" class="text-center">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories.OrderBy(x => x.Display))
+                    {
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">@category.Display</span>
+                            </td>
+                            <td class="text-center">
+                                @{
+                                    int count;
+                                    if (Model.CategoryCounts.TryGetValue(category.Id, out count))
+                                    {
+                                        <span class="text-dark-75 d-block font-size-lg">@count</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-dark-75 d-block font-size-lg">0</span>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th style="min-width: 250px" class="pl-7">Total</th>
+                        <th style="min-width: 100px" class="text-center">@Model.CategoryCounts.Values.Sum()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+            new KTCard('kt_card_2');
+        });
+    </script>
+}

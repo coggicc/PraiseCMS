@@ -1,0 +1,89 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.ViewModels.BillingActivityVM>
+@using PraiseCMS.DataAccess.Singletons;
+@using PraiseCMS.Shared.Methods
+<html>
+<head>
+    <link href="@Server.MapPath("/Content/assets/css/style.bundle.css")" rel="stylesheet">
+</head>
+<body style="background-color:#ffffff !important">
+    <div class="card card-custom gutter-b">
+        <div class="card-header">
+            <div class="card-title">
+                <h1 class="display-4 font-weight-bolde">Billing Activity</h1>
+            </div>
+            <div class="card-toolbar">
+                <a href="/" class="brand-logo">
+                    <img alt="Logo" src="@ApplicationCache.Instance.SiteConfiguration.Url/Content/assets/media/logos/praise_logo.png">
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-bordered table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl">
+                    <thead>
+                        <tr>
+                            <th class="text-left font-size-h4">Plan</th>
+                            <th class="text-left font-size-h4">Billing Frequency</th>
+                            <th class="text-right font-size-h4">Amount</th>
+                            <th class="text-center font-size-h4">Transaction Date</th>
+                            <th class="text-center font-size-h4">Next Due Date</th>
+                            <th class="text-left font-size-h4">Payment Method</th>
+                            <th class="text-center font-size-h4">Transaction ID</th>
+                            <th class="text-center font-size-h4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            if (item.Transactions.Any())
+                            {
+                                foreach (var transaction in item.Transactions)
+                                {
+                                    <tr>
+                                        <td>@(item.Subscription.BillingPlan.EqualsIgnoreCase(BillingType.Free)? "Free" : "Standard")</td>
+                                        @if (item.Subscription.BillingPlan.EqualsIgnoreCase(BillingType.Free))
+                                        {
+                                            <td>N/A</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.Subscription.BillingPlan @Html.Raw(item.Subscription.FreeTrial ? "<small>(Free Trial)</small>" : "")</td>
+                                        }
+                                        <td class="text-right">@transaction.Amount.ToCurrencyString()</td>
+                                        <td class="text-center">@transaction.TransactionDate.ToShortDateString()</td>
+                                        <td class="text-center">@Html.Raw(item.Subscription.EndDate.IsNotNullOrEmpty() ? Convert.ToDateTime(item.Subscription.EndDate).ToShortDateString() : "Unlimited")</td>
+                                        <td>@transaction.PaymentMethod</td>
+                                        <td class="text-center">@transaction.TransactionId</td>
+                                        <td class="text-center">@Html.Raw(item.Subscription.IsActive ? "Active" : "Expired")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>@(item.Subscription.BillingPlan.EqualsIgnoreCase(BillingType.Free)? "Free" : "Standard")</td>
+                                    @if (item.Subscription.BillingPlan.EqualsIgnoreCase(BillingType.Free))
+                                    {
+                                        <td>N/A</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.Subscription.BillingPlan @Html.Raw(item.Subscription.FreeTrial ? "<small>(Free Trial)</small>" : "")</td>
+                                    }
+                                    <td class="text-right">@(0m.ToCurrencyString())</td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center">@Html.Raw(item.Subscription.IsActive ? "Active" : "Expired")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+@{
+    var todayGiving = Model.Giving.Where(x => x.CreatedDate.Date.Equals(DateTime.Now.Date)).Select(x => x.Amount).Sum().ToCurrencyString();
+    var donors = Model.Giving.Where(x => x.PersonId.IsNotNullOrEmpty() && x.CreatedDate.Date.Equals(DateTime.Now.Date)).Select(x => x.PersonId).Distinct().Count();
+}
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder">Today's Giving</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <span class="card-title font-weight-bolder text-dark-75 font-size-h2 mb-0 mt-6 d-block">@todayGiving</span>
+        <span class="font-weight-bold text-muted font-size-sm">@donors @donors.Pluralize("donor") <i class="far fa-question-circle ml-1" data-toggle="tooltip" data-original-title="Lump sum giving is included in the amount but not in the donor count."></i></span>
+    </div>
+</div>

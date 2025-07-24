@@ -1,0 +1,213 @@
+﻿@using PraiseCMS.DataAccess.Models
+@model LoginViewModel
+@{
+    Layout = "~/Views/Shared/_AuthenticationLayout.cshtml";
+    ViewBag.Title = "Login";
+}
+
+<div class="login-signin">
+    @if (Model.ResponseStatus == LoginResponseStatus.LoadLoginForm)
+    {
+        using (Html.BeginForm("Login", RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="ResponseStatus" name="ResponseStatus" value="@Model.ResponseStatus" />
+            <input type="hidden" id="LoginVia" name="LoginVia" value="Email" />
+            <div class="mt-10" id="login-head-email">
+                <h3>Log in to Praise CMS</h3>
+                <div class="text-muted font-weight-bold">Enter your email to access your account.</div>
+            </div>
+            <div class="mt-10" id="login-head-phone" style="display:none;">
+                <h3>Log in to Praise CMS</h3>
+                <div class="text-muted font-weight-bold">Enter your phone number to access your account.</div>
+            </div>
+            <div class="form-group my-5" id="login-email">
+                <label class="text-muted" style="float:left;">Email Address</label>
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "Email", placeholder = "Enter your email address" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-validation-error" })
+            </div>
+            <div class="form-group my-5" id="login-phone" style="display:none;">
+                <label class="text-muted" style="float:left;">Phone Number</label>
+                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control phone h-auto form-control-solid py-4 px-8", name = "phone", placeholder = "(XXX) XXX-XXXX", autocomplete = "off" })
+                <span class="form-text text-muted">We will send you a text message to confirm your number.</span>
+                @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "field-validation-error" })
+            </div>
+            <div class="kt-login__actions">
+                <button type="button" class="btn btn-primary btn_continue font-weight-bold" style="width:100%;">Continue</button>
+            </div>
+            <hr style="border-bottom:.07rem dashed #ebedf2;" />
+            <div class="continue-buttons mt-5">
+                <h4>Other Login Options</h4>
+                <a href="javascript:;" id="show-email-login" class="btn btn-outline-dark btn-elevate my-3 " onclick="LoadEmailLogin()" style="width:100%; display:none;">
+                    <i class="fas fa-envelope" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with email</span>
+                </a>
+                <a href="javascript:;" id="show-mobile-login" class="btn btn-outline-dark btn-elevate my-3 " onclick="LoadMobileLogin()" style="width:100%; display:block;">
+                    <i class="fa fa-mobile-alt" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with mobile</span>
+                </a>
+                @*<a href="/Account/Google" class="btn btn-outline-dark btn-elevate" style="width:100%;">
+                    <i class="fab fa-google" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with Google</span>
+                </a>*@
+                @*<a href="/Account/Facebook" class="btn btn-outline-dark btn-elevate mb-3" style="width:100%;">
+                        <i class="fab fa-facebook" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with Facebook</span>
+                    </a>*@
+            </div>
+            <div class="mt-5">
+                <span class="opacity-70 mr-4">
+                    Don't have an account yet?
+                </span>
+                <a href="@Url.Action("Register","Account")" class="text-muted text-hover-primary font-weight-bold">Sign up for Praise CMS</a>
+            </div>
+        }
+    }
+    else if (Model.ResponseStatus == LoginResponseStatus.SetupPassword)
+    {
+        using (Html.BeginForm("Login", RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="ResponseStatus" name="ResponseStatus" value="@Model.ResponseStatus" />
+            <input type="hidden" id="current_State" name="current_State" value="@Model.ResponseStatus" />
+
+            <div class="mt-10">
+                <h3>Set up password Praise CMS</h3>
+                <div class="text-muted font-weight-bold">You have not created a password for your account yet. Add one to continue.</div>
+            </div>
+            if (Model.LoginVia == LoginVia.Email)
+            {
+                <input type="hidden" id="LoginVia" name="LoginVia" value="Email" />
+                <div class="form-group my-5" id="login-email">
+                    <label class="text-muted" style="float:left;">Email Address</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "login-form-Email", placeholder = "Enter your email address", disabled = "disabled" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "" })
+                    <input type="hidden" id="Email" name="Email" value="@Model.Email" />
+                </div>
+            }
+            else if (Model.LoginVia == LoginVia.Phone)
+            {
+                <input type="hidden" id="LoginVia" name="LoginVia" value="Phone" />
+                <div class="form-group my-5" id="login-phone">
+                    <label class="text-muted" style="float:left;">Phone Number</label>
+                    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "login-form-Phone", placeholder = "(XXX) XXX-XXXX", autocomplete = "off", disabled = "disabled" })
+                    @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "" })
+                    <input type="hidden" id="Phone" name="Phone" value="@Model.Phone" />
+                </div>
+                <div class="form-group my-5">
+                    <label class="text-muted" style="float:left;">Email Address</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "login-form-Email", placeholder = "Enter your email address", autocomplete = "off" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "" })
+                    <input type="hidden" id="Email" name="Email" value="@Model.Email" />
+                </div>
+            }
+            <div class="form-group my-5">
+                <label class="text-muted" style="float:left;">Password</label>
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "login-form-Password", placeholder = "Enter your password" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-validation-error" })
+            </div>
+            <div class="form-group my-5">
+                <label class="text-muted" style="float:left;">Confirm Password</label>
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "login-form-confirm-Password", placeholder = "Confirm your password" })
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-validation-error" })
+            </div>
+            <div class="kt-login__actions">
+                <button type="button" class="btn btn-primary btn_continue font-weight-bold" style="width:100%;">Continue</button>
+            </div>
+            <div class="mt-10">
+                <a href="@Url.Action("Login","Account")" class="text-muted text-hover-primary font-weight-bold">Back to login</a>
+            </div>
+        }
+    }
+    else if (Model.ResponseStatus == LoginResponseStatus.LoginWithPassword)
+    {
+        using (Html.BeginForm("Login", RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="ResponseStatus" name="ResponseStatus" value="@Model.ResponseStatus" />
+            <input type="hidden" id="current_State" name="current_State" value="@Model.ResponseStatus" />
+            <div class="mt-10">
+                <h3>Login Praise CMS</h3>
+                <div class="text-muted font-weight-bold">Enter your password to login.</div>
+            </div>
+            if (Model.LoginVia == LoginVia.Email)
+            {
+                <input type="hidden" id="Email" name="Email" value="@Model.Email" />
+                <input type="hidden" id="LoginVia" name="LoginVia" value="Email" />
+                <div class="form-group my-5">
+                    <label class="text-muted" style="float:left;">Email Address</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "Email", placeholder = "Enter your email address", disabled = "disabled" })
+                </div>
+            }
+            else if (Model.LoginVia == LoginVia.Phone)
+            {
+                <input type="hidden" id="Phone" name="Phone" value="@Model.Phone" />
+                <input type="hidden" id="LoginVia" name="LoginVia" value="Phone" />
+                <div class="form-group my-5">
+                    <label class="text-muted" style="float:left;">Phone Number</label>
+                    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "Phone", placeholder = "Phone", autocomplete = "off", disabled = "disabled" })
+                </div>
+            }
+            <div class="form-group mb-5">
+                <label class="text-muted" style="float:left;">Password</label>
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control h-auto form-control-solid py-4 px-8", name = "Password", placeholder = "Enter your password" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-validation-error" })
+            </div>
+            <div class="kt-login__actions">
+                <button type="button" class="btn btn-primary btn_continue font-weight-bold" style="width:100%;">Continue</button>
+            </div>
+            @*<div class="mt-10">
+                    <a href="@Url.Action("Login","Account")" class="text-muted text-hover-primary font-weight-bold">Back to login</a>
+                </div>*@
+            <div class="mt-10">
+                <div class="form-group d-flex flex-wrap justify-content-between align-items-center">
+                    <label class="checkbox m-0 text-muted">
+                        @Html.CheckBoxFor(x => x.RememberMe)Remember me
+                        <span class="ml-3"></span>
+                    </label>
+                    <a href="@Url.Action("ForgotPassword")" id="kt_login_forgot" class="text-muted text-hover-primary">Forgot Password?</a>
+                    <a href="@Url.Action("Login","Account")" class="text-muted text-hover-primary font-weight-bold">Back to login</a>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        if ('@Model.ResponseStatus' == '@SignInResponseStatus.InvalidAttempt') {
+            LoadEmailLogin();
+        }
+    });
+    function LoadEmailLogin() {
+        $("#Email").val('');
+        $("#login-form-password").val('');
+        $("#LoginVia, #LoginVia").val('Email');
+        $("#show-mobile-login").show();
+        $("#login-email").show();
+        $("#login-phone").hide();
+        $("#show-email-login").hide();
+        $("#alert-container").empty();
+        $("#login-head-email").show();
+        $("#login-head-phone").hide();
+    }
+    function LoadMobileLogin() {
+        $("#Phone").val('');
+        $("#LoginVia, #LoginVia").val('Phone');
+        $("#show-email-login").show();
+        $("#login-email").hide();
+        $("#login-phone").show();
+        $("#show-mobile-login").hide();
+        $("#alert-container").empty();
+        $("#login-head-email").hide();
+        $("#login-head-phone").show();
+    }
+
+    $("#Phone").on("blur", function () {
+        var last = $(this).val().substr($(this).val().indexOf("-") + 1);
+
+        if (last.length == 3) {
+            var move = $(this).val().substr($(this).val().indexOf("-") - 1, 1);
+            var lastfour = move + last;
+            var first = $(this).val().substr(0, 9);
+
+            $(this).val(first + '-' + lastfour);
+        }
+    });
+</script>

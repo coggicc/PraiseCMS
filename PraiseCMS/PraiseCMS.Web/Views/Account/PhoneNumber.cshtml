@@ -1,0 +1,27 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.GivingSignUpViewModel
+@{
+    ViewBag.Title = "Give to " + Model.Church.Name;
+}
+
+<div id="SignUp_Details" class="kt-login__signin">
+    <div class="kt-login__head">
+        <div class="kt-login__desc">@Model.Church.Name<br />Enter your phone number so we can send you a code to verify your identity.</div>
+    </div>
+    @using (Ajax.BeginForm("_PhoneSignIn", "Account", null, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "SignUp_Details" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Church.Id)
+        @Html.HiddenFor(x => x.Payment.Amount)
+        @Html.HiddenFor(x => x.Payment.FundId)
+        @Html.HiddenFor(x => x.Payment.CampusId)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control phone", name = "login-form-phone", placeholder = "Phone Number" })
+            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "invalid-feedback" })
+            <span class="form-text text-muted">We'll text you to confirm your number. Standard message and data rates may apply.</span>
+        </div>
+        <div class="kt-login__actions">
+            <button type="submit" class="btn btn-brand btn-elevate kt-login__btn-primary" style="width:100%;">Continue</button>
+        </div>
+    }
+</div>

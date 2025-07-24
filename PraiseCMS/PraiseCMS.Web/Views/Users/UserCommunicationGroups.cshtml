@@ -1,0 +1,169 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.UserView
+
+@{
+    ViewBag.Title = "Communication Groups";
+}
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">
+                        @ViewBag.Title
+                    </h3>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.Groups.Any())
+                {
+                    <div class="table-responsive">
+                        <p>You have been assigned to the following communication groups:</p>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Group Name</th>
+                                    <th class="text-center">Email <i class="fas fa-envelope ml-2" data-toggle="tooltip" data-original-title="Email Notifications"></i></th>
+                                    <th class="text-center">Text Message <i class="fas fa-comment ml-2" data-toggle="tooltip" data-original-title="Text Message Notifications"></i></th>
+                                    <th class="text-center">System Notification <i class="fas fa-bell ml-2" data-toggle="tooltip" data-original-title="System Notifications"></i></th>
+                                    <th class="text-center">Unsubscribe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var group in Model.Groups)
+                                {
+                                    <tr>
+                                        <td>
+                                            @group.Display
+                                        </td>
+                                        <td class="text-center">
+                                            @if (group.EnableEmail)
+                                            {
+                                                <div class="checkbox-inline">
+                                                    <label class="checkbox" style="margin:auto;">
+                                                        <input class="contact-method-checkbox" type="checkbox" name="EnableEmail" id="EnableEmail" data-group-person-id="@group.GroupsPersonId" @Html.Raw(group.EnableEmail && group.DisableEmailNotifications.IsNullOrEmpty() ? "checked" : "") />
+                                                        <span></span>
+                                                    </label>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            @if (group.EnableText)
+                                            {
+                                                <div class="checkbox-inline">
+                                                    <label class="checkbox" style="margin:auto;">
+                                                        <input class="contact-method-checkbox" type="checkbox" name="EnableText" id="EnableText" data-group-person-id="@group.GroupsPersonId" @Html.Raw(group.EnableText && group.DisableTextNotifications.IsNullOrEmpty() ? "checked" : "") />
+                                                        <span></span>
+                                                    </label>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            @if (group.EnableSystemNotification)
+                                            {
+                                                <div class="checkbox-inline">
+                                                    <label class="checkbox" style="margin:auto;">
+                                                        <input class="contact-method-checkbox" type="checkbox" name="EnableSystemNotification" id="EnableSystemNotification" data-group-person-id="@group.GroupsPersonId" @Html.Raw(group.EnableSystemNotification && group.DisableSystemNotifications.IsNullOrEmpty() ? "checked" : "") @Html.Raw(group.AllowUserToUnsubscribe ? "" : "disabled='disabled'") />
+                                                        <span style="@Html.Raw(!group.AllowUserToUnsubscribe ? "background-color: #80808F !important; cursor:default;" : "")" data-toggle="tooltip" title="@Html.Raw(group.AllowUserToUnsubscribe ? "" : "You cannot remove this notification")"></span>
+                                                    </label>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            @if (group.AllowUserToUnsubscribe)
+                                            {
+
+                                                <a class="unsubscribe" href="#" data-id="@group.Id" data-toggle="tooltip" title="Unsubscribe from the group">Unsubscribe</a>
+                                                <a hidden id="unsubscribe-@group.Id" href="/Users/UnsubscribeGroup?groupId=@group.Id&personId=@Model.User.PersonId" data-toggle="tooltip" title="Unsubscribe from the group"></a>
+                                            }
+                                            else
+                                            {
+                                                <span class="disabled" data-toggle="tooltip" data-original-title="You cannot unsubscribe from this notification"><i class="fas fa-ban"></i></span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center">Your groups will display here once you have been assigned to one.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).on("click", ".unsubscribe", function (event) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Unsubscribe Group",
+            text: "Are you sure you want to unsubscribe this group?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes, unsubscribe'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                StartLoading();
+                $("#unsubscribe" + $(this).data("id"))[0].click();
+            }
+        });
+    });
+
+    $(document).on('change', '.contact-method-checkbox', function (e) {
+        let name = $(this).attr('name');
+        let groupPersonId = $(this).data('group-person-id');
+        let key = "";
+        let value = !$(this).is(":checked");
+        switch (name) {
+            case "EnableEmail":
+                key = "Email";
+                break;
+            case "EnableText":
+                key = "Text";
+                break;
+            case "EnableSystemNotification":
+                key = "SystemNotification";
+                break;
+        }
+        $.post('/people/Override', ({ id: groupPersonId, key: key, value: value }), function (result) {
+            if (!result) {
+                Swal.fire({
+                    text: "Uh-oh! Something went wrong. Please try again later.",
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok",
+                    customClass: {
+                        confirmButton: "btn font-weight-bold btn-light"
+                    }
+                });
+            } else {
+                Notify("success", "SUCCESS", Constants.SavedMessage);
+            }
+        });
+    });
+
+    function deleteCommunicationGroup(id) {
+        Swal.fire({
+            title: "Delete Communication Group",
+            text: "Are you sure? The current members will no longer be assigned to this group.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes, Delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#delete-communicationGroup-' + id)[0].click();
+            }
+        });
+    }
+</script>

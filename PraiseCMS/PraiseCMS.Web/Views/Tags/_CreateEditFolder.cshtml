@@ -1,0 +1,45 @@
+﻿@model PraiseCMS.DataAccess.Models.Folder
+
+<div id="alert-container"></div>
+@using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "folder-form" }))
+{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.ChurchId)
+    @Html.HiddenFor(x => x.CreatedBy)
+    @Html.HiddenFor(x => x.CreatedDate)
+    @Html.HiddenFor(x => x.ParentId)
+    @Html.HiddenFor(x => x.Type)
+
+    <div class="form-group">
+        <label>Folder:</label>
+        @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+    </div>
+}
+@section belowScripts
+{
+    <script type="text/javascript">
+        $("#folder-form").submit(function (e) {
+            e.preventDefault(e);
+            $.ajax({
+                type: "POST",
+                url: $(this).attr('action'),
+                data: $('#folder-form').serialize(), // serializes the form's elements.
+                success: function (result) {
+                    if (result.Success) {
+                        $('#ajax-modal').modal('toggle');
+                        Notify("success", "SUCCESS", result.Message);
+                        RefreshTree();
+                    } else {
+                        ShowErrorAlert(result.Message);
+                    }
+                },
+                error: function (result) {
+                    ShowErrorAlert(result.Message);
+                }
+            });
+        });
+    </script>
+}

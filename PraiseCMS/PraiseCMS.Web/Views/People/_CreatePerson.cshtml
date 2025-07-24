@@ -1,0 +1,133 @@
+﻿@model PraiseCMS.DataAccess.Models.Person
+
+<div id="create-person-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-person-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(q => q.Id)
+        @Html.HiddenFor(q => q.IsActive)
+        @Html.HiddenFor(q => q.CreatedBy)
+        @Html.HiddenFor(q => q.CreatedDate)
+        <div class="form-group row">
+            <div class="col-lg">
+                <label>First Name</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg">
+                <label>Last Name</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.LastName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg">
+                <label>Email</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.Email, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg">
+                <label>Phone Number</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "form-control phone" })
+                    @Html.ValidationMessageFor(x => x.PhoneNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg">
+                <label>Address</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.Address1, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.Address1, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg">
+                <label>Apt/Unit/Suite#</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.Address2, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg">
+                <label>City</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.City, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.City, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg">
+                <label>State</label>
+                <div class="form-group">
+                    @Html.DropDownListFor(x => x.State, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { @class = "form-control select2", style = "width:100%;" })
+                    @Html.ValidationMessageFor(x => x.State, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg">
+                <label>Zip</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.Zip, new { maxlength = "5", @class = "form-control numeric" })
+                    @Html.ValidationMessageFor(x => x.Zip, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    var validation = [];
+    $(function () {
+        validationStep();
+    });
+    $(document).on('click', '#submit-btn', function () {
+        validation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                document.getElementById('add-person').submit();
+            }
+            setTimeout(function () {
+                StopLoading();
+            });
+        });
+    });
+    function validationStep() {
+        const form = document.getElementById('add-person');
+        validation.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'FirstName': { validators: { notEmpty: { message: "Please enter a first name." } } },
+                    'LastName': { validators: { notEmpty: { message: "Please enter a last name." } } },
+                    'Email': {
+                        validators: {
+                            emailAddress: { message: 'Please enter a valid email address.' }
+                        }
+                    },
+                    'PhoneNumber': {
+                        validators: {
+                            callback: {
+                                message: 'Please enter a valid 10 digit phone number.',
+                                callback: function () {
+                                    const val = form.querySelector('[name="PhoneNumber"]').value;
+                                    if (val) {
+                                        const length = parseInt(val.replace(/\D/g, "").length);
+                                        return (length === 10) ? true : false;
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+    }
+</script>

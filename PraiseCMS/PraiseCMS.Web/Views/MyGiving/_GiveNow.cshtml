@@ -1,0 +1,165 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.GivingViewModel
+@{
+    var hasLastGift = Model.LastGift.IsNotNullOrEmpty() && Model.LastGift.ScheduledPaymentId.IsNullOrEmpty();
+}
+<div id="giveNow-div">
+    @Html.Partial("~/Views/Shared/_Alert.cshtml")
+
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "giveNow-div" }, new { @class = "form", id = "GiveNowForm" }))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Church.Id)
+        @Html.HiddenFor(x => x.Church.Email)
+        @Html.HiddenFor(x => x.Church.Phone)
+        @Html.HiddenFor(x => x.Church.Name)
+        @Html.HiddenFor(x => x.Payment.Id)
+        @Html.HiddenFor(x => x.Payment.Merchant)
+        @Html.HiddenFor(x => x.Payment.MerchantId)
+        @Html.HiddenFor(x => x.Payment.ChurchId)
+        @Html.HiddenFor(x => x.Payment.UserId)
+        @Html.HiddenFor(x => x.Payment.DigitalPaymentType)
+        @Html.HiddenFor(x => x.Payment.CreatedBy)
+        @Html.HiddenFor(x => x.Payment.CreatedDate)
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>
+                        Gift Amount
+                        @if (hasLastGift)
+                        {
+                            <span style="margin-left: 20px; font-style: italic;">
+                                Last Gift: <b>@Model.LastGift.Amount.ToCurrencyString()</b> on <b>@Model.LastGift.CreatedDate.ToShortDateString()</b>.
+                                <a class="anchor" onclick="GiveAgain('@Model.LastGift.Id')"> Give @Model.LastGift.Amount.ToCurrencyString() again</a>.
+                            </span>
+                        }
+                    </label>
+                    <div class="input-group input-group-lg">
+                        <div class="input-group-prepend"><span class="input-group-text" style="padding-right: 0;border: none;background: none;font-size: 18px;">$</span></div>
+                        @Html.TextBoxFor(x => x.Amount, new { placeholder = "0.00", @class = "form-control form-control-lg currency amount numeric", name = "PaymentAmount", style = "border-left:none;border-right:none;border-top:none;border-radius:0;font-size:18px;padding-left:10px;" })
+                    </div>
+                    @Html.ValidationMessageFor(x => x.Amount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        if (Model.Funds.Any())
+        {
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label>Fund</label>
+                        @Html.DropDownListFor(x => x.Payment.FundId, Model.Funds, "Select a fund...", new { @class = "form-control select2", name = "Fund", style = "width:100%;" })
+                        @Html.ValidationMessageFor(x => x.Payment.FundId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>Campus</label>
+                    @Html.DropDownListFor(x => x.Payment.CampusId, Model.Campuses, "Select a campus...", new { @class = "form-control select2", name = "Campus", style = "width:100%;" })
+                    @Html.ValidationMessageFor(x => x.Payment.CampusId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>Select Payment Method or <a href="/mygiving/paymentmethods#addPaymentMethod">add new</a></label>
+                    <select class="form-control select2" name="Payment.PaymentMethod" id="Payment_PaymentMethod" style="width:100%;">
+                        <option value="">Select a giving method...</option>
+                        @foreach (var item in Model.Accounts.Where(q => !q.Disabled).ToList())
+                        {
+                            <option @(item.IsPrimary ? Html.Raw("selected='selected'") : Html.Raw("")) @(item.IsPrimary ? Html.Raw("data-content='<span class=\"primary-card ml-2\">(Primary)</span>'") : Html.Raw("")) @(item.Disabled ? "disabled='disabled' data-content='<i class=\"fas fa-exclamation-circle text-danger\"></i>'>" : "") value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(x => x.Payment.PaymentMethod, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="allow_Processing_fee" value="@(Model.Church.AllowDonorCoverProcessingFee?"true":"")" />
+        if (Model.Church.AllowDonorCoverProcessingFee)
+        {
+            <div id="processingFee-div" class="form-check mt-5">
+                @Html.CheckBoxFor(x => x.IncludeProcessingFee, new { id = "IncludeProcessingFee", @class = "cursor-pointer form-check-input h-20px w-20px" })
+                <label class="cursor-pointer form-check-label ml-5" for="IncludeProcessingFee"> Do you want to contribute an additional <span id="processingFeeAmount">$0.00</span> to help us cover our merchant processing fees?</label>
+            </div>
+        }
+    }
+</div>
+<script type="text/javascript">
+    $('.amount').on('input propertychange paste', function (e) {
+        var reg = /^0+/gi;
+        if (this.value.match(reg)) {
+            this.value = this.value.replace(reg, '');
+        }
+    });
+
+    $(function () {
+        $(".select2").select2({
+            templateResult: formatState,
+            templateSelection: formatState
+        });
+
+        function formatState(opt) {
+            if (!opt.id) {
+                return opt.text;
+            }
+            var optContent = $(opt.element).attr('data-content');
+            if (!optContent) {
+                const $opt = $(
+                    '<span>' + opt.text + '</span>'
+                );
+                return $opt;
+            } else {
+                const $opt = $(
+                    '<span>' + opt.text + ' ' + optContent + '</span>'
+                );
+                return $opt;
+            }
+        };
+
+        $(".select2-selection").on("focus", function () {
+            $(this).parent().parent().prev().select2("open");
+        });
+    });
+
+    $(document).on('blur', '#Amount', function () {
+        if ($(this).val()) {
+            calculateProcessingFee($('#Church_Id').val(), $('#Amount').val(), $('#Payment_PaymentMethod').val());
+        } else {
+            $('#processingFeeAmount').text("$0.00");
+            $('#processingFee-div').hide();
+        }
+    });
+
+    $(document).on('change', '#Payment_PaymentMethod', function () {
+        if ($(this).val()) {
+            calculateProcessingFee($('#Church_Id').val(), $('#Amount').val(), $('#Payment_PaymentMethod').val());
+        }
+    });
+
+    function GiveAgain(id) {
+        $.ajax({
+            url: '/mygiving/GetPayment/' + id,
+            type: 'GET',
+            success: function (payment) {
+                if (payment) {
+                    let form = document.getElementById('GiveNowForm');
+                    form.Amount.value = parseFloat(payment.Amount).toFixed(2);
+                    form.Payment_FundId.value = payment.FundId;
+                    $('#Payment_FundId').trigger('change');
+                    form.Payment_CampusId.value = payment.CampusId;
+                    $('#Payment_CampusId').trigger('change');
+                    calculateProcessingFee($('#Church_Id').val(), $('#Amount').val(), $('#Payment_PaymentMethod').val());
+                }
+            }
+        });
+    }
+
+    $("#GiveNowForm").submit(function (e) {
+        StartLoading();
+    });
+</script>

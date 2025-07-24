@@ -1,0 +1,194 @@
+﻿@model PraiseCMS.DataAccess.Models.PermissionViewModel
+
+@using PraiseCMS.Shared.Methods
+
+<style type="text/css">
+    .table .thead-light th {
+        font-weight: bold;
+    }
+
+    table.table-permissions tbody tr:first-child {
+        background-color: #ffefdf;
+        font-weight: bold;
+    }
+
+    table.table-permissions tbody td {
+        vertical-align: middle;
+    }
+
+        table.table-permissions tbody td .kt-switch label {
+            margin: 0;
+        }
+
+        table.table-permissions tbody td .kt-switch span {
+            margin: 0 !important;
+            position: relative;
+            top: 3px;
+        }
+</style>
+<div class="table-responsive">
+    <table class="table table-permissions table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Permissions</th>
+                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <th scope="col">Module Id</th>
+                }
+                @if (!Model.Module.Type.Equals(PermissionType.Subscription.ToString()))
+                {
+                    <th scope="col">Read/Write</th>
+                    <th scope="col">Read Only</th>
+                    <th scope="col">No Access</th>
+                }
+                else
+                {
+                    <th scope="col">Has Access</th>
+                }
+                @if (Model.Module.Type == Constants.User)
+                {
+                    <th scope="col">Permissions Set By</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var rowNumber = 1;
+
+                foreach (var module in Model.Modules)
+                {
+                    string readWrite = null;
+                    string readOnly = null;
+                    string noAccess = null;
+                    string typeId = null;
+                    var type = "Not Defined";
+
+                    if (Model.Module.Type == PermissionType.Role.ToString())
+                    {
+                        typeId = Model.ApplicationSingleRole.Id;
+                    }
+                    else if (Model.Module.Type == PermissionType.User.ToString())
+                    {
+                        typeId = Model.ApplicationSingleUser.Id;
+                    }
+                    else if (Model.Module.Type == PermissionType.Subscription.ToString())
+                    {
+                        typeId = Model.SubscriptionType.Id;
+                    }
+
+                    Permissions permissions = null;
+
+                    if (Model.Permissions.Count > 0)
+                    {
+                        if (Model.Module.Type == PermissionType.User.ToString() || Model.Module.Type == PermissionType.Subscription.ToString())
+                        {
+                            permissions = Model.Permissions.FirstOrDefault(x => x.ModuleId == module.Id && x.Type == Model.Module.Type && x.TypeId == Model.Module.TypeId);
+                        }
+
+                        if (permissions == null)
+                        {
+                            permissions = Model.Permissions.FirstOrDefault(x => x.ModuleId == module.Id && x.Type == "Role");
+                        }
+                    }
+
+                    if (permissions != null)
+                    {
+                        type = permissions.Type;
+
+                        if (Model.Module.Type == PermissionType.Subscription.ToString())
+                        {
+                            readWrite = permissions.OperationId == 2 ? "checked" : null;
+                        }
+                        else if (Model.Module.Type == Constants.User)
+                        {
+                            if (type == "Role")
+                            {
+                                var isRoleContain = Model.Module.HasListValue(permissions.TypeId, Model.Module.RoleIds);
+
+                                if (isRoleContain)
+                                {
+                                    if (permissions.OperationId == 2) { readWrite = "checked"; }
+                                    else if (permissions.OperationId == 1) { readOnly = "checked"; }
+                                    else if (permissions.OperationId == 0) { noAccess = "checked"; }
+                                }
+                                else
+                                {
+                                    type = "Not Defined";
+                                }
+                            }
+                            else
+                            {
+                                if (permissions.OperationId == 2) { readWrite = "checked"; }
+                                else if (permissions.OperationId == 1) { readOnly = "checked"; }
+                                else if (permissions.OperationId == 0) { noAccess = "checked"; }
+                            }
+                        }
+                        else
+                        {
+                            if (permissions.OperationId == 2) { readWrite = "checked"; }
+                            else if (permissions.OperationId == 1) { readOnly = "checked"; }
+                            else if (permissions.OperationId == 0) { noAccess = "checked"; }
+                        }
+                    }
+
+                    var isParent = module.Id == Model.Module.ParentModuleId;
+
+                    <tr row-number="@rowNumber">
+                        <td>@module.Name</td>
+                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                        {
+                            <td>@module.Id</td>
+                        }
+                        <td>
+                            <span class="switch switch-sm switch-icon">
+                                <label>
+                                    <input type="checkbox" class="switch_permissions" data-name="readwrite" data-isParent="@isParent" src="/permissions/UpdatePermission?Type=@Model.Module.Type&TypeId=@typeId&ModuleId=@module.Id&ParentModuleId=@Model.Module.ParentModuleId&OperationId=@Operations.ReadWrite" @readWrite />
+                                    <span></span>
+                                </label>
+                            </span>
+                        </td>
+                        @if (!Model.Module.Type.Equals(PermissionType.Subscription.ToString()))
+                        {
+                            <td>
+                                <span class="switch switch-sm switch-icon">
+                                    <label>
+                                        <input type="checkbox" class="switch_permissions" data-name="readonly" data-isParent="@isParent" src="/permissions/UpdatePermission?Type=@Model.Module.Type&TypeId=@typeId&ModuleId=@module.Id&ParentModuleId=@Model.Module.ParentModuleId&OperationId=@Operations.ReadOnly" @readOnly />
+                                        <span></span>
+                                    </label>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="switch switch-sm switch-icon">
+                                    <label>
+                                        <input type="checkbox" class="switch_permissions" data-name="noaccess" data-isParent="@isParent" src="/permissions/UpdatePermission?Type=@Model.Module.Type&TypeId=@typeId&ModuleId=@module.Id&ParentModuleId=@Model.Module.ParentModuleId&OperationId=@Operations.NoAccess" @noAccess />
+                                        <span></span>
+                                    </label>
+                                </span>
+                            </td>
+                        }
+                        @if (Model.Module.Type == Constants.User)
+                        {
+                            if (type.EqualsIgnoreCase(PermissionType.User.ToString()))
+                            {
+                                <td>
+                                    @type &nbsp;
+                                    @if (permissions != null)
+                                    {
+                                        <a href="/permissions/RemoveUserPermission?Id=@permissions.Id" class="removeUserPermission text-danger">Remove</a>
+                                    }
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @type @Html.Raw(type.EqualsIgnoreCase(PermissionType.Role.ToString()) ? $"<span class='font-weight-bold'>({permissions.Role})</span>" : "")
+                                </td>
+                            }
+                        }
+                    </tr>
+                    rowNumber++;
+                }
+            }
+        </tbody>
+    </table>
+</div>

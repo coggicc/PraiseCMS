@@ -1,0 +1,82 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DetailTasksViewModel
+
+@{
+    var userProfileImage = Model?.UserSetting?.ProfileImage;
+    var user = Model.Users.FirstOrDefault(x => x.Id.Equals(Model.Tasks.CreatedBy));
+}
+
+<div class="kt-grid__item kt-grid__item--fluid  kt-portlet kt-portlet--height-fluid kt-todo__view" id="kt_todo_view">
+    <div class="kt-portlet__body kt-portlet__body--fit-y">
+        <div class="kt-todo__wrapper">
+            <div class="kt-todo__head">
+                <div class="kt-todo__toolbar">
+                    <div class="kt-todo__info">
+                        @if (!string.IsNullOrEmpty(userProfileImage))
+                        {
+                            <span class="kt-media kt-media--sm" style="background-image: url('@Url.Content("~/Uploads/profile/" + userProfileImage)')">
+                                <span></span>
+                            </span>
+                            <a tabindex="0" class="kt-todo__name" data-toggle="popover" data-trigger="focus" title="Contact Details" data-html="true" data-content="@user.FullName<br/><a href='tel:@user.PhoneNumber'>@user.PhoneNumber</a><br/><a href='mailto:@user.Email'>@user.Email</a>" data-original-title="@user.FullName Contact Details">@user.FullName</a>
+                        }
+                        else
+                        {
+                            if (user != null && !string.IsNullOrEmpty(user.FirstName) && !string.IsNullOrEmpty(user.LastName))
+                            {
+                                <span class="kt-media kt-media--sm kt-media--success">
+                                    <span>@user.Initials</span>
+                                </span>
+                            }
+                        }
+                    </div>
+                    <div class="kt-todo__details">
+                        @if (!Model.Tasks.Completed && Model.Tasks.DueDate < DateTime.Now.AddDays(7))
+                        {
+                            <span class="kt-todo__label kt-badge kt-badge--unified-danger kt-badge--bold kt-badge--inline">Due: @(Model.Tasks.DueDate?.ToShortDateString())</span>
+                        }
+
+                        @if (Model.Tasks.Completed)
+                        {
+                            <span class="kt-todo__label kt-badge kt-badge--unified-success kt-badge--bold kt-badge--inline">Completed</span>
+                        }
+                        <a onclick="toggleDetails()" class="ml-2"><i id="task-details-icon" class="fas fa-expand-alt"></i></a>
+                        <a onclick="closeDetails()" class="ml-2"><i class="far fa-times-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="kt-todo__body">
+                <div class="kt-todo__title mb-2">
+                    <span class="kt-todo__text">@Model.Tasks.Name</span>
+                </div>
+                <div class="kt-todo__desc">
+                    @Model.Tasks.Description
+                </div>
+            </div>
+            <div class="kt-todo__foot">
+                <div class="kt-todo__toolbar">
+                    <div class="kt-todo__controls">
+
+                        @if (Model.Tasks.CreatedBy == SessionVariables.CurrentUser.User.Id || Model.Tasks.ModifiedBy == SessionVariables.CurrentUser.User.Id)
+                        {
+                            @Html.AjaxModalLink("<i class='fa fa-edit'></i> Edit", "/tasks/_EditTask?id=" + Model.Tasks.Id, "Edit", "Update", "btn btn-label-brand btn-sm", "")
+                        }
+
+                        @if (Model.Tasks.Completed)
+                        {
+                            <a href="/tasks/completetask/@Model.Tasks.Id" class="btn btn-label-danger btn-sm pull-right">Mark Incomplete</a>
+                        }
+                        else
+                        {
+                            <a href="/tasks/completetask/@Model.Tasks.Id" class="btn btn-label-success btn-sm pull-right">Mark Complete</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+        trigger: 'focus'
+    });
+</script>

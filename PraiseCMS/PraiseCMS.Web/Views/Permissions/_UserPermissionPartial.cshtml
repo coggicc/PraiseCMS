@@ -1,0 +1,66 @@
+﻿@model PraiseCMS.DataAccess.Models.PermissionViewModel
+
+<div id="UserPermissionTree" class="tree-demo" data-scroll="true" data-height="650" style="height: 650px;">
+    <ul>
+        @foreach (var user in Model.ApplicationUsers)
+        {
+            var name = $"{user.Display} - {user.Email}";
+
+            <li>
+                <span data-id="@user.Id" data-name="@name">@name</span>
+                <ul>
+                    @foreach (var parentModules in Model.Modules.Where(x => x.ParentId == null).ToList())
+                    {
+                        <li data-jstree='{ "icon" : "fa fa-folder text-dark " }'>
+                            <span class="load_permissions" data-parentId="@parentModules.Id" data-typeId="@user.Id" data-Id="@parentModules.Id" data-type="User">@parentModules.Name</span>
+                            <ul>
+                                @foreach (var module in Model.Modules.Where(x => x.ParentId == parentModules.Id).ToList())
+                                {
+                                    <li data-jstree='{ "icon" : "fa fa-file  text-primary " }'>
+                                        <span class="load_permissions" data-parentId="@parentModules.Id" data-typeId="@user.Id" data-Id="@module.Id" data-type="User">@module.Name</span>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#UserPermissionTree').jstree({
+            "core": {
+                "themes": {
+                    "responsive": false
+                }
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-folder text-warning"
+                },
+                "file": {
+                    "icon": "fa fa-file  text-warning"
+                }
+            },
+            "plugins": ["types"]
+        });
+
+        // handle link clicks in tree nodes(support target="_blank" as well)
+        $('#UserPermissionTree').on('select_node.jstree', function (e, data) {
+            var link = $('#' + data.selected).find('a');
+            if (link.attr("href") !== "#" && link.attr("href") !== "javascript:;" && link.attr("href") !== "") {
+                if (link.attr("target") === "_blank") {
+                    link.attr("href").target = "_blank";
+                }
+                document.location.href = link.attr("href");
+                return false;
+            }
+        });
+
+        $('#UserPermissionTree').on('click', '.jstree-anchor', function (e) {
+            $(this).jstree(true).toggle_node(e.target);
+        });
+    });
+</script>

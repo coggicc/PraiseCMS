@@ -1,0 +1,24 @@
+﻿@model PraiseCMS.DataAccess.Models.ReportGroup
+
+<div id="group-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "group-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.UserId)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Description:</label>
+            @Html.TextAreaFor(x => x.Description, new { @class = "form-control", rows = 3 })
+            @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>

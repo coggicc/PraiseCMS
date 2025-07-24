@@ -1,0 +1,80 @@
+﻿@model PraiseCMS.DataAccess.Models.EventDashboard
+
+@if (Model.UpComingEvents.Any())
+{
+    <div class="card card-custom gutter-b">
+        <div class="card-header">
+            <div class="card-title">
+                <h3 class="card-label text-dark-50 font-size-h3">
+                    <i class="far fa-calendar-alt text-success fa-3x"></i>
+                </h3>
+            </div>
+            <div class="card-toolbar" style="width:90%">
+                <table class="table table-borderless table-vertical-center">
+                    <thead>
+                        <tr>
+                            <th class="p-0"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-left pb-0">
+                                <span class="text-muted text-uppercase font-weight-bolder">@(Model.UpComingEvents.Count().Equals(1)?"You have an upcoming event":$"You have {Model.UpComingEvents.Count()} upcoming events")</span>
+                                <span class="mt-3 d-block"></span>
+                                @foreach (var upcomingEvent in Model.UpComingEvents)
+                                {
+                                    <span class="line-height-3 d-block font-size-h6 mb-1">
+                                        @upcomingEvent.Title - @upcomingEvent.StartDate at @upcomingEvent.StartTime
+                                        <span class="float-right"><a href="/events/Overview?id=@upcomingEvent.EventId&day=@upcomingEvent.StartDate&defaultselected=@upcomingEvent.Id" class="btn btn-light-primary btn-sm"> Go to Event Overview</a></span>
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row mb-10">
+    <div class="col-lg-6 mb-10 mb-xl-0">
+        <div class="card card-custom gutter-b h-100">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label font-size-h3">Your Calendar</h3>
+                </div>
+                <div class="card-toolbar">
+                    <a href="/calendar" class="font-weight-bold font-size-h6">View Full Schedule</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-7">
+                        <div class="calendar-wrapper"></div>
+                    </div>
+                    <div id="eventsPartialDiv" class="col-5">
+                        @Html.Partial("_Events", Model.EventsByDate)
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-custom gutter-b h-100">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label font-size-h3">Attendance At A Glance</h3>
+                </div>
+                <div class="card-toolbar">
+                    <a href="/reports" class="font-weight-bold font-size-h6">View Reports</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <h3 class="font-size-h1 text-center">Coming Soon...</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/mini-calendar/calendar.js"></script>

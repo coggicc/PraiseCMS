@@ -1,0 +1,130 @@
+﻿@using System.Configuration;
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge" /><![endif]-->
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><!-- Place ../favicon.ico in the root directory -->
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="icon" href="../favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
+    <title>DashCore - Premium Software & Startup HTML</title><!-- themeforest:css -->
+    <link rel="stylesheet" href="~/Content/blog/css/fontawesome.css">
+    <link rel="stylesheet" href="~/Content/blog/css/aos.css">
+    <link rel="stylesheet" href="~/Content/blog/css/cookieconsent.min.css">
+    <link rel="stylesheet" href="~/Content/blog/css/magnific-popup.css">
+    <link rel="stylesheet" href="~/Content/blog/css/odometer-theme-minimal.css">
+    <link rel="stylesheet" href="~/Content/blog/css/prism-okaidia.css">
+    <link rel="stylesheet" href="~/Content/blog/css/simplebar.css">
+    <link rel="stylesheet" href="~/Content/blog/css/smart_wizard_all.css">
+    <link rel="stylesheet" href="~/Content/blog/css/swiper-bundle.css">
+    <link rel="stylesheet" href="~/Content/blog/css/dashcore.css">
+    @*<link rel="stylesheet" href="~/Content/blog/css/rtl.css">*@
+    <link rel="stylesheet" href="~/Content/blog/css/demo.css">
+    <style>
+        a {
+            color: #3699FF;
+        }
+
+        .st-nav .icon {
+            color: #3699FF;
+            margin-left: 5px;
+            margin-right: 15px;
+            padding: 0;
+        }
+
+        .st-nav a {
+            color: #3699FF;
+        }
+
+            .st-nav a:hover .link-title {
+                color: #3699FF;
+            }
+
+        .st-nav p {
+            color: #343a40;
+        }
+
+        .st-nav .st-nav-section.st-nav-mobile .st-root-link .icon-bar {
+            background-color: #3699FF;
+        }
+
+        .st-nav .st-popup-close-button:after, .st-nav .st-popup-close-button:before {
+            background: #3699FF;
+        }
+
+        .navigation.navbar-sticky .nav-link.active, .navigation.navbar-sticky .nav-link:hover {
+            color: #3699FF;
+        }
+
+        .badge-light {
+            color: #869ab8 !important;
+            font-weight: normal;
+        }
+
+        @@media (min-width: 1440px) {
+            .st-nav-primary {
+                margin-left: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!--[if lt IE 8]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <!-- ./Making stripe menu navigation -->
+    @Html.Partial("_BlogNavbar")
+    <main>
+        @RenderBody()
+        @Html.Partial("_BlogFooter")
+    </main>
+    <!-- themeforest:js -->
+    <script src="~/Content/blog/js/jquery.js"></script>
+    <script src="~/Content/blog/js/bootstrap.bundle.js"></script>
+    <script src="~/Content/blog/js/card.js"></script>
+    <script src="~/Content/blog/js/counterup2.js"></script>
+    <script src="~/Content/blog/js/noise.js"></script>
+    <script src="~/Content/blog/js/noframework.waypoints.js"></script>
+    <script src="~/Content/blog/js/odometer.js"></script>
+    <script src="~/Content/blog/js/prism.js"></script>
+    <script src="~/Content/blog/js/simplebar.js"></script>
+    <script src="~/Content/blog/js/swiper-bundle.js"></script>
+    <script src="~/Content/blog/js/jquery.easing.js"></script>
+    <script src="~/Content/blog/js/jquery.validate.js"></script>
+    <script src="~/Content/blog/js/jquery.smartWizard.js"></script>
+    <script src="~/Content/blog/js/feather.js"></script>
+    <script src="~/Content/blog/js/aos.js"></script>
+    <script src="~/Content/blog/js/typed.js"></script>
+    <script src="~/Content/blog/js/jquery.magnific-popup.js"></script>
+    <script src="~/Content/blog/js/cookieconsent.js"></script>
+    <script src="~/Content/blog/js/jquery.animatebar.js"></script>
+    <script src="~/Content/blog/js/common.js"></script>
+    <script src="~/Content/blog/js/forms.js"></script>
+    <script src="~/Content/blog/js/stripe-bubbles.js"></script>
+    <script src="~/Content/blog/js/stripe-menu.js"></script>
+    <script src="~/Content/blog/js/credit-card.js"></script>
+    <script src="~/Content/blog/js/pricing.js"></script>
+    <script src="~/Content/blog/js/shop.js"></script>
+    <script src="~/Content/blog/js/svg.js"></script>
+    <script src="~/Content/blog/js/site.js"></script>
+    <script src="~/Content/blog/js/wizards.js"></script>
+    <script src="~/Content/blog/js/cookie-consent-util.js"></script>
+    <script src="~/Content/blog/js/cookie-consent-themes.js"></script>
+    <script src="~/Content/blog/js/cookie-consent-custom-css.js"></script>
+    <script src="~/Content/blog/js/cookie-consent-informational.js"></script>
+    <script src="~/Content/blog/js/cookie-consent-opt-out.js"></script>
+    <script src="~/Content/blog/js/cookie-consent-opt-in.js"></script>
+    <script src="~/Content/blog/js/cookie-consent-location.js"></script>
+    <script src="~/Content/blog/js/demo.js"></script>
+    <!-- endinject -->
+</body>
+</html>

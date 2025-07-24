@@ -1,0 +1,149 @@
+﻿@model PraiseCMS.DataAccess.Models.CommunicationGroupsPeopleModel
+
+<div id="communication-group-people-div">
+    <div id="alert-container"></div>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "communication-group-people" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.GroupId)
+        <label>Add one or multiple members to the group:</label>
+        <div class="form-group row">
+            <div class="@Html.Raw(RouteHelpers.CurrentAction.ContainsIgnoreCase("edit")? "col-lg-12" : "col-lg-10")">
+                <select id="Members" name="Members" class="form-control select2" style="width:100%;" multiple="multiple" data-placeholder="Select members...">
+                    @foreach (var person in Model.Peoples)
+                    {
+                        <option value="@person.Id">@person.DisplayWithAddress</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(x => x.Members, "", new { @class = "text-danger" })
+            </div>
+            @if (!RouteHelpers.CurrentAction.ContainsIgnoreCase("edit"))
+            {
+                <div class="col-lg-2">
+                    <button data-toggle="tooltip" title="Create new member" type="button" class="btn btn-light-primary btn-sm font-weight-bold ml-2" onclick="addNewPerson()"><i class="fas fa-user-plus pr-0"></i></button>
+                </div>
+            }
+        </div>
+    }
+    <div class="new-person" style="display:none;">
+        <div class="separator separator-dashed my-5"></div>
+        <h6 class="pb-4">Create a new member</h6>
+        <form name="new-person" id="new-person">
+            <div class="form-group col-lg">
+                @Html.EditorFor(x => x.Person.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name" } })
+                @Html.ValidationMessageFor(x => x.Person.FirstName, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-lg">
+                @Html.EditorFor(x => x.Person.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = "Last Name" } })
+                @Html.ValidationMessageFor(x => x.Person.LastName, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-lg">
+                @Html.EditorFor(x => x.Person.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email (optional)" } })
+            </div>
+            <div class="form-group col-lg">
+                @Html.EditorFor(x => x.Person.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone", placeholder = "Phone (optional)" } })
+            </div>
+            <div class="form-group col-lg">
+                <button type="button" class="btn btn-light-primary btn-sm font-weight-bold mr-2" onclick="saveNewPerson()">Add</button>
+                <button type="button" class="btn btn-light-dark btn-sm font-weight-bold mr-2" onclick="hideNewPerson()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var validation = [];
+    var pValidation = [];
+    $(function () {
+        initSelect2();
+        validationStep();
+        personValidation();
+    });
+
+    function initSelect2() {
+        $('.select2').select2({
+            placeholder: "Select Members",
+            allowClear: true
+        });
+    }
+
+    function personValidation() {
+        const form = document.getElementById('new-person');
+        pValidation.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'Person.FirstName': { validators: { notEmpty: { message: 'First name is required' } } },
+                    'Person.LastName': { validators: { notEmpty: { message: 'Last name is required' } } },
+                    'Person.Email': { validators: { emailAddress: { message: 'Please enter a valid email address.' } } },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+    }
+
+    $("#new-person").submit(function (e) {
+        e.preventDefault();
+    });
+
+    function addNewPerson() {
+        $('.new-person').show();
+    }
+    function hideNewPerson() {
+        $('.new-person').hide();
+        document.getElementById("new-person").reset();
+    }
+    function saveNewPerson() {
+        $("#alert-container").html('');
+        pValidation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                $.ajax({
+                    type: "POST",
+                    url: '/People/CreatePerson',
+                    data: $('#new-person').serialize(),
+                    success: function (result) {
+                        if (result.Success) {
+                            hideNewPerson();
+                            $('#Members').append($("<option></option>").attr("value", result.Model.Id).text(result.Model.DisplayWithAddress));
+                            let data = $('#Members').val();
+                            data.push(result.Model.Id);
+                            $('#Members').val(data);
+                            initSelect2();
+                            let html = '<div class="alert alert-custom alert-notice alert-light-success fade show mb-5" role="alert"><div class="alert-icon"><i class="fas fa-check-circle"></i></div><div class="alert-text">A new member has been created and added below.</div><div class="alert-close"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="ki ki-close"></i></span></button></div></div>';
+                            $("#alert-container").prepend(html);
+                        } else {
+                            ShowErrorAlert(result.Message);
+                        }
+                    },
+                    error: function (result) {
+                        ShowErrorAlert(result.Message);
+                    }
+                });
+            }
+            setTimeout(function () {
+                $('#Person_FirstName').focus();
+            });
+        });
+    }
+
+    $("#communication-group-people").submit(function (e) {
+        e.preventDefault(e);
+        validation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                document.getElementById('communication-group-people').submit();
+            }
+            setTimeout(function () {
+                StopLoading();
+            });
+        });
+    });
+    function validationStep() {
+        const form = document.getElementById('communication-group-people');
+        validation.push(FormValidation.formValidation(form,
+            {
+                fields: { 'Members': { validators: { notEmpty: { message: 'Please select at least one member.' } } } },
+                plugins: { trigger: new FormValidation.plugins.Trigger, bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" }) }
+            }));
+    }
+</script>

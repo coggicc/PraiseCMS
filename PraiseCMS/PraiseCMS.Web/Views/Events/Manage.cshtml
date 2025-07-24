@@ -1,0 +1,164 @@
+﻿@using PraiseCMS.Web.Helpers
+@model IEnumerable<PraiseCMS.DataAccess.Models.ChurchEventViewModel>
+
+@{
+    ViewBag.Title = "Manage Events";
+}
+
+<style>
+    .top-15 {
+        top: 15px !important;
+    }
+
+    .fc-today-button {
+        text-transform: capitalize;
+    }
+
+    .fc-unthemed .fc-list-item-title > a:hover {
+        cursor: pointer;
+    }
+
+    .fc-event-container > .customEvent:not(.fc-draggable) {
+        cursor: pointer !important;
+    }
+
+    .fc-event-container > .customEvent.fc-draggable {
+        cursor: grab !important;
+    }
+
+    .fc-unthemed .fc-toolbar .fc-button .fc-icon {
+        color: #3699FF;
+    }
+
+    .fc-unthemed .fc-toolbar .fc-button {
+        color: #3699FF;
+    }
+
+    #kt_calendar .fc-list-item:hover {
+        cursor: pointer;
+    }
+
+    .btn.btn-light-secondary {
+        color: #3f4254;
+    }
+</style>
+
+@{
+    var eventTypes = ViewData.ContainsKey("churchEventTypes") ? (List<ChurchEventTypesViewModel>)ViewData["churchEventTypes"] : new List<ChurchEventTypesViewModel>();
+    <input type="hidden" id="login-user-id" value="@SessionVariables.CurrentUser.User.Id" />
+}
+
+@section leftsubheader{
+    @Html.Partial("_EventsSubheader")
+}
+
+@section subheader{
+    <div class="dropdown">
+        <div id="filter-modal" class="topbar-item" data-toggle="dropdown" data-offset="10px,0px">
+            <div class="btn btn-light-primary btn-sm font-weight-bold mr-2"><i class="fas fa-filter"></i>Filter</div>
+        </div>
+        <div class="top-15 dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg">
+            <form id="calendar-filter-form">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title"><h3 class="card-label">Filter Options</h3></div>
+                        <div class="card-toolbar cursor-pointer" onclick="closeFilterModal()"><i class="fas fa-times"></i></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Campus:</label>
+                            <div class="row">
+                                @Html.DropDownList("CampusFilter", SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id).OrderBy(x => x.Text), "Select a campus...", new { @class = "form-control select2", style = "width:100%;" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Event Type:</label>
+                            <div class="row">
+                                @Html.DropDownList("ChurchEventTypeFilter", eventTypes.ToSelectList(x => x.Type, x => x.Id).OrderBy(x => x.Text), "Select an event type...", new { @class = "form-control select2", style = "width:100%;" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="resetFilter()" class="btn btn-hover-light-dark font-weight-bold">Reset</button>
+                        <button type="button" onclick="applyFilter()" class="btn btn-light-primary font-weight-bold">Apply</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @Html.AjaxModalLink("Add Event", "/events/_createchurchevent", "Create Event", "Save", "btn btn-light-primary btn-sm font-weight-bold backdropStatic", "")
+}
+<div class="row">
+    <div class="col">
+        <div class="card card-custom card-stretch">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label toggle cursor-pointer text-hover-primary">
+                        Scheduled Events
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mx-2 toggle" data-animation="true" data-toggle="tooltip" data-placement="top" title="" data-original-title="Toggle Visibility">
+                        <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="kt_calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-custom gutter-b mt-10">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th width="35%">Event</th>
+                            <th width="65%">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(x => x.EventType.Type))
+                        {
+                            <tr>
+                                <td><a href="/events/Details/@item.Event.Id"><i class="fas fa-circle text-@item.EventType.CalendarColor mr-2" data-toggle="tooltip" data-placement="top" title="Calendar Color"></i>@Html.DisplayFor(modelItem => item.EventType.Type)</a></td>
+                                <td>@Html.DisplayFor(modelItem => item.Event.Description)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col">
+                    <p style="font-size:18px;">You don't have any events yet.</p>
+                    @Html.AjaxModalLink("Create Event", "/events/_createchurchevent", "Create Event", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section belowscripts
+{
+    <script src="~/Content/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js?v=7.0.4"></script>
+    <script src="~/Scripts/mycalendar.js"></script>
+    <script type="text/javascript">
+        var churchEventTypes = @Html.Raw(Json.Encode(eventTypes));
+        var campuses = @Html.Raw(Json.Encode(SessionVariables.Campuses.OrderBy(x=>x.Display)));
+    </script>
+}

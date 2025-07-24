@@ -1,0 +1,51 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.PrayerRequestCategory>
+@{
+    ViewBag.Title = "Prayer Request Categories";
+}
+
+@if (SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            @Html.AjaxModalLink("Add New Category", "/prayerrequests/CreateCategory", "Add Category", "Save", "btn btn-light-success font-weight-bold btn-sm", "", "", "", false)
+        </div>
+    }
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.AjaxModalLink(item.Display, "/prayerrequests/EditCategory?id=" + item.Id, "Edit Category", "Save", "", "", "/prayerrequests/deletecategory?id=" + item.Id, "", false)
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>You don't have any categories yet.</tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

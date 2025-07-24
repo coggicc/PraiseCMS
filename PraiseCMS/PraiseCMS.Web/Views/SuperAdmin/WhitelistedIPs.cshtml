@@ -1,0 +1,75 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.IPViewModel
+
+@{
+    ViewBag.Title = "Whitelisted IPs";
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Whitelist IP", "/superadmin/_CreateWhitelistedIP", "Whitelist IP", "Save", "btn btn-light-primary font-weight-bold", "")
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Name</th>
+                        <th>Last Updated</th>
+                        <th>By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.IPWhitelists.Any())
+                    {
+                        foreach (var item in Model.IPWhitelists.OrderBy(x => x.IpAddress))
+                        {
+                            <tr>
+                                <td>
+                                    @Html.AjaxModalLink(item.IpAddress, "/superadmin/_EditWhitelistedIP/" + item.Id, "Edit IP", "Save", "", "", "/superadmin/DeleteWhitelistedIp/" + item.Id)
+                                </td>
+                                <td>
+                                    <span>@(!string.IsNullOrEmpty(item.Name) ? item.Name : "")</span>
+                                </td>
+                                <td>
+                                    @if (item.ModifiedDate.IsNotNullOrEmpty())
+                                    {
+                                        <span>@item.ModifiedDate</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@item.CreatedDate</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.ModifiedBy.IsNotNullOrEmpty())
+                                    {
+                                        <span>@Model.Users.FirstOrDefault(x => x.Id == item.ModifiedBy).Display</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Model.Users.FirstOrDefault(x => x.Id == item.CreatedBy).Display</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6">You don't have any whitelisted IPs yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

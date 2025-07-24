@@ -1,0 +1,90 @@
+﻿@model PraiseCMS.DataAccess.Models.PermissionViewModel
+@{
+    ViewBag.Title = "Permissions";
+}
+@section subheader{
+    @if (SessionVariables.CurrentUser.IsSuperAdmin)
+    {
+        @Html.AjaxModalLink("Quick Permissions", $"/permissions/customPermission", "Set Module Permission For Roles", "Save", "mr-2 btn btn-sm btn-light-primary", "", "", "", false, ModalSizes.Large)
+    }
+}
+<div class="card card-custom gutter-b">
+    <div class="card-header card-header-tabs-line">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">@ViewBag.Title</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <ul class="nav nav-tabs nav-bold nav-tabs-line">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#RolePermission" role="tab">
+                        <span class="nav-icon"><i class="fas fa-tags"></i></span>
+                        <span class="nav-text">Role Permissions</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#UserPermission" role="tab">
+                        <span class="nav-icon"><i class="fas fa-user-lock"></i></span>
+                        <span class="nav-text">User Permissions</span>
+                    </a>
+                </li>
+                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#PlanPermission" role="tab">
+                            <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="nav-text">Plan Permissions</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="RolePermission" role="tabpanel" aria-labelledby="RolePermission">
+                <div class="row">
+                    <div class="col-lg-3">
+                        @Html.Partial("_RolePermissionPartial", Model)
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="table-responsive permissions_container">
+                            <h1>Role Permissions</h1>
+                            <p>Select a role to manage permissions by role type</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="UserPermission" role="tabpanel" aria-labelledby="UserPermission">
+                <div class="row">
+                    <div class="col-lg-3">
+                        @Html.Partial("_UserPermissionPartial", Model)
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="table-responsive permissions_container">
+                            <h1>User Permissions</h1>
+                            <p>Select a user to manage permissions for a given user</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (SessionVariables.CurrentUser.IsSuperAdmin)
+            {
+                <div class="tab-pane fade" id="PlanPermission" role="tabpanel" aria-labelledby="PlanPermission">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            @Html.Partial("_PlanPermissionPartial", Model)
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="table-responsive permissions_container">
+                                <h1>Subscription Plan Permissions</h1>
+                                <p>Select a plan to manage permissions by subscription plan type</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

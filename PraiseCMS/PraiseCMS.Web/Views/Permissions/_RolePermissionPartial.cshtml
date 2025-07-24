@@ -1,0 +1,92 @@
+﻿@using PraiseCMS.Shared.Methods
+@using Roles = PraiseCMS.Shared.Shared.Roles
+
+@model PraiseCMS.DataAccess.Models.PermissionViewModel
+
+<div id="RolePermissionTree" class="tree-demo kt-scroll" data-scroll="true" data-height="650" style="height: 650px;">
+    <ul>
+        @foreach (var role in Model.ApplicationRoles)
+        {
+            if (!SessionVariables.CurrentUser.IsSuperAdmin)
+            {
+                if (role.Modules.Count > 0)
+                {
+                    var roleModuleForSuperAdmin = role.Modules.FirstOrDefault(x => x.Name == Roles.SuperAdmin);
+                    if (roleModuleForSuperAdmin.IsNotNull())
+                    {
+                        role.Modules.Remove(roleModuleForSuperAdmin);
+                    }
+                }
+            }
+            <li>
+                <span>@role.Name</span>
+                <ul>
+                    @foreach (var parentModules in role.Modules.Where(x => x.ParentId == null).OrderBy(x => x.Display).ToList())
+                    {
+                        <li data-jstree='{ "icon" : "fa fa-folder text-dark" }'>
+                            <span class="load_permissions" data-parentId="@parentModules.Id" data-typeId="@role.Id" data-Id="@parentModules.Id" data-type="Role">
+                                @parentModules.Display
+                            </span>
+                            <ul>
+                                @foreach (var module in role.Modules.Where(x => x.ParentId == parentModules.Id).OrderBy(x => x.Display).ToList())
+                                {
+                                    <li data-jstree='{ "icon" : "fa fa-file text-primary" }'>
+                                        <span class="load_permissions" data-parentId="@parentModules.Id" data-typeId="@role.Id" data-Id="@module.Id" data-type="Role">
+                                            @module.Display
+                                        </span>
+                                        <ul>
+                                            @foreach (var mod in role.Modules.Where(x => x.ParentId == module.Id).OrderBy(x => x.Display).ToList())
+                                            {
+                                                <li data-jstree='{ "icon" : "fa fa-file text-primary" }'>
+                                                    <span class="load_permissions" data-parentId="@module.Id" data-typeId="@role.Id" data-Id="@mod.Id" data-type="Role">
+                                                        @mod.Display
+                                                    </span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#RolePermissionTree').jstree({
+            "core": {
+                "themes": {
+                    "responsive": false
+                }
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-folder text-warning"
+                },
+                "file": {
+                    "icon": "fa fa-file text-warning"
+                }
+            },
+            "plugins": ["types"]
+        });
+
+        // handle link clicks in tree nodes(support target="_blank" as well)
+        $('#RolePermissionTree').on('select_node.jstree', function (e, data) {
+            var link = $('#' + data.selected).find('a');
+            if (link.attr("href") !== "#" && link.attr("href") !== "javascript:;" && link.attr("href") !== "") {
+                if (link.attr("target") === "_blank") {
+                    link.attr("href").target = "_blank";
+                }
+                document.location.href = link.attr("href");
+                return false;
+            }
+        });
+
+        $('#RolePermissionTree').on('click', '.jstree-anchor', function (e) {
+            $(this).jstree(true).toggle_node(e.target);
+        });
+    });
+</script>

@@ -1,0 +1,146 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.Church
+
+@{
+    var infoLink = "";
+    var accountLink = "";
+    var givingLink = "";
+    var emailTemplateLink = "";
+    var dashboardTemplateLink = "";
+    var implementationsLink = "";
+
+    if (!string.IsNullOrEmpty(ViewBag.Tab))
+    {
+        if (ViewBag.Tab == "info")
+        {
+            infoLink = "active";
+        }
+        else if (ViewBag.Tab == "account")
+        {
+            accountLink = "active";
+        }
+        else if (ViewBag.Tab == "giving")
+        {
+            givingLink = "active";
+        }
+        else if (ViewBag.Tab == "email-templates")
+        {
+            emailTemplateLink = "active";
+        }
+        else if (ViewBag.Tab == "implementations")
+        {
+            implementationsLink = "active";
+        }
+    }
+    else
+    {
+        infoLink = "active";
+    }
+}
+
+<div class="flex-row-auto offcanvas-mobile w-300px w-xl-350px" id="kt_profile_aside">
+    <div class="card card-custom">
+        <div class="card-body pt-4">
+            <div class="d-flex align-items-center">
+                <div class="symbol symbol-60 symbol-xxl-100 mr-5 align-self-start align-self-xxl-center">
+                    @if (!string.IsNullOrEmpty(Model.Logo))
+                    {
+                        <div class="symbol-label" style="background-image:url(@Html.AmazonLink(Model.Logo,"Uploads/Logos"));background-size:contain;"></div>
+                    }
+                    else
+                    {
+                        <div class="symbol-label" style="background-image: url('../../Content/assets/media/logos/default_logo.png');background-size: contain;"></div>
+                    }
+                </div>
+                <div class="text-center font-weight-bolder font-size-h5 text-dark-75" style="width:100%;">@Model.Display</div>
+            </div>
+            <div class="py-9">
+                @if (!string.IsNullOrEmpty(Model.Email))
+                {
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="font-weight-bold mr-2">Email:</span>
+                        <span href="#" class="text-muted" data-toggle="tooltip" title="@Model.Email" data-placement="top">@Model.Email.EllipsisAt(20)</span>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.PhysicalAddress))
+                {
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="font-weight-bold mr-2">Phone:</span>
+                        <span class="text-muted">@Model.Phone</span>
+                    </div>
+                }
+            </div>
+            <div class="navi navi-bold navi-hover navi-active navi-link-rounded">
+                <div class="navi-item mb-2">
+                    <a href="/settings" class="navi-link py-4 module-958595693250ac1c90e1ed47c98ba8 @infoLink">
+                        <span class="navi-icon mr-2">
+                            <span class="svg-icon">
+                                <i class="fas fa-church"></i>
+                            </span>
+                        </span>
+                        <span class="navi-text font-size-lg">Church Information</span>
+                    </a>
+                </div>
+                <div class="navi-item mb-2">
+                    <a href="/settings/account" class="navi-link py-4 module-1372957713cacf859ab6144f06b176 @accountLink">
+                        <span class="navi-icon mr-2">
+                            <span class="svg-icon">
+                                <i class="fas fa-user-lock"></i>
+                            </span>
+                        </span>
+                        <span class="navi-text font-size-lg">Praise Account</span>
+                    </a>
+                </div>
+                <div class="navi-item mb-2">
+                    <a href="/settings/giving" class="navi-link py-4 module-1956319359bb82a242fa56496fb9d8 @givingLink">
+                        <span class="navi-icon mr-2">
+                            <i class="fas fa-dollar-sign"></i>
+                        </span>
+                        <span class="navi-text font-size-lg">Giving Account</span>
+                    </a>
+                </div>
+                <div class="navi-item mb-2">
+                    <a href="/settings/emailtemplates" class="navi-link py-4 module-25008088073d134767d33247a48c42 @emailTemplateLink">
+                        <span class="navi-icon mr-2">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <span class="navi-text font-size-lg">Email Templates</span>
+                    </a>
+                </div>
+                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <div class="navi-item mb-2">
+                        <a href="/tags" class="navi-link py-4 module-295783966513529ae01de048d7aaa8">
+                            <span class="navi-icon mr-2">
+                                <i class="fas fa-tags"></i>
+                            </span>
+                            <span class="navi-text font-size-lg">Tags</span>
+                        </a>
+                    </div>
+                }
+                <div class="navi-item mb-2">
+                    <a href="/settings/implementations" class="navi-link py-4 module-9457561050842efe2f1a784e16a9ff @implementationsLink">
+                        <span class="navi-icon mr-2">
+                            <i class="fas fa-cogs"></i>
+                        </span>
+                        <span class="navi-text font-size-lg">Implementations</span>
+                    </a>
+                </div>
+                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <div class="navi-item mb-2">
+                        <a href="/dashboardtemplates" class="navi-link py-4 module-3153410694026839981d6a46d78ba1 @dashboardTemplateLink">
+                            <span class="navi-icon mr-2">
+                                <i class="fas fa-desktop"></i>
+                            </span>
+                            <span class="navi-text font-size-lg">Dashboard Templates</span>
+                        </a>
+                    </div>
+                }
+                @*<div class="navi-item mb-2">
+                        @Html.AjaxModalLink("<span class='navi-icon mr-2'><i class='fas fa-user-plus'></i></span><span class='navi-text font-size-lg'>Send Invitation</span>", "/settings/InvitationEmail/", "Send Invitation", "Send", "navi-link py-4", "")
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>

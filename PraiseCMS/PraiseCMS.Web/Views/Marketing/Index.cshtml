@@ -1,0 +1,59 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.EmailCampaign>
+
+@{
+    ViewBag.Title = "Email Campaigns";
+}
+
+<div class="kt-portlet">
+    <div class="kt-portlet__head kt-portlet__head--lg">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon">
+                <i class="kt-font-brand fas fa-envelope"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="kt-portlet__head-toolbar">
+            <div class="kt-portlet__head-wrapper">
+                <div class="kt-portlet__head-actions">
+                    @Html.AjaxModalLink("Create Email Campaign", "/marketing/_createemailcampaign", "Create Email Campaign", "Save", "btn btn-brand", "")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="kt-portlet__body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.AjaxModalLink(item.Title, "/marketing/_editemailcampaign/" + item.Id, "Edit Email Campaign", "Save", "", "", "/marketing/deleteemailcampaign/" + item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2">You don't have any email campaigns yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

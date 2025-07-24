@@ -1,0 +1,273 @@
+﻿@model PraiseCMS.DataAccess.Models.PrayerRequestVM
+@{
+    string actionName = "_AddPrayerRequest";
+
+    if (ViewBag.ActionName != null)
+    {
+        actionName = ViewBag.ActionName;
+    }
+}
+<div id="prayer-request-div">
+    <p class="pl-1">Select an existing person or add a new one.</p>
+    <div class="px-5">
+        @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "prayer-request-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.PrayerRequest.Id)
+            @Html.HiddenFor(x => x.PrayerRequest.ChurchId)
+            @Html.HiddenFor(x => x.PrayerRequest.CreatedBy)
+            @Html.HiddenFor(x => x.PrayerRequest.CreatedDate)
+            @Html.HiddenFor(x => x.PrayerRequest.Starred)
+            @Html.HiddenFor(x => x.PrayerRequest.PrayedOverDate)
+            @Html.HiddenFor(x => x.PrayerRequest.Read)
+            @Html.HiddenFor(x => x.PrayerRequest.FollowUpDate)
+            @Html.HiddenFor(x => x.PrayerRequest.FollowUpMethod)
+            @Html.HiddenFor(x => x.PrayerRequest.FollowUpStatus)
+            @Html.HiddenFor(x => x.PrayerRequest.PrayedOverBy)
+            @Html.HiddenFor(x => x.PrayerRequest.FollowUpBy)
+            @Html.HiddenFor(x => x.Mode)
+            <div id="system">
+                <div class="row">
+                    <div class="col-lg-9 form-group p-0">
+                        @Html.DropDownListFor(x => x.PrayerRequest.PersonId, Model.People.ToSelectList(x => x.DisplayWithAddress, x => x.Id), "Select a person...", new { @class = "form-control select2", style = "width:100%" })
+                        @Html.ValidationMessageFor(x => x.PrayerRequest.PersonId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-lg-3 form-group p-0">
+                        <button type="button" class="btn btn-light-primary font-weight-bold ml-2 mr-2" onclick="toggle()" data-toggle="tooltip" title="Add new person"><i class="fas fa-user-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="manual" style="display:none">
+                <div class="row">
+                    <div class="col-lg form-group">
+                        <label>First Name:</label>
+                        @Html.EditorFor(x => x.Person.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Person.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-lg form-group">
+                        <label>Last Name:</label>
+                        @Html.EditorFor(x => x.Person.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Person.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg form-group">
+                        <label>Email:</label>
+                        @Html.EditorFor(x => x.Person.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-lg form-group">
+                        <label>Phone:</label>
+                        @Html.EditorFor(x => x.Person.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone" } })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg form-group p-0">
+                        <button type="button" class="btn btn-light-dark btn-sm font-weight-bold mr-2 float-right" onclick="toggle()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label>Category:</label>
+                @Html.DropDownListFor(x => x.PrayerRequest.CategoryId, Model.Categories.ToSelectList(x => x.Name, x => x.Id), "Select a category...", new { @class = "form-control select2", style = "width:100%" })
+                @Html.ValidationMessageFor(x => x.PrayerRequest.CategoryId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group row">
+                <label>Prayer Request:</label>
+                @Html.TextAreaFor(x => x.PrayerRequest.Message, new { @class = "form-control", rows = "5" })
+                @Html.ValidationMessageFor(x => x.PrayerRequest.Message, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group row">
+                <div class="checkbox-list">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(x => x.PrayerRequest.PrayedOver, new { name = PrayerRequestStatuses.PrayedOver })
+                        <span></span>
+                        Prayed Over
+                    </label>
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(x => x.PrayerRequest.Confidential, new { name = PrayerRequestStatuses.Confidential })
+                        <span></span>
+                        Confidential - To be viewed by pastoral staff only
+                    </label>
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(x => x.PrayerRequest.HighPriority, new { name = PrayerRequestStatuses.HighPriority })
+                        <span></span>
+                        High Priority
+                    </label>
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(x => x.PrayerRequest.ShareName, new { })
+                        <span></span>
+                        Share Name with Prayer Team
+                    </label>
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(x => x.PrayerRequest.NotifyPrayerTeam)
+                        <span></span>
+                        Notify Prayer Team
+                    </label>
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(x => x.PrayerRequest.Responded, new { name = PrayerRequestStatuses.Responded })
+                        <span></span>
+                        Responded Previously - Select only if you previously responded
+                    </label>
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(x => x.PrayerRequest.FollowUpRequired, new { id = PrayerRequestStatuses.FollowUpRequired })
+                        <span></span>
+                        Follow Up Required
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row callback-field" style="display:none;">
+                <label>Phone Number:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    </div>
+                    @Html.EditorFor(x => x.PrayerRequest.CallBackPhone, new { htmlAttributes = new { @class = "form-control phone" } })
+                    @Html.ValidationMessageFor(x => x.PrayerRequest.CallBackPhone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row response-field" style="display:none;">
+                <label>Responded Date:</label>
+                <div class="input-group date">
+                    @Html.EditorFor(x => x.PrayerRequest.RespondedDate, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off" } })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="la la-calendar-check-o"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.PrayerRequest.RespondedDate, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group row response-field" style="display:none;">
+                <label>Responded Via:</label>
+                @Html.DropDownListFor(x => x.PrayerRequest.RespondedVia, RespondedViaTypes.Items.ToSelectList(x => x, x => x), "Select a response type...", new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.PrayerRequest.RespondedVia, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group row">
+                <label>Internal Notes:</label>
+                @Html.TextAreaFor(x => x.PrayerRequest.InternalNote, new { @class = "form-control", rows = "5" })
+                <span class="form-text">Note: These notes are visible to the prayer request team only.</span>
+            </div>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    var validation = [];
+    var persons = @Html.Raw(Json.Encode(Model.People));
+    $(function () {
+        validationStep();
+    });
+
+    $("#prayer-request-form").submit(function (e) {
+        e.preventDefault(e);
+        validation[0].validate().then(function (status) {
+            if (status === 'Valid') {
+                StartLoading();
+                document.getElementById('prayer-request-form').submit();
+            }
+            setTimeout(function() {
+                StopLoading();
+            });
+        });
+     });
+
+    function validationStep() {
+          const form = document.getElementById('prayer-request-form');
+        validation.push(FormValidation.formValidation(form,
+        {
+            fields: {
+                'PrayerRequest.Message': { validators: { notEmpty: { message: "Please enter a prayer request." } } },
+                //'PrayerRequest.CategoryId': { validators: { notEmpty: { message: "Please select a category." } } },
+                'People.FirstName': {
+                    validators: {
+                        callback: {
+                            message: 'First name is required',
+                            callback: function (input) {
+                                let mode = form.querySelector('[name="Mode"]').value;
+                                if (mode === '@PeopleSelectionMode.Manual') {
+                                    let fName = form.querySelector('[name="People.FirstName"]').value;
+                                    return fName ? true : false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }, 'People.LastName': {
+                    validators: {
+                        callback: {
+                            message: 'Last name is required',
+                            callback: function (input) {
+                                let mode = form.querySelector('[name="Mode"]').value;
+                                if (mode === '@PeopleSelectionMode.Manual') {
+                                    let lName = form.querySelector('[name="People.LastName"]').value;
+                                    return lName ? true : false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                },
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger,
+                bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+            }
+        }));
+    }
+
+    $(document).on('change', '#PrayerRequest_PersonId', function () {
+        if ($(this).val() && $('#FollowUpRequired').is(":checked")) {
+            let phone = persons.find(q => q.Id === $(this).val()).PhoneNumber;
+            $('#PrayerRequest_CallBackPhone').val(phone);
+        } else {
+            $('#PrayerRequest_CallBackPhone').val();
+        }
+    });
+
+    $("#FollowUpRequired").change(function (item) {
+         if ($(this).is(":checked")) {
+            $(".callback-field").show();
+            if ($('#Mode').val() === "Manual") {
+                $('#PrayerRequest_CallBackPhone').val($('#People_PhoneNumber').val());
+            } else {
+                if ($('#PrayerRequest_PersonId').val()) {
+                    let phone = persons.find(q => q.Id === $('#PrayerRequest_PersonId').val()).PhoneNumber;
+                    $('#PrayerRequest_CallBackPhone').val(phone);
+                }
+            }
+        } else {
+            $(".callback-field").hide();
+            $('#PrayerRequest_CallBackPhone').val('');
+        }
+    });
+
+    function toggle() {
+        const mode = $('#Mode').val();
+        if (mode==='@PeopleSelectionMode.Manual') {
+            $('#manual').hide();
+            $('#system').show();
+            $('#People_Email').val("");
+            $('#People_LastName').val("");
+            $('#People_FirstName').val("");
+            $('#People_PhoneNumber').val("");
+            $('#Mode').val('@PeopleSelectionMode.System');
+        } else if (mode === '@PeopleSelectionMode.System') {
+            $('#manual').show();
+            $('#system').hide();
+            $('#PrayerRequest_PersonId').val("");
+            $('#Mode').val('@PeopleSelectionMode.Manual');
+        }
+    }
+
+    $("#Responded").change(function (item) {
+        if ($(this).is(":checked")) {
+            $(".response-field").show();
+        }
+        else {
+            $(".response-field").hide();
+        }
+    });
+</script>

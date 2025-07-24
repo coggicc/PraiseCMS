@@ -1,0 +1,98 @@
+﻿@using PraiseCMS.DataAccess.Singletons
+@{
+    var url = ApplicationCache.Instance.SiteConfiguration.Url;
+    var marker = $"{url}/Content/assets/image/church.png";
+}
+
+<style type="text/css">
+    /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+    .map_main {
+        height: 100%;
+        position: fixed;
+        width: 100%;
+        float: left;
+    }
+
+    #map {
+        height: 65%;
+        position: absolute !important;
+        width: 78%;
+    }
+    /* Optional: Makes the sample page fill the window. */
+</style>
+
+<input type="hidden" value="@marker" id="_url" />
+
+<script src="~/Content/assets/plugins/custom/jqvmap/markerclustererplus.min.js"></script>
+<script type="text/javascript">
+    function initMap() {
+        var _marker = $("#_url").val();
+        $.get("/map/GeMapLocations", null, function (maplocations) {
+            var map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 5,
+                maxZoom: 18,
+                center: { lat: 39.09024, lng: -95.712891 }
+            });
+
+            // Create an array of alphabetical characters used to label the markers.
+            var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+            // Add some markers to the map.
+            // Note: The code uses the JavaScript Array.prototype.map() method to
+            // create an array of markers based on a given "locations" array.
+            // The map() method here has nothing to do with the Google Maps API.
+
+            var image = 'https://img.icons8.com/color/2x/church.png';
+            var infoWin = new google.maps.InfoWindow();
+            var markers = maplocations.map(function (location, i) {
+                var marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    icon: _marker,
+                    title: location.Label
+                });
+                google.maps.event.addListener(marker, 'click', function (evt) {
+                    infoWin.setContent(location.Label);
+                    infoWin.open(map, marker);
+                });
+                return marker;
+            });
+
+            // Add a marker clusterer to manage the markers.
+            var markerCluster = new MarkerClusterer(map, markers,
+                {
+                    zoomOnClick: false,
+                    imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+                });
+
+            google.maps.event.addListener(markerCluster, 'clusterclick', function (cluster) {
+                infoWin.close();
+
+                if (map.getZoom() < map.maxZoom) {
+                    map.setCenter(cluster.center_);
+                    map.setZoom(map.getZoom() + 2);
+                } else {
+
+                    var content = '(' + cluster.getMarkers().length + ') Church:<br/>';
+                    content += cluster.getMarkers().map(cl => cl.title);
+                    var info = new google.maps.MVCObject;
+                    info.set('position', cluster.center_);
+                    infoWin.setContent(content);
+                    infoWin.open(map, info);
+                }
+            });
+
+            google.maps.event.addListener(map, 'zoom_changed', function () {
+                infoWin.close();
+            });
+        });
+    }
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="map_main">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLWakm0kg0fyxLeeGLZABETDAp24eqpuY&callback=initMap&libraries=&v=weekly" async></script>

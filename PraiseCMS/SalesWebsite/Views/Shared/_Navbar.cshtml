@@ -1,0 +1,230 @@
+﻿@using System.Configuration
+<nav class="st-nav navbar main-nav navigation fixed-top">
+    <div class="container">
+        <ul class="st-nav-menu nav navbar-nav">
+            <li class="st-nav-section nav-item">
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand">
+                    <img src="~/Content/img/praise_logo.png" alt="Praise CMS" class="logo logo-sticky d-block d-md-none">
+                    <img src="~/Content/img/praise_logo_white_blue.png" alt="Praise CMS" class="logo d-none d-md-block">
+                </a>
+            </li>
+            <li class="st-nav-section st-nav-primary nav-item">
+                <a class="st-root-link item-products st-has-dropdown nav-link" data-dropdown="features">Features<i class="fas fa-chevron-down ml-2 d-inline"></i></a>
+                <a class="st-root-link nav-link" href="@Url.Action("Index", "Pricing")">Pricing</a>
+                @*<a class="st-root-link st-has-dropdown nav-link" href="#" data-dropdown="about">About </a>
+                <a class="st-root-link item-company st-has-dropdown nav-link" data-dropdown="components">Resources </a>*@
+                <a class="st-root-link nav-link" href="@Url.Action("Index", "ScheduleDemo")">Schedule a Demo</a>
+                @*<a class="st-root-link nav-link" href="@Url.Action("Index", "Blog")">Blog</a>*@
+            </li>
+            <li class="st-nav-section st-nav-secondary nav-item">
+                <a class="btn btn-rounded btn-outline mr-md-1 mr-lg-3 px-lg-3" href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Login")">
+                    <i class="fas fa-sign-in-alt d-none d-md-inline mr-md-0 mr-lg-2"></i>
+                    <span class="d-md-none d-lg-inline">Log in</span>
+                </a>
+                <a class="btn btn-rounded btn-solid px-lg-3" href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")">
+                    <i class="fas fa-user-plus d-none d-md-inline mr-md-0 mr-lg-2"></i>
+                    <span class="d-md-none d-lg-inline">Sign up</span>
+                </a>
+            </li>
+            <li class="st-nav-section st-nav-mobile nav-item">
+                <button class="st-root-link navbar-toggler" type="button">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="st-popup">
+                    <div class="st-popup-container">
+                        <a class="st-popup-close-button">Close</a>
+                        <div class="st-dropdown-content-group">
+                            <h4 class="text-uppercase regular">Features</h4>
+                            <a class="regular" href="@Url.Action("Giving", "Features")">
+                                <i class="fas fa-dollar-sign fa-fw icon"></i> Giving
+                            </a>
+                            <a class="regular" href="@Url.Action("PrayerRequests", "Features")">
+                                <i class="fas fa-praying-hands fa-fw icon"></i> Prayer Requests
+                            </a>
+                            <a class="regular" href="@Url.Action("Analytics", "Features")">
+                                <i class="fas fa-chart-line fa-fw icon"></i> Analytics & Reporting
+                            </a>
+                            <a class="regular" href="@Url.Action("People", "Features")">
+                                <i class="fas fa-users fa-fw icon"></i> People
+                            </a>
+                        </div>
+                        <div class="st-dropdown-content-group b-t bw-2">
+                            <div class="row">
+                                <div class="col mr-md-4">
+                                    <a href="@Url.Action("Index", "Pricing")">Pricing</a>
+                                </div>
+                                <div class="col mr-md-4">
+                                    <a href="@Url.Action("Index", "ScheduleDemo")">Schedule a Demo</a>
+                                </div>
+                                @*<div class="col mr-md-4">
+                                    <a href="@Url.Action("Index", "ScheduleDemo")">Blog</a>
+                                </div>*@
+                            </div>
+                        </div>
+                        <div class="st-dropdown-content-group bg-6 b-t">
+                            <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Login")">
+                                Log In
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")">
+                                Sign Up
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="st-dropdown-root">
+        <div class="st-dropdown-bg">
+            <div class="st-alt-bg"></div>
+        </div>
+        <div class="st-dropdown-arrow"></div>
+        <div class="st-dropdown-container">
+            <div class="st-dropdown-section" data-dropdown="features">
+                <div class="st-dropdown-content">
+                    <div class="st-dropdown-content-group">
+                        @*<div class="mb-4">
+                                <h3 class="text-primary light text-nowrap">
+                                    Customized features you'll need
+                                </h3>
+                                <p class="color-2 mt-0">Tons of features without the bloat</p>
+                            </div>*@
+                        <a class="dropdown-item" href="@Url.Action("Giving", "Features")">
+                            <div class="media mb-4">
+                                <i class="fas fa-dollar-sign fa-fw icon fa-2x"></i>
+                                <div class="media-body">
+                                    <h3 class="link-title bold m-0">Giving</h3>
+                                    <p class="m-0">Tithes and offerings made easy</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item" href="@Url.Action("PrayerRequests", "Features")">
+                            <div class="media mb-4">
+                                <i class="fas fa-praying-hands fa-fw icon fa-2x"></i>
+                                <div class="media-body">
+                                    <h3 class="link-title bold m-0">Prayer Requests</h3>
+                                    <p class="m-0">Connect with those needing prayer</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item" href="@Url.Action("Analytics", "Features")">
+                            <div class="media mb-4">
+                                <i class="fas fa-chart-line fa-fw icon fa-2x"></i>
+                                <div class="media-body">
+                                    <h3 class="link-title bold m-0">Analytics & Reporting</h3>
+                                    <p class="m-0">Powerful real-time & historical data</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item" href="@Url.Action("People", "Features")">
+                            <div class="media mb-4">
+                                <i class="fas fa-users icon fa-fw fa-2x"></i>
+                                <div class="media-body">
+                                    <h3 class="link-title bold m-0">People</h3>
+                                    <p class="m-0">Manage individuals, households, and volunteers</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @*<div class="st-dropdown-section" data-dropdown="about">
+                    <div class="st-dropdown-content">
+                        <div class="st-dropdown-content-group">
+                            <a class="dropdown-item" href="@Url.Action("Index", "AboutUs")">
+                                <div class="media mb-4">
+                                    <i class="fas fa-address-card icon fa-2x"></i>
+                                    <div class="media-body">
+                                        <h3 class="link-title m-0">About Us</h3>
+                                        <p class="m-0 color-2">Get to know Praise CMS</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <a class="dropdown-item" href="@Url.Action("Index", "OurStory")">
+                                <div class="media mb-4">
+                                    <i class="fas fa-comment-dots icon fa-2x"></i>
+                                    <div class="media-body">
+                                        <h3 class="link-title m-0">Testimonials</h3>
+                                        <p class="m-0 color-2">What do church leaders have to say about us?</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <a class="dropdown-item" href="@Url.Action("Index", "Contact")">
+                                <div class="media mb-4">
+                                    <i class="fas fa-phone icon fa-2x"></i>
+                                    <div class="media-body">
+                                        <h3 class="link-title m-0">Contact</h3>
+                                        <p class="m-0 color-2">Need to get in touch with us?</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>*@
+            @*<div class="st-dropdown-section" data-dropdown="components">
+                    <div class="st-dropdown-content">
+                        <div class="st-dropdown-content-group">
+                            <div class="mb-4">
+                                <h3 class="color-5 light text-nowrap">
+                                    Praise CMS U
+                                </h3>
+                                <p class="color-2 mt-0">Many features, one platform</p>
+                            </div>
+                            <a class="dropdown-item" href="@Url.Action("Index", "Documentation")">
+                                <div class="media mb-4">
+                                    <i class="fas fa-file-alt icon fa-2x"></i>
+                                    <div class="media-body">
+                                        <h3 class="link-title m-0">Documentation</h3>
+                                        <p class="m-0 color-2">Read up on the Project Jockey platform</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <a class="dropdown-item" href="@Url.Action("Index", "VideoLibrary")">
+                                <div class="media mb-4">
+                                    <i class="fas fa-video icon fa-2x"></i>
+                                    <div class="media-body">
+                                        <h3 class="link-title m-0">Instructional Videos</h3>
+                                        <p class="m-0 color-2">Helpful how-to videos</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <h4 class="text-uppercase regular">Getting Started</h4>
+                            <div class="row">
+                                <div class="col mr-4">
+                                    <a class="dropdown-item" href="#">Signing Up</a>
+                                    <a class="dropdown-item" href="#">Accepting Payments</a>
+                                    <a class="dropdown-item" href="#">Reports</a>
+                                    <a class="dropdown-item" href="#">Staff Management</a>
+                                    <a class="dropdown-item" href="#">Increase Giving</a>
+                                </div>
+                                <div class="col mr-4">
+                                    <a class="dropdown-item" href="#">Account Setup</a>
+                                    <a class="dropdown-item" href="#">Analytics</a>
+                                    <a class="dropdown-item" href="#">Events</a>
+                                    <a class="dropdown-item" href="#">Member Engagement</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="st-dropdown-content-group">
+                            <a class="dropdown-item" href="#">
+                                <span class="mr-2"><i class="fa fa-file-alt"></i></span>
+                                Coming Soon Announcement
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <span class="mr-2"><i class="fa fa-file-alt"></i></span>
+                                Member Getting Started Guide
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <span class="mr-2"><i class="fa fa-file-alt"></i></span>
+                                Existing Website Implementation
+                            </a>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</nav>

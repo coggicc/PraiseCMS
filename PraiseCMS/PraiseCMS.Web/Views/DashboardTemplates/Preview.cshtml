@@ -1,0 +1,10 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+
+@section subheader{
+    <div class="d-flex">
+        <a href="/dashboardtemplates" class="btn btn-light-primary btn-sm mr-2">Dashboards</a>
+    </div>
+}
+
+@Html.Partial("~/Views/Home/_WidgetTiles.cshtml", Model)
+@Html.Partial("~/Views/Home/_Widgets.cshtml", Model)

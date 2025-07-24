@@ -1,0 +1,42 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+@{
+    var days = ExtensionMethods.GetDatesOfWeek(DateTime.Now.Date);
+}
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder text-dark">This Week's Schedule</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-4">
+        @if (Model.Events.Any(x => days.Contains(x.StartDate.Date)))
+        {
+            <div class="timeline timeline-5 mt-3">
+                @foreach (var item in Model.Events.FindAll(x => days.Contains(x.StartDate.Date)).OrderBy(q => q.StartDate).ThenBy(o => Convert.ToDateTime(o.StartTime)).ThenBy(d => d.Display).Take(10).ToList())
+                {
+                    <div class="timeline-item align-items-start">
+                        <div class="timeline-label font-weight-bolder text-dark-75 font-size-lg text-right pr-3">@Html.Raw(item.StartDate.Date.Equals(DateTime.Now.Date) ? "" : item.StartDate.DayOfWeek.ToString().SubstringIt(3)) @(item.AllDay ? "All Day" : item.StartTime.TrimStart('0'))</div>
+                        <div class="timeline-badge">
+                            <i class="fa fa-genderless text-@item.CalendarColor icon-xxl"></i>
+                        </div>
+                        <div class="timeline-content text-dark-50">@item.Display</div>
+                    </div>
+                }
+            </div>
+            if (Model.Events.Count(x => days.Contains(x.StartDate.Date)) > 10)
+            {
+                <div class="text-center mt-5">
+                    <a href="/calendar" class="btn btn-light-primary btn-sm font-weight-bold">View More</a>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No events scheduled for this week</p>
+        }
+    </div>
+</div>

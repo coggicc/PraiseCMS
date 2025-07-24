@@ -1,0 +1,124 @@
+﻿@model SubscriptionViewModel
+@{
+    ViewBag.Title = "Praise Account";
+    var plan = Model.IsTrialPeriod ? "Premium <small>(Free Trial)</small>" : "Premium";
+}
+@section leftsubheader{
+    @Html.Partial("_AccountSubHeader")
+}
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model.Church)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom card-stretch">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">Praise Account</h3>
+                </div>
+            </div>
+            <div class="card-body view-details py-4">
+                <h3 class="font-size-lg text-dark font-weight-bold mb-6">Membership &amp; Billing</h3>
+                <div class="form-group row my-2">
+                    <label class="col-4 col-form-label">Status:</label>
+                    <div class="col-8">
+                        <div style="padding-top:8px;"><span class="label label-light-@(Model.Church.IsActive ? "success" : "danger") label-inline label-xl">@(Model.Church.IsActive ? ActiveStatuses.Active : ActiveStatuses.Inactive)</span></div>
+                    </div>
+                </div>
+                <div class="form-group row my-2">
+                    <label class="col-4 col-form-label">Account Number:</label>
+                    <div class="col-8">
+                        <p class="form-control-static" style="margin-top:10px;">Account # @Model.Church.Number</p>
+                    </div>
+                </div>
+                <div class="form-group row my-2">
+                    <div class="col-8 offset-4">
+                        <p class="form-control-static" style="margin-top:10px;"><a href="/settings/paymentmethods" class="module-067175945827cfd6d056b14a2fabca needs-write">Manage payment info</a></p>
+                    </div>
+                </div>
+                <div class="form-group row my-2">
+                    <div class="col-8 offset-4">
+                        <p class="form-control-static" style="margin-top:10px;"><a href="/settings/billingactivity" class="module-0900438452b4694f3753b24de3ad38">Billing activity</a></p>
+                    </div>
+                </div>
+                <div class="separator separator-dashed my-5"></div>
+                <div class="row">
+                    <div class="col-sm">
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Plan Details</h3>
+                    </div>
+                </div>
+                <div class="card-body view-details py-4">
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Type:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.IsPaidPlan ? plan : "Basic Plan") @Html.Raw(Model.ShowActivationButton ? "" : $" - <a href='/settings/changeplan' class='module-1091707272f1ca3ef8c55440408ef2 needs-write'>Change plan</a>")</p>
+                        </div>
+                    </div>
+                    @if (Model.IsPaidPlan)
+                    {
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">@Html.Raw(Model.IsTrialPeriod ? "Trial" : "Subscription") Start Date:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@Model.StartDate.ToShortDateString()</p>
+                            </div>
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">@Html.Raw(Model.IsTrialPeriod ? "Trial" : "Subscription") Expiration Date:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;"><span class="@((Convert.ToDateTime(Model.EndDate).Date - DateTime.Now.Date).Days > 5 ? "" : "text-danger")">@Model.EndDate.ToShortDateString()</span> </p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Free Plan Since: </label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@Model.StartDate.ToShortDateString()</p>
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group row my-2">
+                        @if (Model.IsCancelable)
+                        {
+                            <div class="col-8 offset-md-4">
+                                <button type="button" class="btn btn-link-danger btn-sm module-1372957713cacf859ab6144f06b176 needs-write" onclick="cancelSubscription()">Cancel My Subscription</button>
+                            </div>
+                        }
+                        @if (Model.ShowActivationButton)
+                        {
+                            <div class="col-8 offset-md-4">
+                                @Html.AjaxModalLink("Activate Subscription", $"/settings/ActivateSubscription", "Activate Subscription", "Activate", "btn btn-light-primary btn-sm font-weight-bold module-1372957713cacf859ab6144f06b176 needs-write", "")
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowscripts
+{
+    <script type="text/javascript">
+        function cancelSubscription() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Canceling your account will remove access to prayer requests, in-depth reporting, and more. The change will occur as soon as your current plan expires.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it',
+                cancelButtonText: 'No, go back'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('<form hidden id="changePlanForm" action="/settings/ChangePlan" method="post"><input type="hidden" id="plan" name="plan" value="Free" /><input type="hidden" id="churchId" name="churchId" value="@SessionVariables.CurrentChurch.Id" /><input type="hidden" id="isCancelled" name="isCancelled" value="true" /></form>').appendTo('body').submit();
+                }
+            });
+        }
+    </script>
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

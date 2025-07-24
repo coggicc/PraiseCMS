@@ -1,0 +1,27 @@
+﻿@model PraiseCMS.DataAccess.Models.BuildingViewModel
+<div id="building-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "building-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.BuildingId)
+        @Html.HiddenFor(x => x.ChurchId)
+        @*@Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)*@
+
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Name:</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(x => x.BuildingName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.BuildingName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Campus:</label>
+            <div class="col-lg-8">
+                @Html.DropDownListFor(x => x.CampusId, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id, x => SessionVariables.Campuses.Count() == 1 && x.Id == SessionVariables.Campuses.First().Id), "Select a campus...", new { @class = "form-control select2" })
+                @Html.ValidationMessageFor(x => x.CampusId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    }
+</div>

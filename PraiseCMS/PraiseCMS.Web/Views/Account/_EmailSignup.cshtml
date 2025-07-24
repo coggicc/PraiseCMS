@@ -1,0 +1,55 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.GivingSignUpViewModel
+
+<div id="SignUp_Details" class="kt-login__signin">
+    <div class="kt-login__head">
+        <h3 class="kt-login__title">@(!string.IsNullOrEmpty(Model.Title) ? Model.Title : "Sign Up")</h3>
+        <div class="kt-login__desc">Enter your details to create your account:</div>
+    </div>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.AccountFound)
+        if (Model.AccountFound == false)
+        {
+            @Html.HiddenFor(x => x.Phone)
+        }
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control formal", name = "login-form-firstname", placeholder = "First Name" })
+            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "invalid-feedback" })
+        </div>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control formal", name = "login-form-lastname", placeholder = "Last Name" })
+            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "invalid-feedback" })
+        </div>
+        if (Model.AccountFound)
+        {
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control phone", name = "login-form-phone", placeholder = "Phone Number" })
+                @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "invalid-feedback" })
+            </div>
+        }
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", name = "login-form-username", placeholder = "Email" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "invalid-feedback" })
+        </div>
+        <div class="input-group">
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "login-form-password", name = "login-form-password", placeholder = "Password" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "invalid-feedback" })
+        </div>
+        <div class="input-group">
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", id = "login-form-confirmpassword", name = "login-form-password", placeholder = "Confirm Password" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "invalid-feedback" })
+        </div>
+        <div class="kt-login__actions">
+            <button type="submit" class="btn btn-brand btn-elevate kt-login__btn-primary">Sign Up</button>
+        </div>
+    }
+    <div class="kt-login__account">
+        <span class="kt-login__account-msg">
+            Already have an account?
+        </span>&nbsp;&nbsp;
+        <a href="@Url.Action("Login","Account")" class="kt-link kt-link--light kt-login__account-link">Sign In</a>
+    </div>
+</div>

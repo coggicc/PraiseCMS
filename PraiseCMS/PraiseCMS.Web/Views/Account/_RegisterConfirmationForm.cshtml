@@ -1,0 +1,19 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SignUpViewModel
+
+<div class="mb-5">
+    <div class="text-muted font-weight-bold">Verification code</div>
+</div>
+@Html.AntiForgeryToken()
+@using (Html.BeginForm("PhoneVerification", RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+{
+    @Html.ValidationMessage("VerificationCodeModel")
+    @Html.HiddenFor(x => x.Phone)
+    @Html.HiddenFor(x => x.PlanType)
+
+    <div class="form-group mb-5">
+        @Html.TextBoxFor(m => m.VerificationCode, new { @class = "form-control h-auto form-control-solid py-4 px-8", placeholder = "Verification Code" })
+    </div>
+    <div class="form-group d-flex flex-wrap flex-center mt-5">
+        <button type="button" class="btn_continue btn btn-primary font-weight-bold px-9 py-4 my-3 mx-2" style="width:100%;">Continue</button>
+    </div>
+}

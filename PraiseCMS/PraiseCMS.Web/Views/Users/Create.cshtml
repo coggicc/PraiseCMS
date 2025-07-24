@@ -1,0 +1,113 @@
+﻿@using PraiseCMS.Shared.Methods
+@using Roles = PraiseCMS.Shared.Shared.Roles
+@model PraiseCMS.DataAccess.Models.ViewModels.CreateAccountViewModel
+
+@{
+    ViewBag.Title = Model.Type.IsNotNullOrEmpty() ? $"Create {Model.Type} Role User" : "Create New User";
+    var adoData = new AdoDataAccess();
+    var roles = adoData.ReadAllRoles(SessionVariables.CurrentChurch.Id);
+
+    if (!SessionVariables.CurrentUser.IsSuperAdmin)
+    {
+        roles = roles.Where(x => x.Name != Roles.SuperAdmin).ToList();
+    }
+}
+
+@section leftsubheader{
+    @Html.Partial("~/Views/People/_PeopleSubheader.cshtml")
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+    </div>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data" }))
+    {
+        <div class="card-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Role</label>
+                <div class="col-lg-10">
+                    @Html.DropDownListFor(x => x.TypeId, roles.ToSelectList("Select a role...", x => x.Name, x => x.Id), new { @class = "form-control select2", style = "width:100%;" })
+                    @Html.ValidationMessageFor(x => x.TypeId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">First Name</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Last Name</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.LastName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Email</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.Email, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Phone</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.Phone, new { @class = "form-control phone" })
+                    @Html.ValidationMessageFor(x => x.Phone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Address</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.Address1, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.Address1, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Apt/Unit/Suite#</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.Address2, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">City</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.City, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.City, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">State</label>
+                <div class="col-lg-10">
+                    @Html.DropDownListFor(x => x.State, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { @class = "form-control select2", style = "width:100%;" })
+                    @Html.ValidationMessageFor(x => x.State, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Zip</label>
+                <div class="col-lg-10">
+                    @Html.TextBoxFor(x => x.Zip, new { maxlength = "5", @class = "form-control numeric" })
+                    @Html.ValidationMessageFor(x => x.Zip, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Campus</label>
+                <div class="col-lg-10">
+                    @Html.DropDownListFor(x => x.Campus, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id, x => SessionVariables.Campuses.Count() == 1 && x.Id == SessionVariables.Campuses.First().Id), "Select a campus...", new { @class = "form-control select2" })
+                    @Html.ValidationMessageFor(x => x.Campus, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-light-primary btn-bold mr-2">Save Changes</button>
+            <a href="/users" class="btn btn-light-dark font-weight-bold">Cancel</a>
+        </div>
+    }
+</div>

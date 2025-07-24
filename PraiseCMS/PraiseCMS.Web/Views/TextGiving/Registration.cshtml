@@ -1,0 +1,179 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.PaymentMethodViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Registration</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700|Roboto:300,400,500,600,700">
+    <link href="~/Content/assets/sass/style.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link href="~/Content/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/style.bundle.css" rel="stylesheet" />
+    <link href="~/Content/assets/css/giving-workflow/start-giving.css" rel="stylesheet" />
+    <style>
+    </style>
+</head>
+<body>
+    <div class="card card-custom">
+        <div class="card-header">
+            <div class="card-title">
+                <div class="p-5">
+                    <a>
+                        @if (!string.IsNullOrEmpty(ViewBag.ChurchLogo))
+                        {
+                            string logo = ViewBag.ChurchLogo;
+                            <img src="@Html.AmazonLink(logo, "Uploads/Logos")" class="max-h-70px" alt="" />
+                        }
+                        else
+                        {
+                            <img src="~/Content/assets/media/logos/logo-1.png" class="max-h-70px" alt="" />
+                        }
+                    </a>
+                </div>
+            </div>
+        </div>
+        @if (Model.Status.IsNotNullOrEmpty() && Model.Status == "Result")
+        {
+            <div class="login-content flex-column-fluid d-flex flex-column p-10">
+                <div class="d-flex flex-row-fluid flex-center">
+                    <div class="col-12 col-lg-6 text-center">
+                        <span class="fa-stack fa-5x animate__animated animate__bounceInDown">
+                            <i class="fa fa-circle fa-stack-2x icon-background"></i>
+                            @if (Model.Success)
+                            {
+                                <i class="far fa-thumbs-up fa-inverse fa-stack-1x" style="font-size:64px;"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-exclamation fa-inverse fa-stack-1x" style="font-size:64px;"></i>
+                            }
+                        </span>
+                        <div class="mt-4">
+                            @Html.Raw(Model.Description)
+                        </div>
+                        <div class="mt-4">
+                            <a href="/textgiving/Registration/@Model.User.Id" class="btn btn-primary font-weight-bolder font-size-h6">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { id = "registrationForm", @class = "form", enctype = "multipart/form-data" }))
+            {
+                <div class="card-body">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @Html.HiddenFor(x => x.User.Id)
+                    @Html.HiddenFor(x => x.PaymentMethod)
+                    <h3 class="font-size-h2 text-dark font-weight-bold ml-4 mb-6">Personal Info</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="font-size-h6 font-weight-bolder text-dark">First Name</label>
+                                @Html.TextBoxFor(x => x.User.FirstName, new { @class = "form-control h-auto py-7 px-6  rounded-lg font-size-h6" })
+                                @Html.ValidationMessageFor(x => x.User.FirstName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="font-size-h6 font-weight-bolder text-dark">Last Name</label>
+                                @Html.TextBoxFor(x => x.User.LastName, new { @class = "form-control h-auto py-7 px-6  rounded-lg font-size-h6" })
+                                @Html.ValidationMessageFor(x => x.User.LastName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="font-size-h6 font-weight-bolder text-dark">Phone</label>
+                                @Html.TextBoxFor(x => x.User.PhoneNumber, new { @class = "form-control h-auto py-7 px-6  rounded-lg font-size-h6", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(x => x.User.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="font-size-h6 font-weight-bolder text-dark">Email</label>
+                                @Html.TextBoxFor(x => x.User.Email, new { @class = "form-control h-auto py-7 px-6  rounded-lg font-size-h6" })
+                                @Html.ValidationMessageFor(x => x.User.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-size-h2 text-dark font-weight-bold mt-4 ml-4 mb-6">Payment Method</h3>
+                        <div id="cardInfo">
+                            <div class="form-group">
+                                <label class="font-size-h6 font-weight-bolder text-dark">Card Number</label>
+                                <table>
+                                    <tr>
+                                        <td style="width: 90%;">
+                                            @Html.TextBoxFor(m => m.PaymentCard.CcNumber, new { id = "cardNumber", @class = "numeric form-control h-auto py-7 px-6  rounded-lg font-size-h6 card-number", maxlength = "19", oncopy = "return false", onkeyup = "cardformat(this)", onpaste = "return false", oncut = "return false", placeholder = "", autocomplete = "off" })
+                                            @Html.HiddenFor(m => m.PaymentCard.CcType, new { id = "cardType" })
+                                        </td>
+                                        <td style="width: 10%;">
+                                            <div class="input-group-prepend card-type">
+                                                <img id="card_logo" src="/Content/assets/image/card_Logos/blank_card.png" style="min-height: 70px;" class="card-type-span" alt="">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="card-validation"></div>
+                            </div>
+                            <div class="form-group">
+                                <p style="text-align:right;"><span class="mr-4">Supported Cards</span> <span><img src="~/Content/assets/image/credit_card_logos.png" /></span></p>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="font-size-h6 font-weight-bolder text-dark">Expiration Date</label>
+                                        @Html.TextBoxFor(m => m.PaymentCard.CcExpiry, new { id = "expiryDate", @class = "form-control h-auto py-7 px-6  rounded-lg font-size-h6", placeholder = "MM / YYYY", autocomplete = "off" })
+                                        <span id="expiryErrorMessage" class="error-message"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="font-size-h6 font-weight-bolder text-dark">Zip</label>
+                                        @Html.TextBoxFor(x => x.User.Zip, new { @class = "form-control h-auto py-7 px-6  rounded-lg font-size-h6 numeric", maxlength = "19", })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button onclick="submitForm()" type="button" class="btn btn-light-primary btn-bold">Save</button>
+                </div>
+            }
+        }
+    </div>
+    <script>var KTAppSettings = { "breakpoints": { "sm": 576, "md": 768, "lg": 992, "xl": 1200, "xxl": 1200 }, "colors": { "theme": { "base": { "white": "#ffffff", "primary": "#3699FF", "secondary": "#E5EAEE", "success": "#1BC5BD", "info": "#8950FC", "warning": "#FFA800", "danger": "#F64E60", "light": "#F3F6F9", "dark": "#212121" }, "light": { "white": "#ffffff", "primary": "#E1F0FF", "secondary": "#ECF0F3", "success": "#C9F7F5", "info": "#EEE5FF", "warning": "#FFF4DE", "danger": "#FFE2E5", "light": "#F3F6F9", "dark": "#D6D6E0" }, "inverse": { "white": "#ffffff", "primary": "#ffffff", "secondary": "#212121", "success": "#ffffff", "info": "#ffffff", "warning": "#ffffff", "danger": "#ffffff", "light": "#464E5F", "dark": "#ffffff" } }, "gray": { "gray-100": "#F3F6F9", "gray-200": "#ECF0F3", "gray-300": "#E5EAEE", "gray-400": "#D6D6E0", "gray-500": "#B5B5C3", "gray-600": "#80808F", "gray-700": "#464E5F", "gray-800": "#1B283F", "gray-900": "#212121" } }, "font-family": "Poppins" };</script>
+    <script src="~/Content/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/Content/assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
+    <script src="~/Content/assets/js/scripts.bundle.js"></script>
+    <script src="~/Scripts/global.js"></script>
+    <script src="~/Scripts/form-validate/form-validate.js"></script>
+    <script src="~/Scripts/jquery.mask.js"></script>
+    <script type="text/javascript">
+        function submitForm() {
+            var form = document.getElementById('registrationForm');
+            if (form && form.User_FirstName.value && form.User_LastName.value
+                && form.User_PhoneNumber.value && form.User_Email.value && form.User_Zip.value && form.cardNumber.value && form.expiryDate.value) {
+                if (!form.cardType.value || form.cardNumber.length < 19) {
+                    wizardValidationMessage('Please enter a valid card number.');
+                    return false;
+                }
+                form.submit();
+            } else {
+                wizardValidationMessage('All fields are required.');
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

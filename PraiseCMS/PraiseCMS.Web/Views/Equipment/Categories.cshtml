@@ -1,0 +1,71 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.EquipmentCategory>
+
+@{
+    ViewBag.Title = "Categories";
+}
+
+@section subheader{
+    <div class="d-flex align-items-center">
+        <a href="/equipment/" class="btn btn-light-dark btn-sm mr-2">Equipment Dashboard</a>
+        @Html.AjaxModalLink("Add Equipment Category", "/equipment/_CreateEquipmentCategory", "Add Equipment Category", "Save", "btn btn-sm btn-light-primary")
+    </div>
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                <i class="kt-font-brand fa fa-toolbox"></i>
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                @if (Model.Any())
+                {
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var parent in Model.Where(x => x.ParentId == null).ToList())
+                        {
+                            <tr class="table-secondary">
+                                <td colspan="2">
+                                    <a href="/equipment/viewall?categoryId=@parent.Id">@parent.Display</a>
+                                    @Html.AjaxModalLink(" - Edit", "/equipment/_editequipmentcategory/" + parent.Id, "Edit Category", "Save", "needs-write module-4411134704ac1e194050e64f82b2d2", "", "/equipment/deleteequipmentcategory/" + parent.Id, "", false, ModalSizes.Default)
+                                </td>
+                            </tr>
+                            if (Model.Any(x => x.ParentId == parent.Id))
+                            {
+                                foreach (var cat in Model.Where(x => x.ParentId == parent.Id).ToList())
+                                {
+                                    <tr>
+                                        <td style="padding-left:15px;">
+                                            <a href="/equipment/viewall?categoryId=@cat.Id">@cat.Display</a>
+                                            @Html.AjaxModalLink(" - Edit", "/equipment/_editequipmentcategory/" + cat.Id, "Edit Category", "Save", "needs-write module-4411134704ac1e194050e64f82b2d2", "", "/equipment/deleteequipmentcategory/" + cat.Id, "", false, ModalSizes.Default)
+                                        </td>
+                                        <td>@cat.CreatedDate.ToShortDateString()</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="2" style="padding-left:15px;">You don't have any categories yet. Want to add one?</td></tr>
+                            }
+                        }
+                    </tbody>
+                }
+                else
+                {
+                    <tr><td colspan="2">You don't have any categories yet. Want to add one?</td></tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+

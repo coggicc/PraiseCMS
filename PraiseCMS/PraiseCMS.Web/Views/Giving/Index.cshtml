@@ -1,0 +1,81 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Fund>
+
+@{
+    ViewBag.Title = "Giving Dashboard";
+}
+
+@section leftsubheader{
+    @Html.Partial("_GivingSubheader")
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card card-custom card-stretch gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-money-bill-alt fa-6x text-danger mt-4 mb-4"></i>
+                <h3 class="font-weight-bold mb-4">Offline Giving</h3>
+                <h4 class="text-muted font-size-sm mb-10">Quickly add or view offline giving.</h4>
+                <div>
+                    <a href="/giving/offlinegiving" class="btn btn-light-primary font-weight-bold">Manage Offline Giving</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-custom card-stretch gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-piggy-bank fa-6x text-success mt-8 mb-8"></i>
+                <h3 class="font-weight-bold mb-4">Funds</h3>
+                <h4 class="text-muted font-size-sm mb-10">Quickly manage funds for your church.</h4>
+                <a href="/funds" class="btn btn-light-primary font-weight-bold">Go to Funds</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-4x text-warning mt-4 mb-10"></i>
+                <h3 class="font-weight-bold mb-5" style="font-size:1.25rem;">Giving Summary Report</h3>
+                <h4 class="text-muted font-size-sm mb-5">View giving by campus and fund.</h4>
+                <a href="/reports/givingsummary" class="btn btn-light-primary font-weight-bold">View Report</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-4x text-danger mt-4 mb-10"></i>
+                <h3 class="font-weight-bold mb-5" style="font-size:1.25rem;">Fund Report</h3>
+                <h4 class="text-muted font-size-sm mb-5">View giving by fund.</h4>
+                @if (Model.Any())
+                {
+                    @Html.AjaxModalLink("View Report", "/reports/_fundreportfilter", "Fund Report Filter", "View Report", "btn btn-light-primary font-weight-bold", "")
+                }
+                else
+                {
+                    <a href="/funds" class="btn btn-light-primary font-weight-bold">Create a fund</a>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-4x text-info mt-4 mb-10"></i>
+                <h3 class="font-weight-bold mb-5" style="font-size:1.25rem;">Donor Status Report</h3>
+                <h4 class="text-muted font-size-sm mb-5">View giving by donor status.</h4>
+                <a href="/reports/donorstatusreport" class="btn btn-light-primary font-weight-bold">View Report</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-4x text-dark mt-4 mb-10"></i>
+                <h3 class="font-weight-bold mb-5" style="font-size:1.25rem;">Donor Demographic Report</h3>
+                <h4 class="text-muted font-size-sm mb-5">View giving by church family demographics.</h4>
+                <a href="/reports/donordemographicsreport" class="btn btn-light-primary font-weight-bold">View Report</a>
+            </div>
+        </div>
+    </div>
+</div>

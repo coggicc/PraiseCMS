@@ -1,0 +1,14 @@
+﻿@model PraiseCMS.DataAccess.Models.ReportModel
+@{
+    Layout = null;
+}
+@Html.Raw(Model.Report)
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+             var default_date_range = '@ViewBag.startDate - @ViewBag.endDate';
+            $("#dashboard_daterangepicker_date").text(default_date_range);
+        })
+    </script>
+}

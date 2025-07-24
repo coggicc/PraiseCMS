@@ -1,0 +1,58 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0 pt-5">
+        <h3 style="width: 80%;" class="card-title align-items-start flex-column">
+            <span class="card-label font-weight-bolder text-dark">Employee Birthdays</span>
+        </h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0">
+        @if (Model.UpcomingBirthdays.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-borderless table-vertical-center">
+                    <thead>
+                        <tr>
+                            <th class="p-0 w-50px"></th>
+                            <th class="p-0 min-w-150px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var person in Model.UpcomingBirthdays)
+                        {
+                            <tr>
+                                <td class="pl-0">
+                                    <div class="symbol symbol-50 symbol-light mr-2 mt-2">
+                                        <span class="symbol-label">
+                                            @if (person != null && !string.IsNullOrEmpty(person.ProfileImageURL))
+                                            {
+                                                <span class="symbol-label" style="background-image: url('@person.ProfileImageURL')"></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="symbol-label" style="background-image:url('@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)')"></span>
+                                            }
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="pl-0">
+                                    <a href="javascript:;" class="text-dark font-weight-bolder text-hover-primary font-size-lg">@person.Display</a>
+                                    <span class="text-muted font-weight-bolder d-block font-size-lg">@person.DOB.ToShortDateYearString()</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>No upcoming birthdays</p>
+        }
+    </div>
+</div>

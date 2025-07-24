@@ -1,0 +1,52 @@
+﻿@model IEnumerable<int>
+@{
+    ViewBag.Title = "Giving Statements";
+}
+
+@if (!SessionVariables.CurrentUser.IsDonorOnly)
+{
+    @section leftsubheader{
+        @Html.Partial("_MyGivingSubheader")
+    }
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark"> Giving Statements</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">View or download your statements.</span>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Statement Period</th>
+                            <th>Church</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var year in Model.OrderByDescending(x=>x))
+                        {
+                            <tr>
+                                <td>@year Annual Giving Statement<a href="/mygiving/GivingStatementPDF?year=@year" target="_blank" class="ml-8 mr-8">View</a><a href="/mygiving/DownloadGivingStatementPDF?year=@year">Download</a></td>
+                                <td>01/01/@year - 12/31/@year</td>
+                                <td>@SessionVariables.CurrentChurch.Name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>You don't have any giving statements yet.</p>
+        }
+    </div>
+</div>

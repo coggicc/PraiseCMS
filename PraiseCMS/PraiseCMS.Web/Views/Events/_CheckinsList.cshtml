@@ -1,0 +1,54 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@model IEnumerable<PraiseCMS.DataAccess.Models.ChurchEventCheckIn>
+
+<div class="table-responsive">
+    <table id="checkIn-people-list-table" class="table table-head-custom table-head-bg table-borderless table-vertical-center @Html.Raw(Model.Count() > 10 ? "" : "border-0")">
+        <thead>
+            <tr>
+                <th>Person</th>
+                <th>Household</th>
+                <th>Check-In Time</th>
+                <th>Check-In By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderBy(q => q.CheckIn.Person.Display))
+            {
+                <tr>
+                    <td class="pl-0">
+                        <div class="symbol symbol-50 symbol-light mr-4">
+                            <span class="symbol-label">
+                                <img src="@item.CheckIn.Person.ProfileImageURL" class="h-100 align-self-end" alt="">
+                            </span>
+                        </div>
+                        <div>
+                            @if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+                            {
+                                if (item.CheckIn.Person.UserId.IsNotNullOrEmpty())
+                                {
+                                    <a href="/users/userprofile?Id=@item.CheckIn.Person.UserId&type=user" data-toggle="tooltip" data-original-title="View profile" class="text-muted text-hover-primary font-weight-bold">@item.CheckIn.Person.Display</a>
+                                }
+                                else
+                                {
+                                    <a href="/users/userprofile?Id=@item.CheckIn.Person.Id&type=person" data-toggle="tooltip" data-original-title="View profile" class="text-muted text-hover-primary font-weight-bold">@item.CheckIn.Person.Display</a>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted font-weight-bold">@item.CheckIn.Person.Display</span>
+                            }
+                        </div>
+                    </td>
+                    <td>@item.Households</td>
+                    <td>@item.CheckIn.CheckInTime.ToShortDateAndTimeString()</td>
+                    <td>@(item.CheckIn.ModifiedBy.IsNotNullOrEmpty()? item.CheckIn.ModifiedByUser.Display: item.CheckIn.CreatedByUser.Display)</td>
+                    <td>
+                        <button class="btn btn-hover-primary btn-sm">Action</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

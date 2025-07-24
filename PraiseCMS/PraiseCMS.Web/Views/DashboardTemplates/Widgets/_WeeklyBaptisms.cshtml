@@ -1,0 +1,26 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder">Weekly Baptisms</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="d-flex align-items-center justify-content-between card-spacer flex-grow-1">
+            <span class="symbol symbol-50 symbol-light-primary mr-2">
+                <span class="symbol-label">
+                    <i class="fas fa-water fa-2x text-primary"></i>
+                </span>
+            </span>
+            <div class="d-flex flex-column text-right">
+                <div class="font-weight-bold text-muted font-size-sm">
+                    <span class="text-dark-75 font-weight-bolder font-size-h3 mr-2">@Model.CurrentWeeksBaptisms</span> this week
+                </div>
+            </div>
+        </div>
+        <div id="kt_stats_widget_10_chart" class="card-rounded-bottom" data-color="primary" style="height: 150px"></div>
+    </div>
+</div>

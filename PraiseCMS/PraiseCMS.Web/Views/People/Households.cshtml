@@ -1,0 +1,173 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.HouseholdDashboard
+
+@{
+    ViewBag.Title = "Households";
+}
+
+@section leftsubheader{
+    @Html.Partial("_PeopleSubheader")
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="col-xxl-4 d-flex align-items-center justify-content-center">
+            <div class="input-group input-group-lg input-group-solid my-2">
+                <input type="text" class="form-control pl-4" placeholder="Search households..." id="filterKeyword" value="@ViewBag.userFilterKeyword">
+                <div class="input-group-append">
+                    <span class="input-group-text pr-3">
+                        <a class="pointer mr-3" id="clearSearchBtn" @(string.IsNullOrEmpty(ViewBag.userFilterKeyword) ? "style=display:none;" : "") onclick="clearUserSearch()" data-toggle="tooltip" title="Clear Search">
+                            <i class="fas fa-times"></i>
+                        </a>
+                        <a class="pointer" onclick="getByKeyword()" data-toggle="tooltip" title="Search"><i class="fa fa-search"></i></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Add Household", "/people/_CreateHousehold/", "Add Household", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Households.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th width="20%" class="text-center">Head of Household</th>
+                            <th width="10%" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var household in Model.Households)
+                        {
+                            var members = Model.HouseholdMembers.Where(x => x.HouseholdId == household.Id).ToList();
+                            <tr>
+                                <td>
+                                    <a href="/people/householdMembers/@household.Id" data-toggle="tooltip" title="Manage household members" data-placement="top">@household.Display (@members.Count() @members.Count().Pluralize("member"))</a>
+                                </td>
+                                <td class="text-center">
+                                    @if (members.Any(x => x.IsHeadofHousehold))
+                                    {
+                                        var headofHousehold = members.FirstOrDefault(x => x.IsHeadofHousehold);
+
+                                        if (headofHousehold.UserId.IsNotNullOrEmpty())
+                                        {
+                                            <a href="/users/userprofile?Id=@headofHousehold.UserId&type=user" data-toggle="tooltip" title="View profile">@headofHousehold.MemberName</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/users/userprofile?Id=@headofHousehold.PersonId&type=person" data-toggle="tooltip" title="View profile">@headofHousehold.MemberName</a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>[Not Assigned]</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @Html.AjaxModalLink("<i class='fas fa-pencil-alt'></i>", $"/people/_EditHousehold/{household.Id}", "Edit Household", "Update", "mr-2", "")
+                                    <a href="#" onclick="deleteHousehold('@household.Id')" data-toggle="tooltip" title="Delete household"><i class="fas fa-trash-alt text-hover-danger"></i></a>
+                                    <a id="delete-household-@household.Id" hidden href="/people/DeleteHousehold?id=@household.Id"></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>You don't have any households yet.</p>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    $('#filterKeyword').keyup(function (e) {
+        if (e.currentTarget.value !== "") {
+            $('#clearSearchBtn').show();
+        } else {
+            $('#clearSearchBtn').hide();
+        }
+    });
+    $('#filterKeyword').keypress(function (e) {
+        var key = e.which;
+        if (key === 13) {
+            getByKeyword();
+            return false;
+        }
+    });
+    function deleteHousehold(id) {
+        Swal.fire({
+            title: "Delete Household",
+            text: "Are you sure? The current household's members will no longer be assigned to a household.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes, Delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#delete-household-' + id)[0].click();
+            }
+        });
+    }
+    function getByKeyword() {
+        if ($('#filterKeyword').val()) {
+            let currentUrl = window.location;
+            if (!currentUrl.href.includes('filterKeyword')) {
+                if (currentUrl.href.includes('?')) {
+                    let url = currentUrl.href + "&filterKeyword=" + $('#filterKeyword').val();
+                    location.replace(url);
+                }
+                else {
+                    let url = currentUrl.href + "?filterKeyword=" + $('#filterKeyword').val();
+                    location.replace(url);
+                }
+            }
+            else {
+                let url = currentUrl.href;
+                let items = url.split('filterKeyword=');
+                if (items && items.length > 0) {
+                    url = url.replace("=" + items[1], "=" + $('#filterKeyword').val());
+                }
+                location.replace(url);
+            }
+        }
+    }
+
+    function clearUserSearch() {
+        if ($('#filterKeyword').val()) {
+            $('#filterKeyword').val('');
+            $('#clearSearchBtn').hide();
+            $('#filterKeyword').focus();
+            let currentUrl = window.location;
+            if (currentUrl.href.includes('filterKeyword')) {
+                {
+                    let url = currentUrl.href;
+                    let items = url.split('filterKeyword=');
+                    if (items && items.length > 0) {
+                        if (items[1].includes('&')) {
+                            let subItems = items[1].split('&');
+                            if (subItems && subItems.length > 0) {
+                                url = url.replace("=" + subItems[0], "=");
+                            }
+                        }
+                        else {
+                            url = url.replace("=" + items[1], "=");
+                        }
+                    }
+                    location.replace(url);
+                }
+            }
+        }
+    }
+</script>

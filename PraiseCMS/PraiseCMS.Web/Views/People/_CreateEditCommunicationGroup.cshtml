@@ -1,0 +1,113 @@
+﻿@model PraiseCMS.DataAccess.Models.CommunicationGroup
+
+<div id="CommunicationGroup-div">
+    @Html.Partial("~/Views/Shared/_Alert.cshtml")
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "CommunicationGroup-div" }, new { @class = "form", id = "householdForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+        <div class="form-group">
+            <label>Group Name:</label>
+            @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group row">
+            <div class="col-lg">
+                <div class="checkbox-list">
+                    <span class="switch switch-sm switch-icon">
+                        <label>
+                            @Html.CheckBoxFor(x => x.AllowUserToUnsubscribe) &nbsp; <a class="cursor-pointer">Allow users to unsubscribe from this group</a>
+                            <span class="mt-0"></span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Select a contact method</label>
+            <div class="form-group row p-2">
+                <div class="col-lg-6">
+                    <div class="checkbox-list">
+                        <span class="switch switch-sm switch-icon">
+                            <label>
+                                @Html.CheckBoxFor(x => x.EnableEmail, new { @class = "contactMethod" }) &nbsp;<a class="cursor-pointer"> @ContactMethod.Email.GetDescription()</a>
+                                <span class="mt-0"></span>
+                            </label>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="checkbox-list">
+                        <span class="switch switch-sm switch-icon">
+                            <label>
+                                @Html.CheckBoxFor(x => x.EnableText, new { @class = "contactMethod" })&nbsp; <a class="cursor-pointer">@ContactMethod.Text.GetDescription()</a>
+                                <span class="mt-0"></span>
+                            </label>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row p-2">
+                <div class="col-lg-6">
+                    <div class="checkbox-list">
+                        <span class="switch switch-sm switch-icon">
+                            <label>
+                                @Html.CheckBoxFor(x => x.EnableSystemNotification, new { @class = "contactMethod" }) &nbsp; <a class="cursor-pointer">@ContactMethod.SystemNotification.GetDescription()</a>
+                                <span class="mt-0"></span>
+                            </label>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="checkbox-list">
+                        <span class="switch switch-sm switch-icon">
+                            <label>
+                                @Html.CheckBox("EnableAll", new { id = "EnableAll", @class = "contactMethod" }) &nbsp; <a class="cursor-pointer">@ContactMethod.All.GetDescription()</a>
+                                <span class="mt-0"></span>
+                            </label>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    $(function () {
+        selectAll();
+    });
+
+    $(document).on('click', '.contactMethod', function () {
+        if ($(this).attr('name') === 'EnableAll') {
+            if ($(this).prop("checked")) {
+                $('.contactMethod').each(function () {
+                    $(this).prop("checked", true);
+                });
+            } else {
+                $('.contactMethod').each(function () {
+                    $(this).prop("checked", false);
+                });
+            }
+        } else {
+            selectAll();
+        }
+    });
+
+    function selectAll() {
+        let allSelected = true;
+        $('.contactMethod').each(function () {
+            if (!$(this).prop("checked") && $(this).attr('name') !== 'EnableAll') {
+                allSelected = false;
+            }
+        });
+        if (allSelected) {
+            $('#EnableAll').prop("checked", true);
+        } else {
+            $('#EnableAll').prop("checked", false);
+        }
+    }
+</script>

@@ -1,0 +1,109 @@
+﻿@model PraiseCMS.DataAccess.Models.ReportSettings
+@{
+    ViewBag.Title = "Report Settings";
+    string dateRange = ViewBag.startDate + "-" + ViewBag.endDate;
+
+    if (ViewBag.startDate == ViewBag.endDate)
+    {
+        dateRange = ViewBag.startDate;
+    }
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+        <input type="hidden" id="dateRange" name="dateRange" value="@dateRange" />
+        <div class="card-body">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <div class="col-12">
+                        <span class="mr-2">Default Date Range for Reports:<i class="far fa-question-circle ml-2" data-html="true" data-toggle="tooltip" title="Report settings are set at the USER level and will only apply to your account."></i></span>
+                        <a href="javascript:;" class="btn btn-light btn-sm font-weight-bold mr-2" id="dashboard_daterangepicker_report_settings" data-toggle="tooltip" title="Select Date Range" data-placement="top">
+                            <span class="text-muted font-weight-bold mr-2" id="dashboard_daterangepicker_report_settings_title"></span>
+                            <span class="text-primary font-weight-bold" id="dashboard_daterangepicker_report_settings_date">@dateRange</span>
+                            <span class="svg-icon svg-icon-sm svg-icon-primary ml-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24" />
+                                        <rect fill="#000000" x="2" y="4" width="19" height="4" rx="1" />
+                                        <path d="M3,10 L6,10 C6.55228475,10 7,10.4477153 7,11 L7,19 C7,19.5522847 6.55228475,20 6,20 L3,20 C2.44771525,20 2,19.5522847 2,19 L2,11 C2,10.4477153 2.44771525,10 3,10 Z M10,10 L13,10 C13.5522847,10 14,10.4477153 14,11 L14,19 C14,19.5522847 13.5522847,20 13,20 L10,20 C9.44771525,20 9,19.5522847 9,19 L9,11 C9,10.4477153 9.44771525,10 10,10 Z M17,10 L20,10 C20.5522847,10 21,10.4477153 21,11 L21,19 C21,19.5522847 20.5522847,20 20,20 L17,20 C16.4477153,20 16,19.5522847 16,19 L16,11 C16,10.4477153 16.4477153,10 17,10 Z" fill="#000000" opacity="0.3" />
+                                    </g>
+                                </svg>
+                            </span>
+                        </a>
+                        <span class="form-text text-muted mt-4">This acts as the default/fallback for reports that require a date range.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-light-primary font-weight-bold mr-2">Save Changes</button>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    $(function () {
+        var picker = $('#dashboard_daterangepicker_report_settings');
+        var start = moment('@ViewBag.startDate', 'MM/DD/YYYY').startOf('day');
+        var end = moment('@ViewBag.endDate', 'MM/DD/YYYY').endOf('day');
+
+        var currentYearStart = moment().startOf('year').startOf('day');
+        var currentYearEnd = moment().endOf('year').endOf('day');
+        var lastYearStart = moment().subtract(1, 'year').startOf('year').startOf('day');
+        var lastYearEnd = moment().subtract(1, 'year').endOf('year').endOf('day');
+
+        function updateTitle(start, end) {
+            var title = '';
+
+            start = start.startOf('day');
+            end = end.endOf('day');
+
+            if (start.isSame(currentYearStart) && end.isSame(currentYearEnd)) {
+                title = 'This Year';
+            } else if (start.isSame(lastYearStart) && end.isSame(lastYearEnd)) {
+                title = 'Last Year';
+            } else {
+                title = 'Custom Range';
+            }
+
+            $('#dashboard_daterangepicker_report_settings_title').html(title);
+            $('#dashboard_daterangepicker_report_settings_date').html(start.format('MM/DD/YYYY') + ' - ' + end.format('MM/DD/YYYY'));
+            $("#dateRange").val(start.format('MM/DD/YYYY') + ' - ' + end.format('MM/DD/YYYY'));
+        }
+
+        picker.daterangepicker({
+            direction: KTUtil.isRTL(),
+            startDate: start,
+            endDate: end,
+            opens: 'right',
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-light-primary',
+            ranges: {
+                'This Year': [currentYearStart, currentYearEnd],
+                'Last Year': [lastYearStart, lastYearEnd]
+            }
+        }, updateTitle);
+
+        updateTitle(start, end);
+
+        picker.on('apply.daterangepicker', function (ev, picker) {
+            var start = picker.startDate;
+            var end = picker.endDate;
+            updateTitle(start, end);
+        });
+    });
+</script>

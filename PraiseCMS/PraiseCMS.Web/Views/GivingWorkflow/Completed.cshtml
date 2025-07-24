@@ -1,0 +1,93 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.CompleteViewModel
+@{
+    Layout = "~/Views/Shared/_GivingWorkflowLayout.cshtml";
+    ViewBag.Title = !string.IsNullOrEmpty(Model.Church.Name) ? "to " + Model.Church.Name : "";
+}
+<div class="d-flex flex-column flex-root">
+    <div class="login login-3 wizard d-flex flex-column flex-lg-row flex-column-fluid">
+        @*@if (!Model.Guest)
+        {
+            <div class="login-aside d-flex flex-column flex-row-auto">
+                <div class="d-flex flex-column-auto flex-column pt-lg-40 pt-15">
+                    <div class="login-logo text-center pt-lg-25 pb-10">
+                        @if (Model != null && !string.IsNullOrEmpty(Model.Church.Logo))
+                        {
+                            <img src="@Html.AmazonLink(Model.Church.Logo, "Uploads/Logos")" class="max-h-70px" alt="" />
+                        }
+                        else
+                        {
+                            <img src="~/Content/assets/media/logos/praise_logo.png" class="max-h-70px" alt="" />
+                        }
+                    </div>
+                </div>
+                <div class="aside-img d-flex flex-row-fluid bgi-no-repeat bgi-position-x-center" style="background-position-y: calc(100%); background-image: url(../../Content/assets/image/donor-giving-girl.svg)"></div>
+            </div>
+        }*@
+    <div class="login-content flex-column-fluid d-flex flex-column py-10">
+        @*<div class="text-right d-flex justify-content-center" style="display:none!important;">
+            <div class="top-forgot text-right d-flex justify-content-end pt-5 pb-lg-0 pb-10">
+                <span class="font-weight-bold text-muted font-size-h4">Having issues?</span>
+                @Html.AjaxModalLink("Get Help", $"/givingworkflow/GivingOptions?guest={Model.Guest}", "View Giving Options", "", "font-weight-bolder text-primary font-size-h4 ml-2 mr-2", "", "", "", false, ModalSizes.Large)
+                <span class="font-weight-bold text-muted font-size-h4"> | </span>
+                <a href="/mygiving" class="font-weight-bolder text-primary font-size-h4 ml-2 mr-2">View Account</a>
+            </div>
+        </div>*@
+        <div class="d-flex flex-row-fluid flex-center mt-lg-20">
+            <div class="col-lg-6 text-center">
+                <span class="fa-stack fa-5x animate__animated animate__bounceInDown">
+                    <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                    @if (Model != null && Model.Success)
+                    {
+                        <i class="far fa-thumbs-up fa-inverse fa-stack-1x" style="font-size:64px;"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-exclamation fa-inverse fa-stack-1x" style="font-size:64px;"></i>
+                    }
+                </span>
+                <div class="mt-8">
+                    @if (Model != null && !string.IsNullOrEmpty(Model.Message))
+                    {
+                        @Html.Raw(Model.Message)
+                    }
+                    else
+                    {
+                        <p>We appreciate your generosity.</p>
+                    }
+                </div>
+                <div class="mt-4">
+                    @if (Model.PaymentOccurrence == PaymentOccurrence.OneTime)
+                    {
+                        if (Model.ProcessingFee.IsNotNullOrEmpty())
+                        {
+                            decimal.TryParse(Model.PaymentAmount, out var paymentAmountDecimal);
+                            decimal.TryParse(Convert.ToString(Model.ProcessingFee), out var processingFeeDecimal);
+                            var total = (paymentAmountDecimal + processingFeeDecimal).ToCurrencyString();
+
+                            <p class="font-size-h6">Your gift of @total (including processing fees) was successful.</p>
+                        }
+                        else
+                        {
+                            decimal.TryParse(Model.PaymentAmount, out var paymentAmountDecimal);
+
+                            <p class="font-size-h6">Your gift of @paymentAmountDecimal.ToCurrencyString() was successful.</p>
+                        }
+                        <p class="font-size-h6">Would you like to set up a biweekly gift? <a href="/givingworkflow/startgiving?id=@SessionVariables.CurrentChurch.Id&guest=@Model.Guest&setUpRecurring=true">Yes, let's set it up!</a></p>
+                    }
+                    else if (Model.PaymentOccurrence == PaymentOccurrence.Recurring)
+                    {
+                        <p class="font-size-h6">Your recurring gift has been scheduled.</p>
+                    }
+                </div>
+                <div class="mt-8">
+                    @{ 
+                        var urlPath = Model.Guest ? "giveasguest" : "startgiving";
+                    }
+                    <a href="/givingworkflow/@urlPath/@SessionVariables.CurrentChurch.Id" class="btn btn-primary font-weight-bolder font-size-h6">Give Again</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

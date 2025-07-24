@@ -1,0 +1,79 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardTemplateCategoriesVM
+
+@{
+    ViewBag.Title = "Dashboard Categories";
+}
+
+@if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            <a href="/dashboardtemplates" class="btn btn-light-primary btn-sm mr-2">Dashboards</a>
+            <a href="/dashboardtemplates/widgets" class="btn btn-light-primary btn-sm">Widgets</a>
+        </div>
+    }
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+        {
+            <div class="card-toolbar">
+                <a href="/dashboardtemplates/createeditcategory" class="btn btn-light-primary btn-sm">Create New</a>
+            </div>
+        }
+    </div>
+    <div class="card-body pt-3 pb-0">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Created By</th>
+                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                        {
+                            <th style="text-align:center">Actions</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Categories.Any())
+                    {
+                        foreach (var item in Model.Categories)
+                        {
+                            var user = item.CreatedBy != Constants.System && item.CreatedBy.IsNotNullOrEmpty() ? Model.Users.FirstOrDefault(x => x.Id == item.CreatedBy)?.FullName : "Praise";
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>
+                                <td>
+                                    @item.Description
+                                </td>
+                                <td>
+                                    @user
+                                </td>
+                                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                {
+                                    <td class="text-center">
+                                        <span>
+                                            @*<a href="javascript:;">Delete</a> |*@
+                                            <a href="/dashboardtemplates/createeditcategory/@item.Id">Edit</a>
+                                        </span>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.ModuleAutoCompleteModel
+
+<div id="module-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "module-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Value)
+        <div class="form-group">
+            <label>Parent Name:</label>
+            @Html.DropDownListFor(x => x.ParentId, new SelectList(Model.Modules, "Value", "Text"), "Select a parent module...", new { @class = "form-control select2", style = "width:100%;text-transform:capitalize;", id = "parentId" })
+            <span class="form-text text-muted">This is an optional field.</span>
+            @Html.ValidationMessageFor(x => x.ParentId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.Text, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Text, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>

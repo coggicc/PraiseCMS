@@ -1,0 +1,39 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.SearchResults>
+@{
+    ViewBag.Title = ViewBag.category;
+}
+<div id="search-result-div">
+    @Html.Partial("_AllSearchResults", Model)
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(document).on('keyup', '#filterKeyword', function (e) {
+            if (e.currentTarget.value !== "") {
+                $('#clearSearchBtn').show();
+            } else {
+                $('#clearSearchBtn').hide();
+            }
+        });
+
+        $(document).on('keypress', '#filterKeyword', function (e) {
+            var key = e.which;
+            if (key === 13) {
+                getByKeyword();
+            }
+        });
+
+        function getByKeyword() {
+            $.post("/Search/SearchResult", ({ category: $('#category').val(), query: $('#filterKeyword').val(), partial: true }), function (result) {
+                $("#search-result-div").html("").html(result);
+            });
+        }
+
+        $(document).on('click', '#clearSearchBtn', function (e) {
+            $('#filterKeyword').val('');
+            $.post("/Search/SearchResult", ({ category: $('#category').val(), query: $('#filterKeyword').val(), partial: true }), function (result) {
+                $("#search-result-div").html("").html(result);
+            });
+        });
+    </script>
+}

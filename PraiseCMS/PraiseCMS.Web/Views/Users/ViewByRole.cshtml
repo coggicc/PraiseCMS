@@ -1,0 +1,122 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.UsersViewModel
+@if (!string.IsNullOrEmpty(ViewBag.RoleName))
+{
+    ViewBag.Title = ViewBag.RoleName.EndsWith("r") ? ViewBag.RoleName + "s" : ViewBag.RoleName;
+}
+else
+{
+    ViewBag.Title = "Users by role";
+}
+<style>
+    a {
+        cursor: pointer !important;
+    }
+
+    .fa-user-circle {
+        color: #3699FF !important;
+    }
+</style>
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">@ViewBag.RoleName Role</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Users with the @ViewBag.RoleName role</span>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-borderless table-vertical-center">
+                <tbody>
+                    @if (Model.ApplicationUsers.Any())
+                    {
+                        foreach (var user in Model.ApplicationUsers)
+                        {
+                            var roles = Model.ApplicationRoles[user.Id];
+                            var settings = Model.UserSettings.FirstOrDefault(x => x.UserId.Equals(user.Id));
+                            <tr>
+                                <td class="pl-0 py-4">
+                                    @if (settings != null && !string.IsNullOrEmpty(settings.ProfileImage))
+                                    {
+                                        <div class="symbol symbol-50 symbol-light mr-4">
+                                            <span class="symbol-label">
+                                                <img src="@Html.AmazonLink(settings.ProfileImage,"Uploads/ProfileImages")" class="h-100 align-self-end" alt="">
+                                            </span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="symbol symbol-50 symbol-light mr-4">
+                                            <span class="symbol-label">
+                                                <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" class="h-100 align-self-end" alt="">
+                                            </span>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="pl-0">
+                                    @if (SessionVariables.CurrentUser.IsAdmin)
+                                    {
+                                        <a href="/users/userprofile?id=@user.Id"><span class="text-dark-75 text-hover-primary font-weight-bolder mb-1 font-size-lg">@user.FullName</span></a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-dark-75 font-weight-bolder mb-1 font-size-lg">@user.FullName</span>
+                                    }
+                                    <div>
+                                        <span class="font-weight-bolder">Email:</span>
+                                        <span class="text-muted font-weight-bold">@user.Email</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-weight-bolder">Phone:</span>
+                                        @if (!string.IsNullOrEmpty(user.PhoneNumber))
+                                        {
+                                            <span class="text-muted font-weight-bold">@user.PhoneNumber</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted font-weight-bold">[Not Provided]</span>
+                                        }
+                                    </div>
+                                </td>
+                                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                {
+                                    <td class="pl-0">
+                                        <div>
+                                            <span class="font-weight-bolder">Id:</span>
+                                            <span class="text-muted font-weight-bold">@user.Id</span>
+                                        </div>
+                                    </td>
+                                }
+                                <td class="pl-0">
+                                    <div>
+                                        <span class="font-weight-bolder">@(roles.Any() && roles.Count > 1 ? "Roles" : "Role"):</span>
+                                        <span class="text-muted font-weight-500"> @(roles.Any()? string.Join(", ", roles) :"[No role assigned]")</span>
+                                    </div>
+                                </td>
+                                <td class="pl-0">
+                                    <div>
+                                        <span class="font-weight-bolder">Created Date:</span>
+                                        <span class="text-muted font-weight-bold">@Convert.ToDateTime(user.CreatedDate).ToShortDateString()</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-weight-bolder">Last Accessed Date:</span>
+                                        <span class="text-muted font-weight-bold">@(user.LastLogin != null ? Convert.ToDateTime(user.LastLogin).ToShortDateString() : "Never")</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <span>You don't have any users for this role yet. Roles may be assigned on a given <a href="/users">user's</a> account information page.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

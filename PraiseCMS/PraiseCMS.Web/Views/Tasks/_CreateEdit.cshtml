@@ -1,0 +1,93 @@
+﻿@model PraiseCMS.DataAccess.Models.TaskSD
+
+@{
+    var db = new ApplicationDbContext();
+
+    var churchUsers = db.ChurchUsers.Where(x => x.ChurchId.Equals(SessionVariables.CurrentChurch.Id)).Select(x => x.UserId).ToList();
+    var users = db.Users.Where(item => churchUsers.Contains(item.Id))
+                     .Select(a => a).OrderBy(x=>x.FirstName).ToList();
+
+    var userList = new List<SelectListItem>();
+    foreach (var user in users)
+    {
+        var item = new SelectListItem
+        {
+            Text = user.FullName,
+            Value = user.Id
+        };
+
+        userList.Add(item);
+    }
+}
+
+<div id="task-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "task-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="kt-section kt-section--first">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.Id)
+            @Html.HiddenFor(x => x.ChurchId)
+            @Html.HiddenFor(x => x.CreatedBy)
+            @Html.HiddenFor(x => x.CreatedDate)
+
+            <div class="kt-section__body">
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Assign To:</label>
+                    <div class="col-lg-9">
+                        @Html.DropDownListFor(x => x.AssignedToUserId, userList, "Select a user...", new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(x => x.AssignedToUserId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Task:</label>
+                    <div class="col-lg-9">
+                        @Html.EditorFor(x => x.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Description:</label>
+                    <div class="col-lg-9">
+                        @Html.TextAreaFor(x => x.Description, new { @class = "form-control", rows = "5" })
+                        @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Due Date:</label>
+                    <div class="col-lg-9">
+                        <div class="input-group date">
+                            @Html.EditorFor(x => x.DueDate, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off" } })
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="la la-calendar-check-o"></i>
+                                </span>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(x => x.DueDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Communication:</label>
+                    <div class="col-lg-9">
+                        <div class="kt-checkbox-inline">
+                            <label class="kt-checkbox">
+                                @Html.CheckBoxFor(x => x.NotifyViaEmail, new { name = "isActive" }) Email
+                                <span></span>
+                            </label>
+                            <label class="kt-checkbox">
+                                @Html.CheckBoxFor(x => x.NotifyViaEmail, new { name = "isActive" }) Text
+                                <span></span>
+                            </label>
+                            <label class="kt-checkbox">
+                                @Html.CheckBoxFor(x => x.NotifyViaEmail, new { name = "isActive" }) Both
+                                <span></span>
+                            </label>
+                        </div>
+                        <span class="form-text text-muted">Select the communication method for this task.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

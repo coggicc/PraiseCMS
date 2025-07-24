@@ -1,0 +1,383 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.GivingDashboard
+
+@{
+    ViewBag.Title = "My Giving";
+
+    var missingFieldsList = new List<string>();
+
+    if (string.IsNullOrEmpty(Model.User.Address))
+    {
+        missingFieldsList.Add("Address");
+    }
+    if (string.IsNullOrEmpty(Model.User.City))
+    {
+        missingFieldsList.Add("City");
+    }
+    if (string.IsNullOrEmpty(Model.User.State))
+    {
+        missingFieldsList.Add("State");
+    }
+    if (string.IsNullOrEmpty(Model.User.Zip))
+    {
+        missingFieldsList.Add("Zip");
+    }
+    if (string.IsNullOrEmpty(Model.User.Email))
+    {
+        missingFieldsList.Add("Email");
+    }
+}
+
+@if (!SessionVariables.CurrentUser.IsDonorOnly)
+{
+    @section leftsubheader{
+        @Html.Partial("_MyGivingSubheader")
+    }
+}
+
+<style type="text/css">
+    .giving__item {
+        padding: 1.1rem .5rem;
+        display: flex;
+        line-height: 22px;
+        color: #74788d;
+    }
+
+        .giving__item:hover {
+            color: #74788d;
+        }
+
+        .giving__item label:hover {
+            cursor: pointer;
+        }
+
+    .giving__item-icon {
+        padding: 0;
+    }
+
+        .giving__item-icon i.flaticon-calendar-with-a-clock-time-tools {
+            color: #74788d;
+            margin-top: 1.6rem;
+            float: right;
+            font-size: 26px !important;
+        }
+
+        .giving__item-icon i.flaticon2-right-arrow {
+            margin-top: 1.9rem;
+            font-size: 16px !important;
+            margin-left: 2rem;
+            float: right;
+            color: #2879fb;
+        }
+
+    .giving__item-details {
+        float: left;
+    }
+
+    .giving__item-arrow {
+        display: flex;
+        flex: 0 0 2.5rem;
+    }
+</style>
+
+@if (!SessionVariables.CurrentChurch.HasMerchantAccount)
+{
+    <div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
+        <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="alert-text"><strong>Uh-oh!</strong> @SessionVariables.CurrentChurch.Display has not enabled giving yet. You are unable to give through Praise CMS at this time. Please contact your church staff to request digital giving through Praise CMS.</div>
+        <div class="alert-close">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true"><i class="la la-close"></i></span>
+            </button>
+        </div>
+    </div>
+}
+else
+{
+    if (Model.CardExpiryNotification.IsNotNullOrEmpty())
+    {
+        <div class="alert alert-custom alert-notice alert-light-warning fade show" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text">@Model.CardExpiryNotification</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true"><i class="la la-close"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+
+    if (Model.CardExpiredNotification.IsNotNullOrEmpty() && Model.IsPrimary)
+    {
+        <div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text">@Model.CardExpiredNotification  Please <a href="/mygiving/paymentmethods">update</a> your primary giving method.</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" data-toggle="tooltip" title="Dismiss alert">
+                    <span aria-hidden="true"><i class="la la-close"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+    if (Model.CardExpiredNotification.IsNotNullOrEmpty() && !Model.IsPrimary)
+    {
+        <div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text">@Model.CardExpiredNotification</div>
+            <div class="alert-close">
+                <button type="button" data-guid="@Model.ExpiredCardAccountGUID" onclick="clearExpiredNotification(this)" class="close" data-dismiss="alert" aria-label="Close" data-toggle="tooltip" title="Dismiss alert">
+                    <span aria-hidden="true"><i class="la la-close"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+    if (missingFieldsList.Any())
+    {
+        <div class="alert alert-custom alert-notice alert-light-danger fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text"><strong>Note:</strong> Please add the following to your <a href="/users/userprofile?userId=@SessionVariables.CurrentUser.User.Id">profile</a> to complete your giving setup: <a href="/users/userprofile?userId=@SessionVariables.CurrentUser.User.Id">@missingFieldsList.CombineListToString(",")</a></div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+    if (missingFieldsList.Count == 0 && !Model.CreditCards.Any() && !Model.BankAccounts.Any())
+    {
+        <div class="card card-custom gutter-b">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">
+                        Payment Methods
+                    </h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6 offset-sm-3 text-center">
+                        <p>You don't have any payment methods yet. You must add one before you can start giving.</p>
+                        <a href="@Url.Action("PaymentMethods", "MyGiving")" class="btn btn-light-primary">Add Payment Method</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    if (Model.CreditCards.Any() || Model.BankAccounts.Any())
+    {
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card card-custom gutter-b">
+                    <div class="card-body text-center">
+                        @if (Model.LastGift != null)
+                        {
+                            <h3 class="text-muted">Last Gift</h3>
+                            <h3 class="font-weight-bold display-3">@Model.LastGift.Amount.ToCurrencyString()</h3>
+                            <p class="font-size-h4 text-muted">On @Model.LastGift.CreatedDate.ToShortDateString()</p>
+                        }
+                        else
+                        {
+                            <h3>One-Time Giving</h3>
+                            <p class="font-size-h4 text-muted">It's quick and easy!</p>
+                        }
+                        @Html.AjaxModalLink("<i class='fas fa-dollar-sign'></i> Give Now", "/mygiving/givenow/", "Give Now", "Give Now", "btn btn-light-primary font-weight-bold mt-5", "")
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card card-custom gutter-b">
+                    <div class="card-body text-center">
+                        @if (Model.ScheduledPayments.Any())
+                        {
+                            <h3 class="text-left">Scheduled Giving</h3>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+                                        @foreach (var payment in Model.ScheduledPayments.OrderByDescending(x => x.CreatedDate).Take(3).ToList())
+                                        {
+                                            var fund = Model.Funds.FirstOrDefault(x => x.Id.Equals(payment.FundId));
+
+                                            var paymentMethodNumber = string.Empty;
+                                            var paymentMethod = string.Empty;
+                                            var name = string.Empty;
+                                            var validThru = string.Empty;
+                                            var fundName = string.Empty;
+
+                                            var campus = SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(payment.CampusId));
+                                            if (fund != null)
+                                            {
+                                                fundName = fund.Name;
+                                            }
+
+                                            var cc = Model.CreditCards.FirstOrDefault(x => x.AccountGUID == payment.PaymentMethod);
+                                            if (cc != null)
+                                            {
+                                                paymentMethodNumber = cc.MaskedCardNumber;
+                                                paymentMethod = cc.CardType;
+                                                validThru = cc.ExpMonth + "/" + cc.ExpYear;
+                                                name = cc.NameOnCard;
+                                            }
+                                            else
+                                            {
+                                                var ba = Model.BankAccounts.FirstOrDefault(x => x.AccountGUID == payment.PaymentMethod);
+                                                if (ba != null)
+                                                {
+                                                    paymentMethodNumber = ba.MaskedAccountNumber;
+                                                    paymentMethod = ba.AccountType;
+                                                    name = ba.BankName;
+                                                }
+                                            }
+                                            <tr>
+                                                <td>
+                                                    <a href="/mygiving/ScheduleGift?id=@payment.Id" class="giving__item">
+                                                        <div class="col-1 giving__item-icon">
+                                                            <i class="flaticon-calendar-with-a-clock-time-tools"></i>
+                                                        </div>
+                                                        <div class="col-10 giving__item-details text-left">
+                                                            <label style="color:black; font-size:16px;">@payment.CreatedDate.ToShortDateString() - @Convert.ToDecimal(payment.Amount).ToCurrencyString()</label><br />
+                                                            <span>@(fundName ?? "")</span><br />
+                                                            <span>@(campus != null ? campus.Display : "")</span>
+                                                        </div>
+                                                        <div class="col-1 giving__item-icon">
+                                                            <i class="flaticon2-right-arrow"></i>
+                                                        </div>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    @if (Model.ScheduledPayments.Count > 3)
+                                    {
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-center">
+                                                    <a href="/mygiving/editscheduled">View All</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    }
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-10 offset-lg-1 text-center">
+                                    <p class="display5 mt-md-2">Ready to schedule recurring gifts?</p>
+                                    <p class="font-size-h4 mt-4">Set up automated giving in just a few clicks. It's quick, easy, and makes a lasting impact.</p>
+                                </div>
+                            </div>
+                        }
+                        <a href="@Url.Action("schedulegift", "mygiving")" class="btn btn-light-primary">Schedule New Gift</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="card card-custom gutter-b">
+        <div class="card-header">
+            <div class="card-title">
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label font-weight-bolder text-dark">Giving History</span>
+                    <span class="text-muted mt-3 font-weight-bold font-size-sm">Last 10 Transactions</span>
+                </h3>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.MyGiving.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Fund</th>
+                                <th>Campus</th>
+                                <th>Payment Method</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payment in Model.MyGiving)
+                            {
+                                var paymentMethod = "-";
+                                var amount = payment.Amount.ToCurrencyString();
+                                var fund = Model.Funds.Any() ? Model.Funds.FirstOrDefault(x => x.Id.Equals(payment.FundId)) : null;
+                                var campus = SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(payment.CampusId));
+
+                                if (payment.OfflinePaymentMethod.IsNotNullOrEmpty())
+                                {
+                                    paymentMethod = payment.OfflinePaymentMethod;
+
+                                    if (payment.OfflinePaymentMethod == OfflinePaymentMethods.Check)
+                                    {
+                                        paymentMethod = $"Check # {payment.CheckNumber}";
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.PaymentMethods.Any(x => x.AccountGUID == payment.PaymentMethod))
+                                    {
+                                        paymentMethod = Model.PaymentMethods.FirstOrDefault(x => x.AccountGUID == payment.PaymentMethod).PaymentMethodPreview;
+                                    }
+                                }
+                                <tr>
+                                    <td>
+                                        @payment.CreatedDate.ToShortDateString()
+                                    </td>
+                                    <td>
+                                        @if (fund != null)
+                                        {
+                                            <span>@fund.Name</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (campus != null)
+                                        {
+                                            <span>@campus.Name</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span>@paymentMethod</span>
+                                    </td>
+                                    <td>
+                                        @amount
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>Your giving history will appear here once a gift has been processed.</p>
+            }
+        </div>
+        @if (Model.MyGiving.Any())
+        {
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <a href="/mygiving/history" class="btn btn-light-primary">View All or Download</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <script type="text/javascript">
+        function clearExpiredNotification(event) {
+            let accountGUID = $(event).data('guid');
+            $.ajax({
+                url: 'MyGiving/ClearCardExpiredNotification',
+                type: 'POST',
+                data: { accountGUID: accountGUID },
+                success: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+    </script>
+}

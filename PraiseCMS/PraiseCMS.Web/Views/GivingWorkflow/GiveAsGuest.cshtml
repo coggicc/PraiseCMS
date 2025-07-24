@@ -1,0 +1,217 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.GuestPaymentModel
+
+@{
+    Layout = "~/Views/Shared/_GivingWorkflowLayout.cshtml";
+    ViewBag.Title = !string.IsNullOrEmpty(Model.Church.Name) ? "to " + Model.Church.Name : "";
+}
+@if (Model.HasMerchantAccount)
+{
+    <div class="d-flex flex-column flex-root">
+        <div class="login login-3 wizard d-flex flex-column flex-lg-row flex-column-fluid wizard" id="kt_Guest_Giving">
+            <div hidden class="wizard-steps">
+                <div class="wizard-step" data-wizard-type="step" data-wizard-state="current"></div>
+                <div class="wizard-step" data-wizard-type="step"></div>
+            </div>
+            <div class="login-content flex-column-fluid d-flex flex-column p-10">
+                <div class="text-right d-flex justify-content-center">
+                    <div class="top-signup text-right d-flex justify-content-end pt-5 pb-lg-0 pb-10">
+                        <span class="font-weight-bold text-muted font-size-h4">Having issues?</span>
+                        @Html.AjaxModalLink("Get Help", "/givingworkflow/GivingOptions?guest=true", "View Giving Options", "", "font-weight-bolder text-primary font-size-h4 ml-2 mr-2", "", "", "", false, ModalSizes.Default)
+                    </div>
+                </div>
+                <div class="d-flex flex-row-fluid flex-center mt-lg-20">
+                    <div class="login-form login-form-signup">
+                        @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post" }, new {id = "kt_Guest_Giving_form", @class = "form"}))
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(x => x.Church.Id)
+                            <div class="pb-10">
+                                <a href="@(Model.Church.Website.IsNotNullOrEmpty() ? Model.Church.Website: $"/givingworkflow/GiveAsGuest/{ Model.Church.Id}")" class="login-logo py-6 cursor-pointer">
+                                    @if (Model.Church != null && !string.IsNullOrEmpty(Model.Church.Logo))
+                                    {
+                                        <img src="@Html.AmazonLink(Model.Church.Logo, "Uploads/Logos")" class="max-h-70px" alt="" />
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Content/assets/media/logos/praise_logo.png" class="max-h-70px" alt="" />
+                                    }
+                                </a>
+                            </div>
+                            <div class="pb-5" data-wizard-type="step-content" data-wizard-state="current">
+                                <div class="pb-10 pb-lg-15">
+                                    <h3 class="font-weight-bolder text-dark display5">@(Model.Church!=null? Model.Church.Display : "Praise CMS")</h3>
+                                    <div class="font-weight-bold font-size-h4">One Time Gift</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Amount</label>
+                                    @Html.TextBoxFor(x => x.Amount, "{0:#.#}", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 amount", placeholder = "$0.00", name = "amount", autocomplete = "off" })
+                                    @Html.ValidationMessageFor(x => x.Amount, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Giving Fund</label>
+                                    @Html.DropDownListFor(x => x.FundId, Model.Funds, "Select a fund...", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", name = "fund", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.FundId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Campus</label>
+                                    @Html.DropDownListFor(x => x.CampusId, Model.Campuses, "Select a campus...", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", name = "campus", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.CampusId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Email</label>
+                                    @Html.TextBoxFor(m => m.Email, new { onfocus = "validateForm(this)", @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", placeholder = "example@domain.com", autocomplete = "off" })
+                                    @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Cell Phone (optional)</label>
+                                    @Html.TextBoxFor(x => x.Phone, new { onfocus = "validateForm(this)", @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 phone", name = "phone", placeholder = "(555) 555-5555" })
+                                    @Html.ValidationMessageFor(x => x.Phone, "", new { @class = "text-danger" })
+                                </div>
+                                <p>Do you want to create a giving account? With an account, you can view your giving history and export your tax-deductible contributions.</p>
+                                <div class="form-group">
+                                    @Html.CheckBoxFor(x => x.CreateAccount, new { @class = "checkBox", title = "Check this if you want to create an account." })
+                                    <label class="font-size-h6 font-weight-bolder text-dark ml-2">Yes! Create my account.</label>
+                                </div>
+                            </div>
+                            <div class="pb-5" data-wizard-type="step-content">
+                                <div class="pt-lg-0 pt-5 pb-10">
+                                    <h3 class="font-weight-bolder text-dark display5">@(Model.Church!=null? Model.Church.Display : "Praise CMS")</h3>
+                                </div>
+                                <h3 class="font-size-h2-xxl mb-5">One Time Gift</h3>
+                                <div class="p-6" style="background:#ffffff;">
+                                    <table>
+                                        <tr>
+                                            <td class="w-30"><h4 class="font-weight-bolder mb-3 text-dark-50">Amount</h4></td>
+                                            <td class="w-70"><h4 class="mb-3"><span class="font-weight-400" id="summary-amount"></span></h4></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w-30"><h4 class="font-weight-bolder mb-3 text-dark-50">Campus</h4></td>
+                                            <td class="w-70"><h4 class="mb-3"><span class="font-weight-400" id="summary-campus"></span></h4></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w-30"><h4 class="font-weight-bolder mb-3 text-dark-50">Email</h4></td>
+                                            <td class="w-70"><h4 class="mb-3"><span class="font-weight-400" id="summary-email"></span></h4> </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w-30"><h4 class="font-weight-bolder mb-3 text-dark-50">Phone</h4></td>
+                                            <td class="w-70"><h4 class="mb-3"><span class="font-weight-400" id="summary-phone"></span></h4> </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w-30"><h4 class="font-weight-bolder mb-3 text-dark-50">Fund</h4></td>
+                                            <td class="w-70"><h4 class="mb-3"><span class="font-weight-400" id="summary-fund"></span></h4>  </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <h3 class="font-size-h2-xxl mt-10 mb-5">Card Details</h3>
+                                <div class="p-6">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="font-size-h6 font-weight-bolder text-dark">First Name</label>
+                                                @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" })
+                                                @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="font-size-h6 font-weight-bolder text-dark">Last Name</label>
+                                                @Html.TextBoxFor(x => x.LastName, new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" })
+                                                @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-size-h6 font-weight-bolder text-dark">Card Number</label>
+                                        <div class="row">
+                                            <div class="col-lg-12 input-group">
+                                                @Html.TextBoxFor(m => m.PaymentCard.CcNumber, new { id = "cardNumber", @class = "numeric form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 card-number", maxlength = "19", oncopy = "return false", onkeyup = "cardformat(this)", onpaste = "return false", oncut = "return false", placeholder = "", autocomplete = "off" })
+                                                <div class="input-group-prepend col-lg-2 card-type">
+                                                    <img id="card_logo" src="~/Content/assets/image/card_Logos/blank_card.png" class="card-type-span" alt="">
+                                                    @Html.HiddenFor(m => m.PaymentCard.CcType, new { id = "cardType" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-validation"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="font-size-h6 font-weight-bolder text-dark">Expiration Date</label>
+                                                @Html.TextBoxFor(m => m.PaymentCard.CcExpiry, new { id = "expiryDate", @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", placeholder = "MM / YYYY", autocomplete = "off" })
+                                                <span id="expiryErrorMessage" class="error-message"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="font-size-h6 font-weight-bolder text-dark">Zip</label>
+                                                @Html.TextBoxFor(x => x.Zip, new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 numeric", maxlength = "5", })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <p style="text-align:right;"><span class="mr-4">Supported Cards</span><span><img src="~/Content/assets/image/credit_card_logos.png" alt="VISA, MC, DISC, AMEX" /></span></p>
+                                    </div>
+                                    <input type="hidden" id="allow_Processing_fee" value="@(Model.Church.AllowDonorCoverProcessingFee?"true":"")" />
+                                    @if (Model.Church.AllowDonorCoverProcessingFee)
+                                    {
+                                        <div id="processingFee-div" class="form-check mt-5">
+                                            @Html.CheckBoxFor(x => x.IncludeProcessingFee, new { id = "IncludeProcessingFee", @class = "cursor-pointer form-check-input h-20px w-20px" })
+                                            <label class="cursor-pointer font-size-h6 form-check-label ml-5" for="IncludeProcessingFee"> I would like to contribute an additional <span id="processingFeeAmount"></span> to help cover merchant processing fees.</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div id="footerBtn" class="d-flex justify-content-between pt-3">
+                                <div class="mr-2">
+                                    <button type="button" class="btn btn-light-primary font-weight-bolder font-size-h6 pl-6 pr-8 py-4 my-3 mr-3 previous" data-wizard-type="action-prev">
+                                        <span class="svg-icon svg-icon-md mr-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(15.000000, 12.000000) scale(-1, 1) rotate(-90.000000) translate(-15.000000, -12.000000)" x="14" y="7" width="2" height="10" rx="1" />
+                                                    <path d="M3.7071045,15.7071045 C3.3165802,16.0976288 2.68341522,16.0976288 2.29289093,15.7071045 C1.90236664,15.3165802 1.90236664,14.6834152 2.29289093,14.2928909 L8.29289093,8.29289093 C8.67146987,7.914312 9.28105631,7.90106637 9.67572234,8.26284357 L15.6757223,13.7628436 C16.0828413,14.136036 16.1103443,14.7686034 15.7371519,15.1757223 C15.3639594,15.5828413 14.7313921,15.6103443 14.3242731,15.2371519 L9.03007346,10.3841355 L3.7071045,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(9.000001, 11.999997) scale(-1, -1) rotate(90.000000) translate(-9.000001, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span>Previous
+                                    </button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary font-weight-bolder font-size-h6 pl-5 pr-8 py-4 my-3" data-wizard-type="action-submit" id="giving_form_submit">
+                                        Submit
+                                        <span class="svg-icon svg-icon-md ml-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(8.500000, 12.000000) rotate(-90.000000) translate(-8.500000, -12.000000)" x="7.5" y="7.5" width="2" height="9" rx="1" />
+                                                    <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <button type="button" id="next-step" class="btn btn-primary font-weight-bolder font-size-h6 pl-8 pr-4 py-4 my-3" data-wizard-type="action-next">
+                                        Next Step
+                                        <span class="svg-icon svg-icon-md ml-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(8.500000, 12.000000) rotate(-90.000000) translate(-8.500000, -12.000000)" x="7.5" y="7.5" width="2" height="9" rx="1" />
+                                                    <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div style="text-align:center;"><h4>@ViewBag.Message</h4></div>
+}

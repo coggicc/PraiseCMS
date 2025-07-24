@@ -1,0 +1,58 @@
+﻿@model PraiseCMS.DataAccess.Models.ReportGroupEmailSettingsView
+
+<div id="reportCategory-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "reportCategory-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.ReportGroupEmailSettings.Id)
+        @Html.HiddenFor(x => x.ReportGroup.Id)
+        @Html.HiddenFor(x => x.ReportGroupEmailSettings.CreatedDate)
+        @Html.HiddenFor(x => x.ReportGroupEmailSettings.CreatedBy)
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.RecurrenceType, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.RecurrenceType, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.RecurrenceNumber, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.RecurrenceNumber, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.Ending, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.Ending, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.To, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.To, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.Cc, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.Cc, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.Bcc, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.Bcc, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.From, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.From, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.ReportGroupEmailSettings.Subject, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.Subject, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Description:</label>
+            @Html.TextAreaFor(x => x.ReportGroupEmailSettings.Message, new { @class = "form-control", rows = 10 })
+            @Html.ValidationMessageFor(x => x.ReportGroupEmailSettings.Message, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>

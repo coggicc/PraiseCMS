@@ -1,0 +1,246 @@
+﻿@model PraiseCMS.DataAccess.Models.ChurchOnboardingView
+
+@{
+    ViewBag.Title = "Church Setup";
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data", id = "super-admin-church-register" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.Church.Id)
+            @Html.HiddenFor(x => x.Plan)
+            @Html.HiddenFor(x => x.Church.PrimaryUserId)
+
+            <div class="mb-15">
+                <div class="form-group row">
+                    <div class="col-lg-6">
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Church Info:</h3>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-6">
+                        <label>Church Name*</label>
+                        @Html.TextBoxFor(x => x.Church.Name, new { @class = "form-control form-control-lg" })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label>Phone*</label>
+                        @Html.TextBoxFor(x => x.Church.Phone, new { onkeyup = "validateForm(this)", @class = "form-control form-control-lg phone" })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-6">
+                        <label>Email*</label>
+                        @Html.TextBoxFor(x => x.Church.Email, new { @class = "form-control form-control-lg", type = "email", placeholder = "example@email.com" })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label>Website</label>
+                        @Html.EditorFor(x => x.Church.Website, new { htmlAttributes = new { @class = "form-control", placeholder = "Ex: www.google.com" } })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-6">
+                        <label>Denomination*</label>
+                        @Html.DropDownListFor(x => x.Church.Denomination, Model.Denominations.ToSelectList(x => x.Display, x => x.Id), "Select a denomination...", new { onchange = "validateForm(this)", @class = "form-control select2" })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label>Timezone*</label>
+                        @Html.DropDownListFor(x => x.Church.TimeZone, Constants.GetTimeZonesAsDropdown(), "Select a timezone...", new { onchange = "validateForm(this)", @class = "form-control form-control-lg select2", style = "width:100%;" })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                </div>
+                <h3 class="font-size-lg text-dark font-weight-bold mb-6">Add Church's Primary Address:</h3>
+                <div class="form-group row">
+                    <div class="col-lg-6">
+                        <label>Address*</label>
+                        @Html.EditorFor(x => x.Church.PhysicalAddress1, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label>Apt/Unit/Suite</label>
+                        @Html.EditorFor(x => x.Church.PhysicalAddress2, new { htmlAttributes = new { @class = "form-control form-control-lg", placeholder = "Optional" } })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-4">
+                        <label>City*</label>
+                        @Html.EditorFor(x => x.Church.PhysicalCity, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>State*</label>
+                        @Html.DropDownListFor(x => x.Church.PhysicalState, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { onchange = "validateForm(this)", @class = "form-control form-control-lg select2", style = "width:100%;" })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>Zip*</label>
+                        @Html.EditorFor(x => x.Church.PhysicalZip, new { htmlAttributes = new { @class = "form-control form-control-lg numeric", maxlength = "5" } })
+                        <div class="fv-plugins-message-container"></div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Administrator Details:</h3>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <label>First Name*</label>
+                            @Html.EditorFor(x => x.AdminUserFirstname, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Last Name*</label>
+                            @Html.EditorFor(x => x.AdminUserLastname, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <label>Email*</label>
+                            @Html.EditorFor(x => x.AdminUserEmail, new { htmlAttributes = new { @class = "form-control form-control-lg" } })
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Phone*</label>
+                            @Html.EditorFor(x => x.AdminUserPhone, new { htmlAttributes = new { onkeyup = "validateForm(this)", @class = "form-control form-control-lg phone" } })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="inner-card-footer">
+                @*<button type="button" onclick="submit()" class="btn btn-light-primary mr-2">Save Changes</button>*@
+                <a onclick="submit()" class="btn btn-light-primary mr-2">Save Changes</a>
+            </div>
+        }
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        var validations = [];
+        $(function () {
+            setValidations();
+        });
+        function setValidations() {
+            const form = document.getElementById('super-admin-church-register');
+            validations.push(FormValidation.formValidation(form,
+                {
+                    fields: {
+                        'Church.Name': { validators: { notEmpty: { message: "Please enter your church's legal name." } } },
+                        'Church.Email': {
+                            validators: {
+                                notEmpty: { message: 'Please enter your email address.' },
+                                emailAddress: { message: 'Please enter a valid email address.' }
+                            }
+                        },
+                        'Church.Phone': {
+                            validators: {
+                                notEmpty: { message: "Phone number is required." },
+                                callback: {
+                                    message: 'Please enter a valid 10 digit phone number.',
+                                    callback: function () {
+                                        const val = form.querySelector('[name="Church.Phone"]').value;
+                                        if (val) {
+                                            const length = parseInt(val.replace(/\D/g, "").length);
+                                            return (length === 10) ? true : false;
+                                        } else {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        'Church.Website': {
+                            validators:
+                            {
+                                callback: {
+                                    message: 'Please enter a valid church Website.',
+                                    callback: function () {
+                                        const regexp = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+                                        let val = form.querySelector('[name="Church.Website"]').value;
+                                        if (!val) {
+                                            return true;
+                                        }
+                                        else if (regexp.test(val)) {
+                                            return true;
+                                        } else {
+                                            return false;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        'Church.PhysicalAddress1': { validators: { notEmpty: { message: "Please enter your address." } } },
+                        'Church.PhysicalCity': { validators: { notEmpty: { message: "Please enter your city." } } },
+                        'Church.PhysicalState': { validators: { notEmpty: { message: "Please select your state." } } },
+                        'Church.PhysicalZip': { validators: { notEmpty: { message: "Please enter your zip code." } } },
+                        'Church.Denomination': { validators: { notEmpty: { message: "Please select a denomination." } } },
+                        'Church.TimeZone': { validators: { notEmpty: { message: "Please select a TimeZone." } } },
+                        'AdminUserFirstname': { validators: { notEmpty: { message: "First name is required." } } },
+                        'AdminUserLastname': { validators: { notEmpty: { message: "Last name is required." } } },
+                        'AdminUserEmail': {
+                            validators: {
+                                notEmpty: { message: "Email is required." },
+                                emailAddress: { message: 'Please enter a valid email address.' }
+                            }
+                        },
+                        'AdminUserPhone': {
+                            validators: {
+                                notEmpty: { message: "Phone number is required." },
+                                callback: {
+                                    message: 'Please enter a valid 10 digit phone number.',
+                                    callback: function () {
+                                        const val = form.querySelector('[name="AdminUserPhone"]').value;
+                                        if (val) {
+                                            const length = parseInt(val.replace(/\D/g, "").length);
+                                            return (length === 10) ? true : false;
+                                        } else {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        trigger: new FormValidation.plugins.Trigger,
+                        bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                    }
+                }));
+        }
+
+        function submit() {
+            // e.preventDefault();
+            validations[0].validate().then(function (status) {
+                if (status === 'Valid') {
+                    StartLoading();
+                    const form = document.getElementById('super-admin-church-register');
+                    if (form.Church_Website.value) {
+                        const prefix1 = 'http://';
+                        const prefix2 = 'https://';
+                        if (form.Church_Website.value.substr(0, prefix1.length) !== prefix1 && form.Church_Website.value.substr(0, prefix2.length) !== prefix2) {
+                            form.Church_Website.value = prefix1 + form.Church_Website.value;
+                        }
+                    }
+
+                    document.getElementById('super-admin-church-register').submit();
+                }
+            });
+        };
+
+        function validateForm(self) {
+            if ($(self).val()) {
+                $(self).removeClass('is-invalid');
+                $(self).siblings('.fv-plugins-message-container').html('');
+            }
+        }
+    </script>
+}

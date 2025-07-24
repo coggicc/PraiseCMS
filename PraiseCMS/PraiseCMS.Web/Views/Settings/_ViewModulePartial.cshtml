@@ -1,0 +1,34 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Modules>
+
+@if (Model.Any())
+{
+    foreach (var parent in Model.Where(x => x.ParentId == null).ToList())
+    {
+        <tr>
+            <td>
+                <strong>@Html.RenderModuleLink(parent)</strong>
+            </td>
+            <td>@parent.Id</td>
+        </tr>
+
+        foreach (var child in Model.Where(x => x.ParentId == parent.Id).ToList())
+        {
+            <tr>
+                <td style="padding-left:20px;">
+                    @Html.RenderModuleLink(child)
+                </td>
+                <td>@child.Id</td>
+            </tr>
+
+            foreach (var grandChild in Model.Where(x => x.ParentId == child.Id).ToList())
+            {
+                <tr>
+                    <td style="padding-left:40px;">
+                        @Html.RenderModuleLink(grandChild)
+                    </td>
+                    <td>@grandChild.Id</td>
+                </tr>
+            }
+        }
+    }
+}

@@ -1,0 +1,61 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Attendance>
+
+@{
+    ViewBag.Title = "Attendance";
+}
+
+@section leftsubheader{
+    @Html.Partial("~/Views/People/_PeopleSubheader.cshtml")
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Add Attendance", "/attendance/_createattendance", "Add Attendance", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Occurred On</th>
+                            <th>Campus</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(x => x.OccurredOnDate))
+                        {
+                            var campus = SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(item.CampusId));
+                            <tr>
+                                <td>
+                                    @(item.OccurredOnDate != null ? Convert.ToDateTime(item.OccurredOnDate).ToShortDateString() : "")
+                                </td>
+                                <td>
+                                    @(campus.IsNotNullOrEmpty()?campus.Display:"")
+                                </td>
+                                <td>
+                                    @Html.AjaxModalLink(item.Total.ToString(), "/attendance/_editattendance/" + item.Id, "Edit Attendance", "Save", "", "", "/attendance/delete/" + item.Id)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>
+                You haven't added any attendance yet.
+            </p>
+        }
+    </div>
+</div>

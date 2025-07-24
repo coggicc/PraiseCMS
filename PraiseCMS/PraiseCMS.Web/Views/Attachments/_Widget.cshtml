@@ -1,0 +1,114 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.AttachmentsViewModel
+@{
+    var view = Model.Attachments != null ? Model : new AttachmentsViewModel();
+    var pluralized = "";
+
+    var title = Model.UseTypeVerbiage ? pluralized : "Attachments";
+    var verbiage = Model.UseTypeVerbiage ? Model.Type : "Attachment";
+}
+
+<style>
+    #_Widget-@view.TypeId .arrows {
+        display: inline-block;
+        margin-right: 10px;
+        width: 12px;
+        height: 24px;
+    }
+
+    #_Widget-@view.TypeId .arrows a {
+        font-size: 12px;
+        display: inline-block;
+        float: left;
+        color: #CCC;
+    }
+</style>
+
+<div id="_Widget-@view.TypeId">
+    <table class="table table-bordered" style="margin: 0;">
+        <thead>
+            <tr>
+                <th>@title</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (view.Attachments.Any())
+            {
+                foreach (var attachment in view.Attachments)
+                {
+                    var user = view.Users.FirstOrDefault(x => x.Id.Equals(attachment.CreatedBy));
+                    var style = !string.IsNullOrEmpty(attachment.Notes) && attachment.Notes.StartsWith("Terminated") ? "text-decoration: line-through;" : "";
+
+                    <tr>
+                        <td>
+                            <span style="float:right;">
+                                Uploaded
+                                @if (user != null)
+                                {
+                                    <span class="formal">by @user.FullName</span>
+                                }
+                                on @attachment.CreatedDate.ToShortDateString()
+                                @Html.AjaxModalLink("[Edit]", "/attachments/_edit/" + attachment.Id + "?returnUrl=" + Url.Encode(view.returnUrl), "Edit " + verbiage, "Save", "save-progress", "margin-left: 5px;", "/attachments/delete/" + attachment.Id + "?returnUrl=" + Url.Encode(view.returnUrl))
+                            </span>
+                            <div class="arrows">
+                                <a data-ajax="true" data-ajax-method="get" href="/attachments/_moveattachmentup/@attachment.Id?widget=@Url.Encode("_Widget")&returnUrl=@Url.Encode(view.returnUrl)"><i class="ti-angle-up"></i></a>
+                                <a data-ajax="true" data-ajax-method="get" href="/attachments/_moveattachmentdown/@attachment.Id?widget=@Url.Encode("_Widget")&returnUrl=@Url.Encode(view.returnUrl)"><i class="ti-angle-down"></i></a>
+                            </div>
+                            @*<a href="@Html.AmazonLink(attachment.FileName)" target="_blank" style="@style">@attachment.Name.EllipsisAt(50)</a>*@
+                            @if (!string.IsNullOrEmpty(attachment.Category))
+                            {
+                                <span>(@attachment.Category)</span>
+                            }
+                            @if (!string.IsNullOrEmpty(attachment.Notes))
+                            {
+                                <span>- @attachment.Notes</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        No attachments added yet, click "Add @verbiage" below to get started
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>
+                    @Html.AjaxModalLink(view.Attachments.Any() ? "Add Another " + verbiage : "Add " + verbiage, "/attachments/_create?type=" + Url.Encode(view.Type) + "&typeId=" + view.TypeId + "&returnUrl=" + Url.Encode(view.returnUrl), "Add New " + verbiage, "Save", "save-progress", "")
+                </td>
+            </tr>
+            @if (!Model.DisableDragAndDrop)
+            {
+                <tr>
+                    <td>
+                        @using (Html.BeginForm("_UploadFiles", "Attachments", FormMethod.Post, new { @class = "dropzone form-horizontal", id = "drop-form-" + view.TypeId, enctype = "multipart/form-data" }))
+                        {
+                            @Html.ValidationSummary()
+
+                            @Html.Hidden("type", view.Type)
+                            @Html.Hidden("typeId", view.TypeId)
+                            @Html.Hidden("returnUrl", view.returnUrl)
+                        }
+
+                        <script>
+                        Dropzone.autoDiscover = false;
+                        $("form#drop-form-@view.TypeId").dropzone({
+                            dictDefaultMessage: "<i class='ti-cloud-up' style='font-size: 48px;margin-top: -10px;'></i><h3 style='font-size: 18px;'>Drag &amp; Drop Files Here</h3><span style='display:block;margin: 15px 0;font-size: 12px;'>or</span><a href='#' class='btn btn-label-brand btn-bold'>Browse Files</a>",
+                            paramName: "file",
+                            maxFilesize: 25,
+                            init: function () {
+                                this.on('queuecomplete', function () {
+                                    window.location.replace("@view.returnUrl");
+                                });
+                            }
+                        });
+                        </script>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

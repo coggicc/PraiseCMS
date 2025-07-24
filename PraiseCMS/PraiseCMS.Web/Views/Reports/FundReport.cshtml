@@ -1,0 +1,133 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.FundReportDashboard
+@{
+    ViewBag.Title = Model.Fund.Display + " Fund Report";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-primary card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-dollar-sign fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.TotalGiving.Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Total Giving</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <a href="/reports/fundreportdetails?fundid=@Model.Fund.Id&type=@PaymentMethodTypes.Digital&startDate=@ViewBag.startDate&endDate=@ViewBag.endDate" class="card card-custom bg-success bg-hover-state-success card-stretch gutter-b" data-toggle="tooltip" data-placement="top" title="View Digital Giving Details">
+            <div class="card-body">
+                <i class="fa fa-credit-card fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.DigitalGiving.Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Digital</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-xl-2">
+        <a href="/reports/fundreportdetails?fundid=@Model.Fund.Id&type=@PaymentMethodTypes.Offline&startDate=@ViewBag.startDate&endDate=@ViewBag.endDate" class="card card-custom bg-danger bg-hover-state-danger card-stretch gutter-b" data-toggle="tooltip" data-placement="top" title="View Offline Giving Details">
+            <div class="card-body">
+                <i class="fa fa-money-bill-alt fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.OfflineGiving.Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Offline</span>
+            </div>
+        </a>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Giving by Campus</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+            <a href="/Reports/ExportFundReportToCSV?type=@ViewBag.type&fundId=@ViewBag.fundId&dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+            <a href="javascript:;" class="toggle-selector btn btn-icon btn-sm btn-light-success" data-card-tool="reload" data-selector=".campusDetails" title="Expand Details">
+                <i class="fas fa-plus icon-nm details"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        @if (Model.Campuses.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                    <thead>
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">
+                                <span class="text-dark-75">Campus</span>
+                            </th>
+                            <th style="min-width: 100px">Total</th>
+                            <th style="min-width: 100px">Digital</th>
+                            <th style="min-width: 100px">Offline</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var campus in Model.Campuses)
+                        {
+                            <tr>
+                                <td class="pl-0 py-8">
+                                    <a href="/reports/campusgivingreport?campusId=@campus.Id" class="text-dark-75 text-hover-primary mb-1 font-size-lg">@campus.Display</a>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.CampusTotals.First(x => x.CampusId == campus.Id).TotalGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.CampusTotals.First(x => x.CampusId == campus.Id).DigitalGiving</span>
+                                    <span class="campusDetails text-muted " style="display:none;">Online - @Model.CampusTotals.First(x => x.CampusId == campus.Id).OnlineGiving<br />Text Message - @Model.CampusTotals.First(x => x.CampusId == campus.Id).TextMessageGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.CampusTotals.First(x => x.CampusId == campus.Id).OfflineGiving</span>
+                                    <span class="campusDetails text-muted " style="display:none;">Offering Plate - @Model.CampusTotals.First(x => x.CampusId == campus.Id).OfferingPlateGiving<br />Drop-Off - @Model.CampusTotals.First(x => x.CampusId == campus.Id).DropOffGiving<br />Mailed - @Model.CampusTotals.First(x => x.CampusId == campus.Id).MailedGiving</span>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="pl-0 py-8">
+                                <span class="text-dark-75 mb-1 font-size-lg">[No Campus Assigned]</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 d-block font-size-lg">@Model.NoCampusTotals.TotalGiving</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 d-block font-size-lg">@Model.NoCampusTotals.DigitalGiving</span>
+                                <span class="campusDetails text-muted" style="display:none;">Online - @Model.NoCampusTotals.OnlineGiving<br />Text Message - @Model.NoCampusTotals.TextMessageGiving</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 d-block font-size-lg">@Model.NoCampusTotals.OfflineGiving</span>
+                                <span class="campusDetails text-muted" style="display:none;">Offering Plate - @Model.NoCampusTotals.OfferingPlateGiving<br />Drop-Off - @Model.NoCampusTotals.DropOffGiving<br />Mailed - @Model.NoCampusTotals.MailedGiving</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="tfoot-grey">
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">
+                                <span class="text-dark-75">Totals</span>
+                            </th>
+                            <th style="min-width: 100px">@Model.TotalGiving.Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.DigitalGiving.Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Sum(x => x.Amount).ToCurrencyString()</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+            toggleDetails();
+        });
+    </script>
+}

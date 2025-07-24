@@ -1,0 +1,10 @@
+﻿@{
+    ViewBag.Title = "Access Denied";
+    Layout = "~/Views/Shared/_AuthenticationLayout.cshtml";
+}
+
+<h1 class="error-title font-weight-boldest text-danger mt-10 mt-md-0 mb-12">Oops!</h1>
+<p class="font-weight-boldest display-4">
+    @Html.Raw(!string.IsNullOrEmpty(ViewBag.Message) ? ViewBag.Message : "It looks like this page is restricted for your account.")
+</p>
+<p class="font-size-h3">Return <a href="/home">home</a> or <a href="https://www.praisecms.com/contact">contact us</a> if you think this is an error.</p>

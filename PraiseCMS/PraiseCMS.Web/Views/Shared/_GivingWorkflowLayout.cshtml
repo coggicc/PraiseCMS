@@ -1,0 +1,137 @@
+﻿@using System.Configuration
+@using PraiseCMS.Shared.Methods
+@{
+    var appVersion = "app.version".AppSetting<string>("v9.9.9");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="../../../../">
+    <meta charset="utf-8" />
+    <title>Giving | Praise CMS</title>
+    <meta name="description" content="Giving page" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700|Roboto:300,400,500,600,700">
+    <link href="~/Content/assets/plugins/global/plugins.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/style.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" />
+    <link href="~/Content/assets/css/themes/layout/header/base/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/header/menu/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/brand/dark.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/aside/dark.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/pages/login/login-3.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/giving-workflow/start-giving.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="~/Content/assets/image/favicon.ico" type="image/x-icon" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SVWX6ZHYYQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-SVWX6ZHYYQ');
+    </script>
+</head>
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+    @RenderBody()
+    <div id="ajax-modal" class="modal fade">
+        <div id="ajax-modal-size" class="" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajax Modal</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <i class="ti-reload rotate-refresh"></i>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <a href="#" class="btn btn-label-danger modal-delete" style="display: none;">Delete</a>
+                    </div>
+                    <button type="button" class="btn btn-label-brand font-weight-bold modal-save" style="margin-left: auto;">Save</button>
+                    <button type="button" class="btn btn-light-dark font-weight-bold modal-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>var KTAppSettings = { "breakpoints": { "sm": 576, "md": 768, "lg": 992, "xl": 1200, "xxl": 1200 }, "colors": { "theme": { "base": { "white": "#ffffff", "primary": "#3699FF", "secondary": "#E5EAEE", "success": "#1BC5BD", "info": "#8950FC", "warning": "#FFA800", "danger": "#F64E60", "light": "#F3F6F9", "dark": "#212121" }, "light": { "white": "#ffffff", "primary": "#E1F0FF", "secondary": "#ECF0F3", "success": "#C9F7F5", "info": "#EEE5FF", "warning": "#FFF4DE", "danger": "#FFE2E5", "light": "#F3F6F9", "dark": "#D6D6E0" }, "inverse": { "white": "#ffffff", "primary": "#ffffff", "secondary": "#212121", "success": "#ffffff", "info": "#ffffff", "warning": "#ffffff", "danger": "#ffffff", "light": "#464E5F", "dark": "#ffffff" } }, "gray": { "gray-100": "#F3F6F9", "gray-200": "#ECF0F3", "gray-300": "#E5EAEE", "gray-400": "#D6D6E0", "gray-500": "#B5B5C3", "gray-600": "#80808F", "gray-700": "#464E5F", "gray-800": "#1B283F", "gray-900": "#212121" } }, "font-family": "Poppins" };</script>
+    <script src="~/Content/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/Content/assets/js/scripts.bundle.js"></script>
+    <script src="~/Scripts/global.js?v=@appVersion"></script>
+    <script src="~/Scripts/Giving.js"></script>
+    <script src="~/Scripts/GuestGiving.js"></script>
+    <script src="~/Scripts/form-validate/form-validate.js"></script>
+    <script src="~/Scripts/jquery.mask.js"></script>
+    <script src="~/Scripts/ScheduleGift.js"></script>
+    <script src="~/Content/assets/js/pages/crud/forms/widgets/input-mask.js"></script>
+    <script src="~/Content/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+    <script>
+    var funds = @Html.Raw(Json.Encode(Model.Funds));
+    var campuses = @Html.Raw(Json.Encode(Model.Campuses));
+    var accounts = @Html.Raw(Json.Encode(Model.Accounts));
+    $(function() {
+        frequencyDate_initialize();
+        InitSelect2();
+    });
+    $('.amount').on('input propertychange paste',
+        function(e) {
+            var reg = /^0+/gi;
+            if (this.value.match(reg)) {
+                this.value = this.value.replace(reg, '');
+            }
+        });
+
+    function InitSelect2() {
+        $(".select2").select2({
+            templateResult: formatState,
+            templateSelection: formatState
+        });
+    }
+
+    function formatState(opt) {
+        if (!opt.id) {
+            return opt.text;
+        }
+        var optcontent = $(opt.element).attr('data-content');
+        if (!optcontent) {
+            const $opt = $(
+                '<span>' + opt.text + '</span>'
+            );
+            return $opt;
+        } else {
+            const $opt = $(
+                '<span>' + opt.text + ' ' + optcontent + '</span>'
+            );
+            return $opt;
+        }
+    }
+
+    $(document).ready(function() {
+        $('body').on('click',
+            '.ajax-modal',
+            function(e) {
+                e.preventDefault();
+                var deleteUrl = $(this).data("delete-button");
+                if (deleteUrl != "") {
+                    $(".modal-delete").attr("href", deleteUrl).show();
+                } else {
+                    $(".modal-delete").attr("href", "#").hide();
+                }
+                var saveButton = $(this).data("save-button");
+                if (saveButton != "") {
+                    $(".modal-save").show();
+                } else {
+                    $(".modal-save").hide();
+                }
+                var modalSize = $(this).data("modal-size");
+                $("#ajax-modal-size").removeAttr("class");
+                $("#ajax-modal-size").addClass("modal-dialog " + modalSize);
+                $('#ajax-modal .modal-title').text($(this).data("title"));
+                $('#ajax-modal .modal-save').text($(this).data("save-button"));
+                $('#ajax-modal .modal-body').html("<div style='text-align:center;'><i class='ti-reload rotate-refresh'></i></div>").load($(this).attr("href"));
+            });
+    });
+    </script>
+</body>
+</html>

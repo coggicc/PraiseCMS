@@ -1,0 +1,293 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ChurchEventTime
+
+<style type="text/css">
+    .border-danger {
+        border: 1px solid red;
+    }
+</style>
+
+<div id="event-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "event-div" }, new { @class = "form", id = "time-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchEventSchedulerId)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+        @Html.HiddenFor(x => x.StartDate)
+
+        var displayTime = Model.AllDay ? "none" : "block";
+        var displayAllDay = !Model.AllDay ? "none" : "block";
+        var displayMultiDay = Model.EndDate.IsNotNullOrEmpty() ? "block" : "none";
+
+        <div class="row" @Html.Raw(Model.ShowMultiday ? "" : "style='display:none'")>
+            <div class="col-4">
+                <div class="form-group">
+                    <label>Multi-Day:</label>
+                    <div class="row">
+                        <div class="col-3">
+                            <span class="switch switch-icon">
+                                <label>
+                                    <input type="checkbox" id="multiDays" @Html.Raw(Model.EndDate.IsNotNullOrEmpty() ? "checked" : "") />
+                                    <span></span>
+                                </label>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div id="multidays-div" class="form-group" style="display:@displayMultiDay">
+                    <label>To Date</label>
+                    <div class="input-group date">
+                        @Html.TextBoxFor(x => x.EndDate, "{0:MM/dd/yyyy}", new { @class = "form-control multiDaysEndDatepicker", @readonly = "readonly", autocomplete = "off" })
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="la la-calendar-check-o"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>All Day:</label>
+            <div class="row">
+                <div class="col-3">
+                    <span class="switch switch-icon">
+                        <label>
+                            @Html.CheckBoxFor(x => x.AllDay, new { id = "AllDay", @class = "readonly" })
+                            <span></span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div id="time-div" style="display:@displayTime">
+            <div class="form-group">
+                <label>Start Time</label>
+                <div class="input-group date">
+                    @Html.TextBoxFor(x => x.StartTime, new { @readonly = "readonly", @class = "timePicker_startTime form-control" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="la la-clock-o"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.StartTime, "", new { @class = "text-danger", id = "errorStartTime" })
+            </div>
+            <div class="form-group">
+                <label>End Time <small class="endDateLabel"></small></label>
+                <div class="input-group date">
+                    @Html.TextBoxFor(x => x.EndTime, new { @readonly = "readonly", @class = "timePicker_endTime form-control" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="la la-clock-o"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.EndTime, "", new { @class = "text-danger", id = "errorEndTime" })
+            </div>
+            <div class="form-group">
+                <label>Show Event At<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="The time in which the event will be available to accept check-ins."></i></label>
+                <div class="input-group date">
+                    @Html.TextBoxFor(x => x.ShowEventAt, new { @readonly = "readonly", @class = "timePicker_showAtTime form-control" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="la la-clock-o"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.ShowEventAt, "", new { @class = "text-danger", id = "errorShowEventAt" })
+            </div>
+            <div class="form-group">
+                <label>Hide Event At <small class="endDateLabel"></small><i class="far fa-question-circle ml-2" data-toggle="tooltip" title="The time in which the event will no longer be available to accept check-ins."></i></label>
+                <div class="input-group date">
+                    @Html.TextBoxFor(x => x.HideEventAt, new { @readonly = "readonly", @class = "timePicker_hideAtTime form-control" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="la la-clock-o"></i>
+                        </span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(x => x.HideEventAt, "", new { @class = "text-danger", id = "errorHideEventAt" })
+            </div>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    var success = true;
+
+    $(document).on('change', '#AllDay', function () {
+        if ($(this).is(":checked")) {
+            $("#time-div").hide();
+            DisableFormSubmission(false);
+        } else {
+            $("#time-div").show();
+            DisableFormSubmission(!success);
+        }
+    });
+
+    $(document).on('change', '#multiDays', function () {
+        if (!$(this).is(":checked")) {
+            $("#multidays-div").hide();
+            $("#EndDate").val('');
+        } else {
+            $("#multidays-div").show();
+            multidayEndDatepicker();
+        }
+        showEndDateLabel();
+        let endTime = $('.timePicker_endTime').val().split(':');
+        let endDate = createDate(endTime[0], endTime[1].split(' ')[0], endTime[1].split(' ')[1]);
+        let startTime = $('.timePicker_startTime').val().split(':');
+        let startDate = createDate(startTime[0], startTime[1].split(' ')[0], startTime[1].split(' ')[1]);
+        if (endDate <= startDate && !$('#multiDays').is(":checked")) {
+            $("#errorEndTime").text("End time should be greater than start time.");
+            $("#EndTime").addClass("is-invalid");
+            DisableFormSubmission(true);
+            success = false;
+        } else {
+            $("#errorEndTime").text("");
+            $("#EndTime").removeClass("is-invalid");
+            DisableFormSubmission(false);
+            success = true;
+        }
+    });
+
+    function DisableFormSubmission(value) {
+        $(".btn_submit").prop('disabled', value);
+    }
+    $('.timePicker_startTime').timepicker({
+        minuteStep: 5,
+        showMeridian: true,
+        snapToStep: true
+    }).on('changeTime.timepicker', function (e) {
+        let date = createDate(e.time.hours, e.time.minutes, e.time.meridian);
+        let showTime = date.setHours(date.getHours() - 1, date.getMinutes(), 0);
+        $('.timePicker_showAtTime').timepicker('setTime', formatAMPM(showTime));
+
+        date = createDate(e.time.hours, e.time.minutes, e.time.meridian);
+        let hideTime = date.setHours(date.getHours() + 1, date.getMinutes() + 30, 0);
+        $('.timePicker_hideAtTime').timepicker('setTime', formatAMPM(hideTime));
+
+        date = createDate(e.time.hours, e.time.minutes, e.time.meridian);
+        let endTime = date.setHours(date.getHours() + 1, date.getMinutes(), 0);
+        $('.timePicker_endTime').timepicker('setTime', formatAMPM(endTime));
+
+        $("#errorHideEventAt").text("");
+        $("#HideEventAt").removeClass("is-invalid");
+        $("#errorEndTime").text("");
+        $("#EndTime").removeClass("is-invalid");
+        $("#errorShowEventAt").text("");
+        $("#ShowEventAt").removeClass("is-invalid");
+        DisableFormSubmission(false);
+        success = true;
+    });
+
+    $('.timePicker_endTime').timepicker({
+        minuteStep: 5,
+        showMeridian: true,
+        snapToStep: true
+    }).on('changeTime.timepicker', function (e) {
+        let date = createDate(e.time.hours, e.time.minutes, e.time.meridian);
+        let hideTime = date.setHours(date.getHours(), date.getMinutes() + 30, 0);
+        $('.timePicker_hideAtTime').timepicker('setTime', formatAMPM(hideTime));
+
+        let endDate = createDate(e.time.hours, e.time.minutes, e.time.meridian);
+        let startTime = $('.timePicker_startTime').val().split(':');
+        let startDate = createDate(startTime[0], startTime[1].split(' ')[0], startTime[1].split(' ')[1]);
+        if (endDate <= startDate && !$('#multiDays').is(":checked")) {
+            $("#errorEndTime").text("End time should be greater than start time.");
+            $("#EndTime").addClass("is-invalid");
+            DisableFormSubmission(true);
+            success = false;
+        } else {
+            $("#errorEndTime").text("");
+            $("#EndTime").removeClass("is-invalid");
+            DisableFormSubmission(false);
+            success = true;
+        }
+    });
+
+    $('.timePicker_showAtTime').timepicker({
+        minuteStep: 5,
+        showMeridian: true,
+        snapToStep: true
+    }).on('changeTime.timepicker', function (e) {
+        let showEventDate = createDate(e.time.hours, e.time.minutes, e.time.meridian);
+        let startTime = $('.timePicker_startTime').val().split(':');
+        let startDate = createDate(startTime[0], startTime[1].split(' ')[0], startTime[1].split(' ')[1]);
+        if (showEventDate >= startDate) {
+            $("#errorShowEventAt").text("Show event time should be less than start time.");
+            $("#ShowEventAt").addClass("is-invalid");
+            DisableFormSubmission(true);
+            success = false;
+        } else {
+            $("#errorShowEventAt").text("");
+            $("#ShowEventAt").removeClass("is-invalid");
+            DisableFormSubmission(false);
+            success = true;
+        }
+    });
+
+    $('.timePicker_hideAtTime').timepicker({
+        minuteStep: 5,
+        showMeridian: true,
+        snapToStep: true
+    }).on('changeTime.timepicker', function (e) {
+        let hideEventDate = createDate(e.time.hours, e.time.minutes, e.time.meridian);
+        let endTime = $('.timePicker_endTime').val().split(':');
+        let endDate = createDate(endTime[0], endTime[1].split(' ')[0], endTime[1].split(' ')[1]);
+        if (hideEventDate <= endDate) {
+            $("#errorHideEventAt").text("Hide event time should be greater than end time.");
+            $("#HideEventAt").addClass("is-invalid");
+            DisableFormSubmission(true);
+            success = false;
+        } else {
+            $("#errorHideEventAt").text("");
+            $("#HideEventAt").removeClass("is-invalid");
+            DisableFormSubmission(false);
+            success = true;
+        }
+    });
+
+    $(document).on('change', '#Time_EndDate', function () {
+        showEndDateLabel();
+    });
+
+    function showEndDateLabel() {
+        if ($('#multiDays').is(":checked")) {
+            $('.endDateLabel').text('(on ' + $("#EndDate").val() + ')');
+        } else {
+            $('.endDateLabel').text('');
+        }
+    }
+
+    function multidayEndDatepicker() {
+        $('.multiDaysEndDatepicker').datepicker('destroy');
+        var date = $('#StartDate').val().split('/');
+        let startDate = new Date(date[2], parseInt(date[0]) - 1, date[1]);
+        let multiDayEndDate = new Date(startDate.setDate(startDate.getDate() + 1));
+        $('.multiDaysEndDatepicker').datepicker({
+            todayHighlight: true,
+            todayBtn: "linked",
+            autoclose: true,
+            startDate: multiDayEndDate
+        });
+        $("#EndDate").val(formatDate(multiDayEndDate));
+        showEndDateLabel();
+    }
+
+    $(function () {
+        multidayEndDatepicker();
+    });
+
+    $("#time-form").submit(function (e) {
+        if (!$('#multiDays').is(":checked")) {
+            $("#EndDate").val('');
+        }
+    });
+</script>

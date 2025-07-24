@@ -1,0 +1,155 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.GivingDashboard
+
+@{
+    ViewBag.Title = "Giving History";
+}
+<link href="~/Content/assets/css/datatables.min.css" rel="stylesheet" />
+<style>
+    #my_table_wrapper .wrapper {
+        padding: 0 !important;
+    }
+</style>
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                Giving History
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="@Request.Url.PathAndQuery.ToLower().Replace("/history", "/downloadgivinghistory")" class="btn btn-outline-primary btn-sm">Export CSV</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Get, new { @class = "form", role = "form" }))
+                {
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="form-group row">
+                        <div class="col-sm-6 col-lg-2">
+                            <label>Start Date:</label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(x => x.StartDate, new { @class = "form-control datepicker", name = "StartDate", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                <div class="input-group-append"><span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-2">
+                            <label>End Date:</label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(x => x.EndDate, new { @class = "form-control datepicker", name = "EndDate", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                <div class="input-group-append"><span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <label>Fund:</label>
+                            @Html.DropDownListFor(x => x.FundId, Model.Funds.ToSelectList(x => x.Display, x => x.Id).OrderBy(x => x.Text), "Select a fund...", new { @class = "form-control select2", name = "Fund", style = "width:100%;" })
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <label>Campus:</label>
+                            @Html.DropDownListFor(x => x.CampusId, Model.Campuses.ToSelectList(x => x.Display, x => x.Id).OrderBy(x => x.Text), "Select a campus...", new { @class = "form-control select2", name = "Campus", style = "width:100%;" })
+                        </div>
+                        <div class="col-sm-12 col-lg-2">
+                            <button type="submit" class="btn btn-primary mr-2" style="margin-top:25px;">Filter</button>
+                            <a href="/users/history/@Model.PersonId" class="btn btn-light-dark" style="margin-top:25px;">Clear</a>
+                        </div>
+                    </div>
+                }
+                <div class="separator separator-dashed my-5"></div>
+
+                <table id="my_table" class="table table-striped table-bordered table-responsive-md table-responsive-sm" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th width="20%">Date</th>
+                            <th width="20%">Fund</th>
+                            <th width="20%">Campus</th>
+                            <th width="25%">Payment Method</th>
+                            <th width="15%" class="text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model.MyGiving)
+                        {
+                            string paymentMethod = "-";
+                            string amount = payment.Amount.ToCurrencyString();
+                            var fund = Model.Funds.Any() ? Model.Funds.FirstOrDefault(x => x.Id.Equals(payment.FundId)) : null;
+                            var campus = SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(payment.CampusId));
+
+                            if (payment.OfflinePaymentMethod.IsNotNullOrEmpty())
+                            {
+                                paymentMethod = payment.OfflinePaymentMethod;
+
+                                if (payment.OfflinePaymentMethod == OfflinePaymentMethods.Check)
+                                {
+                                    paymentMethod = $"Check # {payment.CheckNumber}";
+                                }
+                            }
+                            else
+                            {
+                                if (Model.PaymentMethods.Any(x => x.AccountGUID == payment.PaymentMethod))
+                                {
+                                    paymentMethod = Model.PaymentMethods.FirstOrDefault(x => x.AccountGUID == payment.PaymentMethod).PaymentMethodPreview;
+                                }
+                            }
+                            <tr>
+                                <td>
+                                    @payment.CreatedDate.ToShortDateString()
+                                </td>
+                                <td>
+                                    @if (fund != null)
+                                    {
+                                        <span>@fund.Name</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (campus != null)
+                                    {
+                                        <span>@campus.Name</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span>@paymentMethod</span>
+                                </td>
+                                <td class="text-right">
+                                    @amount
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <table class="table table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td width="85%" class="font-weight-bolder" colspan="4">Total</td>
+                            <td width="15%" class="font-weight-bolder text-right">@Model.MyGiving.Sum(x => x.Amount).ToCurrencyString()</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/datatables.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#my_table').dataTable({
+            responsive: true,
+            bFilter: false,
+            bInfo: true,
+            bPaginate: true,
+            bLengthChange: false,
+            bAutoWidth: false,
+            searching: false,
+            ordering: false,
+            pageLength: 50,
+            orderable: false,
+            "dom": '<"wrapper"flipt>'
+        });
+        $(".select2-selection").on("focus", function () {
+            $(this).parent().parent().prev().select2("open");
+        });
+    });
+</script>

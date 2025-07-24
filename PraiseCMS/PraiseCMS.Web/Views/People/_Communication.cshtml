@@ -1,0 +1,202 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.CommunicateWithGroupModel
+
+<div id="alert-container"></div>
+<div id="communicate-div">
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "communicate-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label>Select Group</label>
+            @Html.DropDownListFor(x => x.SelectedGroupId, Model.CommunicationGroup.ToSelectList("Select a group...", x => x.Display, x => x.Id), new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%;" })
+            @Html.ValidationMessageFor(x => x.SelectedGroupId, "", new { @class = "text-danger" })
+        </div>
+        foreach (var group in Model.CommunicationGroup)
+        {
+            <div class="groupInfo group-@group.Id" style="display:none;">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Group Members</label>
+                            <a class="form-control text-center" data-toggle="tooltip" target="_blank" title="View Group Members" href="/people/CommunicationGroupPeoples/@group.Id">@group.CommunicationGroupsPeople.Count() @group.CommunicationGroupsPeople.Count().Pluralize("Member")</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Notification Methods</label>
+                            <div class="form-control text-center">
+                                @{
+                                    if (group.EnableEmail)
+                                    {
+                                        <i class="fas fa-envelope mr-2" data-toggle="tooltip" data-original-title="Email Notifications"></i>
+                                    }
+                                    if (group.EnableText)
+                                    {
+                                        <i class="fas fa-comment mr-2" data-toggle="tooltip" data-original-title="Text Message Notifications"></i>
+                                    }
+                                    if (group.EnableSystemNotification)
+                                    {
+                                        <i class="fas fa-bell" data-toggle="tooltip" data-original-title="System Notifications"></i>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <label>Subject</label>
+            @Html.TextBoxFor(x => x.Subject, new { maxlength = "70", @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Subject, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Message <small id="textLimit" class="text-dark-50"></small></label>
+            @Html.TextAreaFor(x => x.Message, new { @class = "form-control", rows = "5" })
+            @Html.ValidationMessageFor(x => x.Subject, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    var communicationGroups = @Html.Raw(Json.Encode(Model.CommunicationGroup));
+    $(function () {
+        setValidationStep();
+    });
+
+    $(document).on("change", "#SelectedGroupId", function (e) {
+        $(".groupInfo").hide();
+        if ($(this).val()) {
+            $(".group-" + $(this).val()).show();
+            let selectedGroup = communicationGroups.find(x => x.Id === $(this).val());
+            if (selectedGroup && selectedGroup.EnableText) {
+                $("#textLimit").text("(Limit: 250 characters)");
+                textLimitCalculation($("#Message").val());
+            } else {
+                $("#textLimit").text("");
+            }
+        } else {
+            $("#textLimit").text("");
+        }
+    });
+
+    function textLimitCalculation(val) {
+        let pendingLength = 0;
+        if (val) {
+            if (val.length > 250) {
+                $("#Message").val(val.slice(0, 250));
+                pendingLength = 0;
+            } else {
+                pendingLength = parseInt(250 - val.length);
+            }
+            $("#textLimit").text("(" + pendingLength + " characters remaining)");
+        } else {
+            $("#textLimit").text("(Limit: 250 characters)");
+            return;
+        }
+        if (pendingLength === 0) {
+            $("#textLimit").addClass("text-danger").removeClass("text-dark-50");
+        } else {
+            $("#textLimit").removeClass("text-danger").addClass("text-dark-50");
+        }
+    }
+
+    $(document).on("keyup", "#Message", function () {
+        textLimitCalculation($(this).val());
+    });
+
+    $("#communicate-form").submit(function (e) {
+        e.preventDefault();
+        IsSubmitted = true;
+        formValidations[0].validate().then(function (status) {
+            if (status === "Valid") {
+                $.ajax({
+                    type: "POST",
+                    url: $("#communicate-form").attr("action"),
+                    data: $("#communicate-form").serialize(),
+                    success: function (result) {
+                        if (result.Success) {
+                            Notify("success", "SUCCESS", "Your message has been sent.", "/", "_blank");
+                            setTimeout(function () {
+                                location.reload(true);
+                            }, 1000);
+                        } else {
+                            ShowErrorAlert(result.Message);
+                        }
+                    },
+                    error: function (result) {
+                        ShowErrorAlert(result.Message);
+                    }
+                });
+            }
+            else {
+                setTimeout(function () {
+                    StopLoading();
+                });
+            }
+        });
+    });
+
+    var formValidations = [];
+    var IsSubmitted = false;
+    function setValidationStep() {
+        let form = document.getElementById("communicate-form");
+        formValidations.push(FormValidation.formValidation(form,
+            {
+            fields: {
+                "SelectedGroupId": {
+                    validators: {
+                        callback: {
+                            message: "Please select a group.",
+                            callback: function (input) {
+                                if (!input.value) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                },
+                "Message": {
+                    validators: {
+                        callback: {
+                            message: "Please enter a message.",
+                            callback: function (input) {
+                                if (!input.value) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                },
+                "Subject": {
+                    validators: {
+                        callback: {
+                            message: "Please enter a subject.",
+                            callback: function (input) {
+                                if (!input.value) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                },
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger,
+                bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+            }
+        }));
+    }
+
+    function validateForm(self) {
+        if (IsSubmitted) {
+            formValidations[0].validate();
+        }
+    }
+</script>

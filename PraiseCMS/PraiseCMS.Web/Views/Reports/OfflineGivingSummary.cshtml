@@ -1,0 +1,226 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.GivingSummaryDashboard
+@{
+    ViewBag.Title = "Offline Giving Summary";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-danger card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-dollar-sign fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.OfflineGiving.Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Total</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-warning card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-hand-holding-usd fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.OfferingPlate).Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Offering Plate</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-dark card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-church fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.DropOff).Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Drop-Off</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-info card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-envelope fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.Mail).Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Mailed</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Giving by Campus</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Offering Plate, Drop-Off, and Mailed</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="javascript:;" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+            <a href="/Reports/ExportCampusOfflineGivingSummaryToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+            <a href="javascript:;" class="toggle-selector btn btn-icon btn-sm btn-light-success" data-card-tool="reload" data-target="campusDetails" data-toggle="tooltip" data-placement="top" title="Expand Details">
+                <i class="fas fa-plus icon-nm details"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        @if (SessionVariables.Campuses.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                    <thead>
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">Campus</th>
+                            <th style="min-width: 100px">Total</th>
+                            <th style="min-width: 100px">Offering Plate</th>
+                            <th style="min-width: 100px">Drop-Off</th>
+                            <th style="min-width: 100px">Mailed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var campus in SessionVariables.Campuses.OrderBy(x => x.Name))
+                        {                            
+                            <tr>
+                                <td class="pl-0 py-8">
+                                    <a href="/reports/campusgivingreport?campusId=@campus.Id" class="text-dark-75 text-hover-primary mb-1 font-size-lg">@campus.Display</a>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.CampusTotals.First(x => x.CampusId == campus.Id).TotalGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.CampusTotals.First(x => x.CampusId == campus.Id).OfferingPlateGiving</span>
+                                    <span class="campusDetails text-muted">Cash - @Model.CampusTotals.First(x => x.CampusId == campus.Id).OfferingPlateCashGiving<br />Checks - @Model.CampusTotals.First(x => x.CampusId == campus.Id).OfferingPlateCheckGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.CampusTotals.First(x => x.CampusId == campus.Id).DropOffGiving</span>
+                                    <span class="campusDetails text-muted">Cash - @Model.CampusTotals.First(x => x.CampusId == campus.Id).DropOffCashGiving<br />Checks - @Model.CampusTotals.First(x => x.CampusId == campus.Id).DropOffCheckGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.CampusTotals.First(x => x.CampusId == campus.Id).MailedGiving</span>
+                                    <span class="campusDetails text-muted">Cash - @Model.CampusTotals.First(x => x.CampusId == campus.Id).MailedCashGiving<br />Checks - @Model.CampusTotals.First(x => x.CampusId == campus.Id).MailedCheckGiving</span>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="pl-0 py-8">
+                                <span class="text-dark-75 mb-1 font-size-lg">[No Campus Assigned]</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 d-block font-size-lg">@Model.NoCampusTotals.TotalGiving</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 d-block font-size-lg">@Model.NoCampusTotals.OfferingPlateGiving</span>
+                                <span class="campusDetails text-muted">Cash - @Model.NoCampusTotals.OfferingPlateCashGiving<br />Checks - @Model.NoCampusTotals.OfferingPlateCheckGiving</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 d-block font-size-lg">@Model.NoCampusTotals.DropOffGiving</span>
+                                <span class="campusDetails text-muted">Cash - @Model.NoCampusTotals.DropOffCashGiving<br />Checks - @Model.NoCampusTotals.DropOffCashGiving</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 d-block font-size-lg">@Model.NoCampusTotals.MailedGiving</span>
+                                <span class="campusDetails text-muted">Cash - @Model.NoCampusTotals.MailedCashGiving<br />Checks - @Model.NoCampusTotals.MailedCheckGiving</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="tfoot-grey">
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">Totals</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.OfferingPlate).Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.DropOff).Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.Mail).Sum(x => x.Amount).ToCurrencyString()</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_2">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Giving by Fund</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Offering Plate, Drop-Off, and Mailed</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="javascript:;" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+            <a href="/Reports/ExportFundOfflineGivingSummaryToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+            <a href="javascript:;" class="toggle-selector btn btn-icon btn-sm btn-light-success" data-card-tool="reload" data-target="fundDetails" data-toggle="tooltip" data-placement="top" title="Expand Details">
+                <i class="fas fa-plus icon-nm details"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        @if (Model.Funds.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                    <thead>
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">Fund</th>
+                            <th style="min-width: 100px">Total</th>
+                            <th style="min-width: 100px">Offering Plate</th>
+                            <th style="min-width: 100px">Drop-Off</th>
+                            <th style="min-width: 100px">Mailed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var fund in Model.Funds.OrderBy(x => x.Display))
+                        {
+                            <tr>
+                                <td class="pl-0 py-8">
+                                    <a href="/reports/fundreport?fundid=@fund.Id" class="text-dark-75 text-hover-primary mb-1 font-size-lg">@fund.Display</a>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.FundTotals.First(f => f.FundId == fund.Id).TotalGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.FundTotals.First(f => f.FundId == fund.Id).OfferingPlateGiving</span>
+                                    <span class="fundDetails text-muted">Cash - @Model.FundTotals.First(f => f.FundId == fund.Id).OfferingPlateCashGiving<br />Checks - @Model.FundTotals.First(f => f.FundId == fund.Id).OfferingPlateCheckGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.FundTotals.First(f => f.FundId == fund.Id).DropOffGiving</span>
+                                    <span class="fundDetails text-muted">Cash - @Model.FundTotals.First(f => f.FundId == fund.Id).DropOffCashGiving<br />Checks - @Model.FundTotals.First(f => f.FundId == fund.Id).DropOffCheckGiving</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 d-block font-size-lg">@Model.FundTotals.First(f => f.FundId == fund.Id).MailedGiving</span>
+                                    <span class="fundDetails text-muted">Cash - @Model.FundTotals.First(f => f.FundId == fund.Id).MailedCashGiving<br />Checks - @Model.FundTotals.First(f => f.FundId == fund.Id).MailedCheckGiving</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="tfoot-grey">
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">Totals</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.OfferingPlate).Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.DropOff).Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.OfflineGiving.Where(x => x.OfflinePaymentType == OfflinePaymentTypes.Mail).Sum(x => x.Amount).ToCurrencyString()</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>You haven't added any funds yet. <a href="/funds">Create one</a> to get started.</p>
+        }
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+            new KTCard('kt_card_2');
+            toggleDetails();
+        });
+    </script>
+}

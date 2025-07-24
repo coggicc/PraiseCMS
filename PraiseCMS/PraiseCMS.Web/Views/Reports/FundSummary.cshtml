@@ -1,0 +1,138 @@
+﻿@model PraiseCMS.DataAccess.Models.GivingSummaryDashboard
+@{
+    var fundId = Request.QueryString["fundId"];
+
+    if (!string.IsNullOrEmpty(fundId))
+    {
+        var fund = Model.Funds.FirstOrDefault(x => x.Id.Equals(fundId));
+        ViewBag.Title = fund.Display + " Fund Giving Summary";
+    }
+    else
+    {
+        ViewBag.Title = "Fund Giving Summary";
+    }
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-primary card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-dollar-sign fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.TotalGiving.Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Total Giving - YTD</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-success card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-credit-card fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.DigitalGiving.Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Digital - YTD</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-danger card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fa fa-money-bill-alt fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.OfflineGiving.Sum(x => x.Amount).ToCurrencyString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Offline - YTD</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Giving by Campus</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Online and Text Message</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        @if (SessionVariables.Campuses.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                    <thead>
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">
+                                <span class="text-dark-75">Campus</span>
+                            </th>
+                            <th style="min-width: 100px">Total</th>
+                            <th style="min-width: 100px">Online</th>
+                            <th style="min-width: 100px">Text Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var campus in SessionVariables.Campuses.OrderBy(x => x.Name))
+                        {
+                            <tr>
+                                <td class="pl-0 py-8">
+                                    <span href="/reports/campusesgivingreport?campusId=@campus.Id" class="text-dark-75 font-weight-bolder mb-1 font-size-lg">@campus.Display</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">@Model.DigitalGiving.Where(x => !string.IsNullOrEmpty(x.CampusId) && x.CampusId.Equals(campus.Id)).Sum(x => x.Amount).ToCurrencyString()</span>
+                                    <span class="text-muted font-weight-bold">Total</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">@Model.DigitalGiving.Where(x => !string.IsNullOrEmpty(x.CampusId) && x.CampusId.Equals(campus.Id) && x.DigitalPaymentType == DigitalPaymentTypes.Online).Sum(x => x.Amount).ToCurrencyString()</span>
+                                    <span class="text-muted font-weight-bold">Online</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">@Model.DigitalGiving.Where(x => !string.IsNullOrEmpty(x.CampusId) && x.CampusId.Equals(campus.Id) && x.DigitalPaymentType == DigitalPaymentTypes.TextToGive).Sum(x => x.Amount).ToCurrencyString()</span>
+                                    <span class="text-muted font-weight-bold">Text Message</span>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="pl-0 py-8">
+                                <span class="text-dark-75 font-weight-bolder mb-1 font-size-lg">[No Campus Assigned]</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 font-weight-bolder d-block font-size-lg">@Model.DigitalGiving.Where(x => string.IsNullOrEmpty(x.CampusId)).Sum(x => x.Amount).ToCurrencyString()</span>
+                                <span class="text-muted font-weight-bold">Total</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 font-weight-bolder d-block font-size-lg">@Model.DigitalGiving.Where(x => string.IsNullOrEmpty(x.CampusId) && x.DigitalPaymentType == DigitalPaymentTypes.Online).Sum(x => x.Amount).ToCurrencyString()</span>
+                                <span class="text-muted font-weight-bold">Online</span>
+                            </td>
+                            <td>
+                                <span class="text-dark-75 font-weight-bolder d-block font-size-lg">@Model.DigitalGiving.Where(x => string.IsNullOrEmpty(x.CampusId) && x.DigitalPaymentType == DigitalPaymentTypes.TextToGive).Sum(x => x.Amount).ToCurrencyString()</span>
+                                <span class="text-muted font-weight-bold">Text Message</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="tfoot-grey">
+                        <tr class="text-left text-uppercase">
+                            <th style="min-width: 250px" class="pl-7">
+                                <span class="text-dark-75">Totals</span>
+                            </th>
+                            <th style="min-width: 100px">@Model.DigitalGiving.Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.DigitalGiving.Where(x => x.DigitalPaymentType == DigitalPaymentTypes.Online).Sum(x => x.Amount).ToCurrencyString()</th>
+                            <th style="min-width: 100px">@Model.DigitalGiving.Where(x => x.DigitalPaymentType == DigitalPaymentTypes.TextToGive).Sum(x => x.Amount).ToCurrencyString()</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+            toggleDetails();
+        });
+    </script>
+}

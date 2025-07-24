@@ -1,0 +1,117 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.SignUpViewModel
+
+@{
+    Layout = "~/Views/Shared/_AuthenticationLayout.cshtml";
+    ViewBag.Title = "Register";
+}
+
+<div id="alert-container"></div>
+<input type="hidden" id="current_State" value="@Model.ResponseStatus" />
+<div class="login-signup">
+    <div id="main_Form">
+        @if (Model.ResponseStatus == SignInResponseStatus.LoadRegistrationForm)
+        {
+            @Html.Partial("_RegisterVerificationForm", Model)
+        }
+        else if (Model.ResponseStatus == SignInResponseStatus.LoadRegistrationDetailsForm)
+        {
+            @Html.Partial("_RegisterFormInputFields", Model)
+        }
+        else if (Model.ResponseStatus == SignInResponseStatus.LoadConfirmationCode)
+        {
+            @Html.Partial("_RegisterConfirmationForm", Model)
+        }
+    </div>
+    <hr style="border-bottom:.07rem dashed #ebedf2;" />
+    <div class="continue-buttons mt-5">
+        <h4>Other Registration Options</h4>
+        <a href="javascript:;" class="btn btn-outline-dark btn-elevate my-3 show-email-registration" onclick="LoadEmailRegistration()" style="width:100%; display:none;">
+            <i class="fas fa-envelope" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;">Sign up with email</span>
+        </a>
+        <a href="javascript:;" class="btn btn-outline-dark btn-elevate my-3 show-mobile-registration" onclick="LoadMobileRegistration()" style="width:100%;">
+            <i class="fa fa-mobile-alt" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;">Sign up with mobile</span>
+        </a>
+        @*<a href="/Account/Google?from=register" class="btn btn-outline-dark btn-elevate" style="width:100%;">
+            <i class="fab fa-google-plus" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;">Sign up with Google</span>
+        </a>*@
+        @*<a href="/Account/Facebook?from=register" class="btn btn-outline-dark btn-elevate mb-3" style="width:100%;">
+                <i class="fab fa-facebook" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;">Sign up with Facebook</span>
+            </a>*@
+    </div>
+    <div class="mt-5">
+        <span class="opacity-70 mr-4">
+            Already have an account?
+        </span>
+        <a href="@Url.Action("Login", "Account")" class="text-muted text-hover-primary font-weight-bold">Sign in</a>
+    </div>
+</div>
+
+<div id="registrationForm" style="display:none;">
+    @Html.Partial("_RegisterVerificationForm", Model)
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        if ("@Model.RegisterVia" === "@RegisterVia.Email" && "@Model.ResponseStatus" === "@SignInResponseStatus.LoadLoginForm") {
+            ShowEmail();
+        }
+
+        if ("@Model.RegisterVia" === "@RegisterVia.PhoneNumber") {
+            LoadMobileRegistration();
+        }
+    });
+
+    function ShowEmail() {
+        var current_State = $("#current_State").val();
+        if (current_State === "LoadRegistrationForm" || current_State === "LoadConfirmationCode") {
+            $("#main_Form").html($("#registrationForm").html());
+        }
+        $("#registrationForm").hide();
+        $("#RegisterVia, #current_State").val("Email");
+        $(".show-mobile-registration, .registration-email").show();
+        $(".registration-mobile, .show-email-registration").hide();
+    }
+
+    function LoadEmailRegistration() {
+        $(".validation-summary-errors").html("");
+        ShowEmail();
+    }
+
+    function LoadMobileRegistration() {
+        $("#registrationForm").hide();
+        $(".validation-summary-errors").html("");
+        $("#RegisterVia, #current_State").val("PhoneNumber");
+        $(".show-email-registration, .registration-mobile").show();
+        $(".registration-email, .show-mobile-registration").hide();
+    }
+</script>
+
+@*@if (!ViewData.ModelState.IsValid)
+{
+    string message = null;
+    var errors = ViewData.ModelState.Where(n => n.Value.Errors.Count > 0).ToList();
+
+    if (errors.Count == 1)
+    {
+        foreach (var item in errors)
+        {
+            message = item.Value.Errors.FirstOrDefault()?.ErrorMessage;
+        }
+    }
+    else
+    {
+        foreach (var error in errors.Select(item => item.Value.Errors.FirstOrDefault()?.ErrorMessage).Where(error => error != null && !error.Contains("Name")))
+        {
+            message = error;
+        }
+    }
+    if (message.IsNotNullOrEmpty())
+    {
+        <script type="text/javascript">
+            $(function () {
+                ShowErrorAlert("@message");
+            });
+        </script>
+    }
+}*@

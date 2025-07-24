@@ -1,0 +1,370 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@model PraiseCMS.DataAccess.Models.ChurchMerchantAccountVM
+
+@{
+    ViewBag.Title = "Church Giving Account";
+}
+
+<link href="~/Content/assets/css/pages/wizard/wizard-3.css" rel="stylesheet" />
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="card card-custom">
+            <div class="card-body p-0">
+                <div class="wizard wizard-3" id="kt_wizard_v3" data-wizard-state="first" data-wizard-clickable="true">
+                    <div class="wizard-nav">
+                        <div class="wizard-steps px-8 py-8 px-lg-15 py-lg-3">
+                            <div id="step-1" class="wizard-step" data-wizard-type="step" data-wizard-state="current">
+                                <div class="wizard-label">
+                                    <h3 class="wizard-title">
+                                        <span>Primary Information</span>
+                                    </h3>
+                                    <div class="wizard-bar"></div>
+                                </div>
+                            </div>
+                            <div id="step-2" class="wizard-step" data-wizard-type="step" data-wizard-state="pending">
+                                <div class="wizard-label">
+                                    <h3 class="wizard-title">
+                                        <span>Address Details</span>
+                                    </h3>
+                                    <div class="wizard-bar"></div>
+                                </div>
+                            </div>
+                            <div id="step-3" class="wizard-step" data-wizard-type="step" data-wizard-state="pending">
+                                <div class="wizard-label">
+                                    <h3 class="wizard-title">
+                                        <span>Banking Details</span>
+                                    </h3>
+                                    <div class="wizard-bar"></div>
+                                </div>
+                            </div>
+                            <div id="step-4" class="wizard-step" data-wizard-type="step" data-wizard-state="pending">
+                                <div class="wizard-label">
+                                    <h3 class="wizard-title">
+                                        <span>Financial Contact Information</span>
+                                    </h3>
+                                    <div class="wizard-bar"></div>
+                                </div>
+                            </div>
+                            <div id="step-5" class="wizard-step" data-wizard-type="step" data-wizard-state="pending">
+                                <div class="wizard-label">
+                                    <h3 class="wizard-title">
+                                        <span>Summary</span>
+                                    </h3>
+                                    <div class="wizard-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center py-10 px-8 py-lg-12 px-lg-10">
+                        <div class="col-xl-12 col-xxl-7">
+                            <div id="alert-container" class="text-center"></div>
+                            @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post" }, new { @class = "form", id = "kt_form" }))
+                            {
+                                @Html.HiddenFor(x => x.Church.Id)
+                                @Html.HiddenFor(x => x.Church.Display)
+                                @Html.HiddenFor(x => x.Church.Name)
+                                @Html.HiddenFor(x => x.Church.Phone)
+                                @Html.HiddenFor(x => x.Church.SubscriptionFee)
+                                if (Model.Account.IsNotNullOrEmpty())
+                                {
+                                    @Html.HiddenFor(x => x.Account.Id)
+                                }
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                                <div class="pb-5" data-wizard-type="step-content" data-wizard-state="current">
+                                    <h4 class="mb-5 font-weight-bold text-dark">Tell us a little more about your church</h4>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>What is the legal name of your church?</label>
+                                        @Html.TextBoxFor(x => x.Church.LegalName, new { @class = "form-control", autocomplete = "off" })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Business Type:</label>
+                                        @Html.DropDownListFor(x => x.Account.BusinessType, CompanyOwnershipTypes.Items.ToSelectList(q => q), "Select business type...", new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%;" })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tax ID #:</label>
+                                        @Html.EditorFor(x => x.Church.TaxIdNumber, new { htmlAttributes = new { onkeyup = "validateForm(this)", @class = "form-control taxid" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Email</label>
+                                        @Html.EditorFor(x => x.Church.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Website</label>
+                                        @Html.EditorFor(x => x.Church.Website, new { htmlAttributes = new { @class = "form-control", placeholder = "Ex: www.google.com" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                </div>
+                                <div class="pb-5" data-wizard-type="step-content" data-wizard-state="pending">
+                                    <h4 class="mb-5 font-weight-bold text-dark">Where is your church located?</h4>
+                                    <p class="mb-10">What is your church's physical address?</p>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Address</label>
+                                        @Html.EditorFor(x => x.Church.PhysicalAddress1, new { htmlAttributes = new { @class = "form-control" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Apt/Unit/Suite #:</label>
+                                        @Html.EditorFor(x => x.Church.PhysicalAddress2, new { htmlAttributes = new { @class = "form-control", placeholder = "optional" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-4">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>City</label>
+                                                @Html.EditorFor(x => x.Church.PhysicalCity, new { htmlAttributes = new { @class = "form-control formal" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-4">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>State</label>
+                                                @Html.DropDownListFor(x => x.Church.PhysicalState, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%;" })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-4">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>Zip</label>
+                                                @Html.EditorFor(x => x.Church.PhysicalZip, new { htmlAttributes = new { maxlength = "5", @class = "form-control numeric" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pb-5" data-wizard-type="step-content" data-wizard-state="pending">
+                                    <h4 class="mb-5 font-weight-bold text-dark">What bank account should we deposit your funds into?</h4>
+                                    <p class="mb-0">We need to know where your tithes and donations will be deposited.*</p>
+                                    <p class="mb-10"><small><em>Note: Funds are deposited within two business days.</em></small></p>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Account Number</label>
+                                        @Html.EditorFor(x => x.Account.AccountNumber, new { htmlAttributes = new { @class = "form-control numeric" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Confirm Account Number</label>
+                                        <input type="text" name="ConfirmAccountNumber" id="ConfirmAccountNumber" class="form-control numeric" />
+                                        <span class="confirmNumberText error-message"></span>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Routing Number</label>
+                                        @Html.EditorFor(x => x.Account.RoutingNumber, new { htmlAttributes = new { id = "PaymentAccount_RoutingNumber", @class = "form-control numeric" } })
+                                        <div class="routing-feedback"></div>
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Bank Account Type</label>
+                                        @Html.DropDownListFor(x => x.Account.BankAccountType, BankAccountTypes.Items.ToSelectList(q => q, q => q), "Select bank account type...", new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%;" })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                </div>
+                                <div class="pb-5" data-wizard-type="step-content" data-wizard-state="pending">
+                                    <h4 class="mb-5 font-weight-bold text-dark">Who is responsible for your church's financials?</h4>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p>This person is typically a Senior Pastor, President, Founder, Executive Director, etc.</p>
+                                            <p><small>USA Patriot Act: To help the government fight the funding of terrorism and money laundering activities, Federal law requires that we obtain, verify, and record information that identifies each person who opens an account. Therefore, we may ask for your name, address, date of birth, and other information that allows us to identify you. We also ask to see your driver's license or other identifying documents.</small></p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>First Name</label>
+                                                @Html.EditorFor(x => x.Account.RespContactFirstName, new { htmlAttributes = new { @class = "form-control" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>Last Name</label>
+                                                @Html.EditorFor(x => x.Account.RespContactLastName, new { htmlAttributes = new { @class = "form-control" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>Email</label>
+                                                @Html.EditorFor(x => x.Account.RespContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>Phone</label>
+                                                @Html.EditorFor(x => x.Account.RespContactPhone, new { htmlAttributes = new { onkeyup = "validateForm(this)", type = "text", @class = "form-control phone" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>Date of Birth</label>
+                                                <div class="input-group">
+                                                    @Html.TextBoxFor(x => x.Account.RespContactDOB, "{0:MM/dd/yyyy}", new { @class = "dateOfBirth form-control", autocomplete = "off", placeholder = "MM/DD/YYYY" })
+                                                    <div class="input-group-append"><span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span></div>
+                                                </div>
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>SSN</label>
+                                                @Html.EditorFor(x => x.Account.RespContactSSN, new { htmlAttributes = new { type = "text", maxlength = "11", @class = "form-control numeric" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>Driver's License Number</label>
+                                                @Html.EditorFor(x => x.Account.RespContactDLN, new { htmlAttributes = new { type = "text", maxlength = "20", @class = "form-control" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Address</label>
+                                        @Html.EditorFor(x => x.Account.RespContactAddress1, new { htmlAttributes = new { @class = "form-control" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="form-group fv-plugins-icon-container has-success">
+                                        <label>Apt/Unit/Suite #:</label>
+                                        @Html.EditorFor(x => x.Account.RespContactAddress2, new { htmlAttributes = new { @class = "form-control", placeholder = "optional" } })
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>City</label>
+                                                @Html.EditorFor(x => x.Account.RespContactCity, new { htmlAttributes = new { @class = "form-control formal" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>State</label>
+                                                @Html.DropDownListFor(x => x.Account.RespContactState, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%;" })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl">
+                                            <div class="form-group fv-plugins-icon-container has-success">
+                                                <label>Zip</label>
+                                                @Html.EditorFor(x => x.Account.RespContactZip, new { htmlAttributes = new { maxlength = "5", @class = "form-control numeric" } })
+                                                <div class="fv-plugins-message-container"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="pb-5" data-wizard-type="step-content" data-wizard-state="pending">
+                                    <h4 class="mb-5 font-weight-bold text-dark">Review Your Church Details</h4>
+                                    <p class="mb-10">If everything looks correct, then click "Enable Giving" below to complete the giving setup.</p>
+                                    <a href="#" onclick="trigger('1')">
+                                        <h6 class="font-weight-bolder mb-3">Primary Information:</h6>
+                                    </a>
+                                    <div class="text-dark-50 line-height-lg">
+                                        <div><b>Legal Name:</b> <span id="summary-legalname"></span></div>
+                                        <div><b>Business Type:</b> <span id="summary-business-type"></span></div>
+                                        <div><b>Tax Id #:</b> <span id="summary-taxid"></span></div>
+                                        <div><b>Email:</b> <span id="summary-email"></span></div>
+                                        <div><b>Website:</b> <span id="summary-website"></span></div>
+                                    </div>
+                                    <div class="separator separator-dashed my-5"></div>
+                                    <a href="#" onclick="trigger('2')">
+                                        <h6 class="font-weight-bolder mb-3">Address Details:</h6>
+                                    </a>
+                                    <div class="text-dark-50 line-height-lg">
+                                        <div><b>Address:</b> <span id="summary-address1"></span></div>
+                                        <div><b>Apt/Unit/Suite #:</b> <span id="summary-address2"></span></div>
+                                        <div><b>City:</b> <span id="summary-city"></span></div>
+                                        <div><b>State:</b> <span id="summary-state"></span></div>
+                                        <div><b>Zip:</b> <span id="summary-zip"></span></div>
+                                    </div>
+                                    <div class="separator separator-dashed my-5"></div>
+                                    <a href="#" onclick="trigger('3')">
+                                        <h6 class="font-weight-bolder mb-3">Banking Details:</h6>
+                                    </a>
+                                    <div class="text-dark-50 line-height-lg">
+                                        <div><b>Account Number:</b> <span id="summary-account-number"></span></div>
+                                        <div><b>Routing Number:</b> <span id="summary-routing-number"></span></div>
+                                        <div><b>Account Type:</b> <span id="summary-BA-type"></span></div>
+                                    </div>
+                                    <div class="separator separator-dashed my-5"></div>
+                                    <a href="#" onclick="trigger('4')">
+                                        <h6 class="font-weight-bolder mb-3">Financial Contact Details:</h6>
+                                    </a>
+                                    <div class="text-dark-50 line-height-lg">
+                                        <div><b>First Name:</b> <span id="summary-FI-f-name"></span></div>
+                                        <div><b>Last Name:</b> <span id="summary-FI-l-name"></span></div>
+                                        <div><b>Email:</b> <span id="summary-FI-email"></span></div>
+                                        <div><b>Phone:</b> <span id="summary-FI-phone"></span></div>
+                                        <div><b>Date of Birth:</b> <span id="summary-FI-dob"></span></div>
+                                        <div><b>SSN:</b> <span id="summary-FI-ssn"></span></div>
+                                        @*<div><b>SSN (Last Four Digits):</b> <span id="summary-FI-ssnlast4"></span></div>*@
+                                        <div><b>Address:</b> <span id="summary-FI-address1"></span></div>
+                                        <div><b>Apt/Unit/Suite #:</b> <span id="summary-FI-address2"></span></div>
+                                        <div><b>City:</b> <span id="summary-FI-city"></span></div>
+                                        <div><b>State:</b> <span id="summary-FI-state"></span></div>
+                                        <div><b>Zip:</b> <span id="summary-FI-zip"></span></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between border-top mt-5 pt-10">
+                                    <div class="mr-2">
+                                        <button id="prev-btn" type="button" class="btn btn-light-dark font-weight-bolder text-uppercase px-9 py-4" data-wizard-type="action-prev">Previous</button>
+                                    </div>
+                                    <div>
+                                        <button id="submit-btn" type="button" class="btn btn-primary font-weight-bolder text-uppercase px-9 py-4" data-wizard-type="action-submit">Enable Giving</button>
+                                        <button id="next-btn" type="button" class="btn btn-light-primary font-weight-bolder text-uppercase px-9 py-4" data-wizard-type="action-next">Next</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/church-account-wizard-3.js"></script>
+<script type="text/javascript">
+    $(document).on("blur", "#ConfirmAccountNumber", function () {
+        confirmAccountnumber();
+    });
+
+    $(document).on("keyup", "#ConfirmAccountNumber", function () {
+        var accountNumber = $("#Account_AccountNumber").val();
+        var confirmAccountNumber = $("#ConfirmAccountNumber").val();
+        if (accountNumber && confirmAccountNumber && (confirmAccountNumber.length >= accountNumber.length)) {
+            confirmAccountnumber();
+        }
+    });
+
+    function confirmAccountnumber() {
+        var confirmAccountNumber = $("#ConfirmAccountNumber").val();
+        var accountNumber = $("#Account_AccountNumber").val();
+        if (accountNumber != confirmAccountNumber) {
+            $(".confirmNumberText").text("Account number does not match!");
+            $("#next-btn").attr("disabled", "disabled");
+        }
+        else {
+            $(".confirmNumberText").text("");
+            $("#next-btn").removeAttr("disabled");
+        }
+    }
+
+    function trigger(id) {
+        $("#step-" + id).trigger("click");
+    }
+</script>

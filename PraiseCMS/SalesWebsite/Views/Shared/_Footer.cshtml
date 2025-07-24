@@ -1,0 +1,115 @@
+﻿@using System.Configuration
+<section class="section b-b">
+    <div class="container pt-5">
+        <div class="d-flex align-items-center flex-column flex-md-row">
+            <div class="text-center text-md-left">
+                <p class="light mb-0 accent lead">Ready to get started?</p>
+                <h2 class="mt-0">Sign up today!</h2>
+            </div>
+            <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-accent btn-lg btn-rounded mt-3 mt-md-0 ml-md-auto">Sign up free</a>
+        </div>
+    </div>
+</section>
+<footer class="site-footer section">
+    <div class="container pt-4 pb-3">
+        <div class="row gap-y text-center text-md-left" style="margin-top:60px;">
+            <div class="col-md-4 mr-auto">
+                <img src="~/Content/img/praise_logo.png" alt="" class="logo">
+                <p>Praise CMS is a powerful, passionately crafted church management system designed to help God's kingdom through the local church.</p>
+            </div>
+            @*<div class="col-md-2">
+            <h6 class="py-2 bold">Company</h6>
+            <nav class="nav flex-column">
+                <a class="nav-item py-2" href="@Url.Action("Index","WhoWeAre")">Who We Are</a>
+                <a class="nav-item py-2" href="@Url.Action("Index","Testimonials")">Testimonials</a>
+                <a class="nav-item py-2" href="@Url.Action("Index","Contact")">Contact</a>
+            </nav>
+        </div>*@
+            @*<div class="col-md-2">
+            <h6 class="py-2 bold">Resources</h6>
+            <nav class="nav flex-column">
+                <a class="nav-item py-2" href="@Url.Action("Index","Documentation")">Documentation</a>
+                <a class="nav-item py-2" href="@Url.Action("Index","VideoLibrary")">Video Library</a>
+            </nav>
+        </div>*@
+            <div class="col-md-2 d-none d-sm-block">
+                <h6 class="py-2 bold">Features</h6>
+                <nav class="nav flex-column">
+                    <a class="nav-item py-2" href="@Url.Action("Giving","Features")">Giving</a>
+                    <a class="nav-item py-2" href="@Url.Action("Analytics","Features")">Analytics</a>
+                </nav>
+            </div>
+            <div class="col-md-2 d-none d-sm-block">
+                <h6 class="py-2 bold">&nbsp;</h6>
+                <nav class="nav flex-column">
+                    <a class="nav-item py-2" href="@Url.Action("PrayerRequests","Features")">Prayer Requests</a>
+                    <a class="nav-item py-2" href="@Url.Action("People","Features")">People</a>
+                </nav>
+            </div>
+            <div class="col-md-2">
+                <h6 class="py-2 bold">&nbsp;</h6>
+                <nav class="nav flex-column">
+                    <a class="nav-item py-2" href="@Url.Action("Index","Pricing")">Pricing</a>
+                    <a class="nav-item py-2" href="@Url.Action("Index","ScheduleDemo")">Schedule a Demo</a>
+                    @*<a class="nav-item py-2" href="@Url.Action("Index","Blog")">Blog</a>*@
+                </nav>
+            </div>
+            <div class="col d-block d-sm-none">
+                <h6 class="py-2 bold">Features</h6>
+                <nav class="nav flex-column">
+                    <a class="nav-item py-2" href="@Url.Action("Giving","Features")">Giving</a>
+                    <a class="nav-item py-2" href="@Url.Action("PrayerRequests","Features")">Prayer Requests</a>
+                    <a class="nav-item py-2" href="@Url.Action("Analytics","Features")">Analytics</a>
+                    <a class="nav-item py-2" href="@Url.Action("People","Features")">People</a>
+                </nav>
+            </div>
+        </div>
+        <hr class="mt-5">
+        <div class="row small align-items-center">
+            <div class="col-md-6">
+                <p class="mt-2 mb-md-0 color-2 text-center text-md-left">© @DateTime.Now.Year Praise CMS, LLC. All Rights Reserved @*| <a href="@Url.Action("Index","Terms")">Terms & Conditions</a>*@</p>
+            </div>
+            <div class="col-md-6">
+                <nav class="nav justify-content-center justify-content-md-end">
+                    <a href="https://www.facebook.com/praisecms" target="_blank" class="mr-3">
+                        <i class="fab fa-2x fa-facebook"></i>
+                    </a>
+                    <a href="https://www.instagram.com/praisecms" target="_blank" class="mr-3">
+                        <i class="fab fa-2x fa-instagram"></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="~/Scripts/01.cookie-consent-util.js"></script>
+<script src="~/Scripts/02.1.cookie-consent-themes.js"></script>
+<script src="~/Scripts/02.2.cookie-consent-custom-css.js"></script>
+<script src="~/Scripts/02.3.cookie-consent-informational.js"></script>
+<script src="~/Scripts/02.4.cookie-consent-opt-out.js"></script>
+<script src="~/Scripts/02.5.cookie-consent-opt-in.js"></script>
+<script src="~/Scripts/02.6.cookie-consent-location.js"></script>
+<script src="~/Scripts/jquery.js"></script>
+<script src="~/Scripts/jquery.animatebar.js"></script>
+<script src="~/Scripts/odometer.min.js"></script>
+<script src="~/Scripts/simplebar.js"></script>
+<script src="~/Scripts/swiper.js"></script>
+<script src="~/Scripts/popper.js"></script>
+<script src="~/Scripts/jquery.easing.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.smartWizard.js"></script>
+<script src="~/Scripts/bootstrap.js"></script>
+<script src="~/Scripts/jquery.waypoints.js"></script>
+<script src="~/Scripts/jquery.counterup.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.min.js"></script>
+<script src="~/Scripts/aos.js"></script>
+<script src="~/Scripts/particles.js"></script>
+<script src="~/Scripts/typed.js"></script>
+<script src="~/Scripts/prettify.js"></script>
+<script src="~/Scripts/jquery.magnific-popup.js"></script>
+<script src="~/Scripts/cookieconsent.min.js"></script>
+<script src="~/Scripts/common-script.js"></script>
+<script src="~/Scripts/forms.js"></script>
+<script src="~/Scripts/site.js"></script>
+<script src="~/Scripts/stripe-menu.js"></script>

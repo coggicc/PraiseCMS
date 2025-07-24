@@ -1,0 +1,285 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ManageLayoutVM
+
+@{
+    ViewBag.Title = "Manage Dashboard";
+
+    var mockDashboard = new DashboardViewModel
+    {
+        Notifications = new List<Notification>(),
+        PrayerRequests = new List<PrayerRequest>(),
+        Payments = new List<Payment>(),
+        OfflineGiving = new List<OfflineGiving>()
+    };
+
+    var note = new Notification
+    {
+        Name = "Prayer request follow-up",
+        CreatedDate = DateTime.Now,
+        Viewed = false
+    };
+    var note2 = new Notification
+    {
+        Name = "Schedule quarterly baptisms.",
+        CreatedDate = DateTime.Now.AddDays(-7),
+        Viewed = false
+    };
+    var note3 = new Notification
+    {
+        Name = "Order new choir robes.",
+        CreatedDate = DateTime.Now.AddDays(-25),
+        Viewed = false
+    };
+    mockDashboard.Notifications.Add(note);
+    mockDashboard.Notifications.Add(note2);
+    mockDashboard.Notifications.Add(note3);
+
+    var prayerRequest = new PrayerRequest
+    {
+        Message = "Dear frozen yogurt, you are the celery of desserts. Be ice cream, or be nothing.",
+        CreatedDate = DateTime.Now,
+        Archived = false
+    };
+    var prayerRequest2 = new PrayerRequest
+    {
+        Message = "I've been quite open about this around the office: I don't want this parks department to build any parks because I don't believe in government. I think that all government is a waste of taxpayer money. My dream is to have the park system privatized and run entirely by for-profit corporations, like Chuck E. Cheese. They have an impeccable business model. I would rather work for Chuck E. Cheese.",
+        CreatedDate = DateTime.Now.AddDays(-7),
+        Archived = false
+    };
+    var prayerRequest3 = new PrayerRequest
+    {
+        Message = "If I keep my body moving, and my mind occupied at all times, I will avoid falling into a bottomless pit of despair.",
+        CreatedDate = DateTime.Now.AddDays(-15),
+        Archived = false
+    };
+    var prayerRequest4 = new PrayerRequest
+    {
+        Message = "You know what they say about a car wreck, where it's so awful you can't look away? The Dundies are like a car wreck that you want to look away from, but you have to stare at it because your boss is making you.",
+        CreatedDate = DateTime.Now,
+        Archived = false,
+        Confidential = true
+    };
+    var prayerRequest5 = new PrayerRequest
+    {
+        Message = "Well, this is what happened. Uh, Ryan's big project was the website, which wasn't doing so well. So Ryan, to give the impression of sales, recorded them twice. Once as offices and once in the website sales, which is what we refer to in the business as misleading the shareholders. Another good term is fraud. The real crime, I think, was the beard.",
+        CreatedDate = DateTime.Now.AddDays(-7),
+        Archived = false,
+        Confidential = true
+    };
+    var prayerRequest6 = new PrayerRequest
+    {
+        Message = "Guess what, I have flaws. What are they? Oh, I don't know. I sing in the shower. Sometimes I spend too much time volunteering. Occasionally I'll hit somebody with my car. So sue me.",
+        CreatedDate = DateTime.Now.AddDays(-15),
+        Archived = false,
+        Confidential = true
+    };
+    var prayerRequest7 = new PrayerRequest
+    {
+        Message = "The raccoon problem is under control. They have their part of the town and we have ours.",
+        CreatedDate = DateTime.Now,
+        Archived = false,
+        HighPriority = true
+    };
+    var prayerRequest8 = new PrayerRequest
+    {
+        Message = "Everything hurts and I'm dyin.",
+        CreatedDate = DateTime.Now.AddDays(-7),
+        Archived = false,
+        HighPriority = true
+    };
+    var prayerRequest9 = new PrayerRequest
+    {
+        Message = "If I don't have some cake soon, I might die.",
+        CreatedDate = DateTime.Now.AddDays(-15),
+        Archived = false,
+        HighPriority = true
+    };
+    mockDashboard.PrayerRequests.Add(prayerRequest);
+    mockDashboard.PrayerRequests.Add(prayerRequest2);
+    mockDashboard.PrayerRequests.Add(prayerRequest3);
+    mockDashboard.PrayerRequests.Add(prayerRequest4);
+    mockDashboard.PrayerRequests.Add(prayerRequest5);
+    mockDashboard.PrayerRequests.Add(prayerRequest6);
+    mockDashboard.PrayerRequests.Add(prayerRequest7);
+    mockDashboard.PrayerRequests.Add(prayerRequest8);
+    mockDashboard.PrayerRequests.Add(prayerRequest9);
+}
+
+<style type="text/css">
+    ul {
+        list-style-type: none;
+    }
+
+    #widgetsSorting .card.sort-handle {
+        flex: unset;
+        float: left;
+        border: 0;
+        user-select: none;
+    }
+
+    #widgetsSorting .sortable-placeholder {
+        margin: 40px 40px 0px 0px !important;
+        background-color: silver;
+        max-width: 46% !important;
+        flex: 40% !important;
+        box-shadow: 1px 1px 6px 0px #ddd;
+        height: 180px;
+        list-style-type: none;
+    }
+
+    #widgetsSorting {
+        padding: 0px 0px 0px 43px;
+        width: 100%;
+        margin: 0px auto;
+    }
+
+    .ui-sortable-handle:hover {
+        cursor: grab;
+    }
+
+    #tileWidgetsSorting .sortable-placeholder {
+        background-color: silver !important;
+        max-width: 15% !important;
+        flex: 15% !important;
+        margin: 0 1rem;
+    }
+
+    #tileWidgetsSorting .kt-portlet, #widgetsSorting .kt-portlet {
+        margin: 1rem 1rem;
+        box-shadow: 1px 1px 6px 0px #ddd;
+        display: inline-table;
+    }
+
+    #widgetsSorting .card-title {
+        margin-bottom: 0;
+    }
+</style>
+
+@if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            <a href="/dashboardtemplates" class="btn btn-light-primary btn-sm mr-2">Dashboard Templates</a>
+        </div>
+    }
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Tiled Widgets</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Drag the tiles in the order in which you want them to display.</span>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <p>These will display as tiles in the top row of the dashboard.</p>
+        <ul id="tileWidgetsSorting" class="widgetsSorting card-group">
+            @foreach (var item in Model.TileWidgetSortable.Where(item => item.Widget.IsNotNull()))
+            {
+                if (item.Widget.ImageUrl.IsNotNullOrEmpty())
+                {
+                    <li id="@item.Widget.Id" data-location="Top" class="kt-portlet sort-handle">
+                        <img src="@Html.Raw("Upload.Images".AppSetting<string>("/Uploads"))/@item.Widget.ImageUrl" class="img-fluid" />
+                    </li>
+                }
+                else
+                {
+                    if (item.Widget.FileName.IsNotNullOrEmpty())
+                    {
+                        <li id="@item.Widget.Id" data-location="Top" class="kt-portlet card sort-handle">
+                            <div class="card-header">
+                                <h3 class="card-title font-weight-bolder">@item.Widget.Name</h3>
+                            </div>
+                            <div class="card-body p-1">
+                                <div data-scroll="true" data-height="300">
+                                    @try
+                                    {
+                                        Html.RenderAction(Path.GetFileNameWithoutExtension(item.Widget.FileName), "Home", new { name = item.Widget.FileName });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        ExceptionLogger.LogException(ex);
+                                        @Html.Partial(item.Widget.FileName.WidgetPartialViewUrl(), mockDashboard)
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    }
+                }
+            }
+        </ul>
+    </div>
+</div>
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Dashboard Widgets</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Drag the widgets in the order in which you want them to display.</span>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body main-body">
+        <p>These will display just below the top row tiles.</p>
+        <ul id="widgetsSorting" class="widgetsSorting card-group">
+            @foreach (var item in Model.MainWidgetSortable.Where(item => item.Widget.IsNotNullOrEmpty()))
+            {
+                if (item.Widget.ImageUrl.IsNotNullOrEmpty())
+                {
+                    <li id="@item.Widget.Id" data-location="Main" class="kt-portlet card sort-handle">
+                        <img src="@Html.Raw("Upload.Images".AppSetting<string>("/Uploads"))/@item.Widget.ImageUrl" class="img-fluid" />
+                    </li>
+                }
+                else
+                {
+                    if (item.Widget.FileName.IsNotNullOrEmpty())
+                    {
+                        <li id="@item.Widget.Id" data-location="Main" class="kt-portlet card sort-handle @item.Widget.LayoutSize">
+                            <div class="card-header">
+                                <i class="fa fa-align-justify" aria-hidden="true"></i>
+                                <h3 class="card-title font-weight-bolder">@item.Widget.Name</h3>
+                            </div>
+                            <div class="card-body p-1">
+                                <div data-scroll="true" data-height="300">
+                                    @try
+                                    {
+                                        Html.RenderAction(Path.GetFileNameWithoutExtension(item.Widget.FileName), "Home", new { name = item.Widget.FileName });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        ExceptionLogger.LogException(ex);
+                                        @Html.Partial(item.Widget.FileName.WidgetPartialViewUrl(), mockDashboard)
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    }
+                }
+            }
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $(".widgetsSorting").sortable({
+            opacity: 0.8,
+            coneHelperSize: true,
+            placeholder: 'sortable-placeholder',
+            revert: 250,
+            update: function (e, ui) {
+                var array = [];
+                $.map($(this).find('li'), function (el) {
+                    var id = $(el).attr('id');
+                    var location = $(el).attr('data-location');
+                    var index = $(el).index();
+                    array.push(id + '^' + index + '^' + location);
+                });
+                $.post("/DashboardTemplates/UpdateWidgetSorting", ({ templateId: '@ViewBag.templateId', data : array }), function () {});
+            }
+        });
+        $(".widgetsSorting").disableSelection();
+    });
+</script>

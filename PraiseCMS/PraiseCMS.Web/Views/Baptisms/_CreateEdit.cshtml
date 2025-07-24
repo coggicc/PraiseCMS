@@ -1,0 +1,35 @@
+﻿@model PraiseCMS.DataAccess.Models.Baptism
+
+<div id="salvation-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "salvation-div" }, new { @class = "kt-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+    <div class="form-group">
+        <label>Campus:</label>
+        @Html.DropDownListFor(x => x.CampusId, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id, x => SessionVariables.Campuses.Count() == 1 && x.Id == SessionVariables.Campuses.First().Id), "Select a campus...", new { @class = "form-control select2" })
+        @Html.ValidationMessageFor(x => x.CampusId, "", new { @class = "text-danger" })
+    </div>
+        <div class="form-group">
+            <label>Total:</label>
+            @Html.TextBoxFor(x => x.Total, new { maxlength = "10", @class = "form-control numeric" })
+            @Html.ValidationMessageFor(x => x.Total, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Occurred On:</label>
+            <div class="input-group date">
+                @Html.TextBoxFor(x => x.OccurredOnDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                    </span>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(x => x.OccurredOnDate, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>

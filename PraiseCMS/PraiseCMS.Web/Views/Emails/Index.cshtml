@@ -1,0 +1,16 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.EmailVM
+
+<link href="~/Content/assets/css/pages/custom/inbox.css" rel="stylesheet" />
+<style type="text/css">
+    th.p-0 { padding: 0.75rem !important; }
+</style>
+
+@if (Model.EmailId.IsNullOrEmpty())
+{
+    @Html.Partial("_EmailCard", Model)
+}
+else
+{
+    @Html.Partial("_EmailBody", Model)
+}

@@ -1,0 +1,94 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.PaymentMethodViewModel
+@{
+    ViewBag.Title = (RouteHelpers.CurrentAction.Contains("Edit") ? "Edit" : "Add") + " Bank Account";
+    var mode = "";
+}
+
+@if (!SessionVariables.CurrentUser.IsDonorOnly)
+{
+    @section leftsubheader{
+        @Html.Partial("_MyGivingSubheader")
+    }
+}
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+        @if (RouteHelpers.CurrentAction.Contains("Edit"))
+        {
+            <div class="card-toolbar">
+                <button class="btn btn-light-danger btn-sm font-weight-bold" onclick="deleteMethod('@Model.PaymentAccount.AccountGUID')">Delete</button>
+            </div>
+            mode = "readonly";
+        }
+    </div>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data" }))
+    {
+        <div class="card-body">
+            @if (RouteHelpers.CurrentAction.Contains("Edit"))
+            {
+                <div class="alert alert-custom alert-notice alert-light-info fade show" role="alert">
+                    <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="alert-text"><strong>Note:</strong> Only the nickname field is editable for this payment method. If you need to modify other details, you'll need to delete the payment method and add it again.</div>
+                    <div class="alert-close">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true"><i class="la la-close"></i></span>
+                        </button>
+                    </div>
+                </div>
+            }
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.PaymentAccount.AccountGUID)
+            @Html.HiddenFor(x => x.UserMerchantAccount.DonorGUID)
+            @Html.HiddenFor(x => x.ChurchId)
+            @if (mode.IsNullOrEmpty())
+            {
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label">Account Type:</label>
+                    <div class="col-lg-8">
+                        @Html.DropDownListFor(x => x.PaymentAccount.AccountType, BankAccountTypes.Items.ToSelectList("Select account type...", x => x, x => x, x => x.Contains(BankAccountTypes.Checking)), new { @class = "form-control select2", name = "BankAccountType", style = "width:100%;" })
+                        @Html.ValidationMessageFor(x => x.PaymentAccount.AccountType, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label">Routing Number:</label>
+                    <div class="col-lg-8">
+                        @Html.TextBoxFor(x => x.PaymentAccount.RoutingNumber, new { placeholder = "Routing Number", @class = "form-control numeric dynamic" })
+                        @Html.ValidationMessageFor(x => x.PaymentAccount.RoutingNumber, "", new { @class = "text-danger" })
+                        <div class="routing-feedback"></div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label">Account Number:</label>
+                    <div class="col-lg-8">
+                        @Html.TextBoxFor(x => x.PaymentAccount.AccountNumber, new { placeholder = "Account Number", @class = "form-control numeric dynamic" })
+                        @Html.ValidationMessageFor(x => x.PaymentAccount.AccountNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p>@Model.PaymentAccount.AccountNumber</p>
+            }
+            <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Nickname:</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(x => x.PaymentAccount.NickName, new { placeholder = "Ex. My Savings Account", @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.PaymentAccount.NickName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-light-primary font-weight-bold">Save</button>
+            <a href="/mygiving/paymentmethods" class="btn btn-light-dark font-weight-bold">Cancel</a>
+        </div>
+    }
+    <script type="text/javascript">
+        const edit = '@mode.IsNotNullOrEmpty()' === "True" ? true : false;
+        if (edit) {
+            $('.dynamic').attr("readonly","readonly");
+        }
+    </script>
+</div>

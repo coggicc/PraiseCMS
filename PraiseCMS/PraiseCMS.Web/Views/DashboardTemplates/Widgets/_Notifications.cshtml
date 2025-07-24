@@ -1,0 +1,37 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder text-dark">Notifications</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0">
+        @if (Model.Notifications.Any(x => !Convert.ToBoolean(x.Viewed)))
+        {
+            foreach (var item in Model.Notifications.Where(x => !Convert.ToBoolean(x.Viewed)).OrderByDescending(x=>x.CreatedDate).Take(3))
+            {
+                <div class="d-flex align-items-center bg-light-primary rounded p-5 mb-9">
+                    <i class="fa fa-bell text-primary mr-5"></i>
+                    <div class="d-flex flex-column flex-grow-1 mr-2">
+                        <a href="" class="font-weight-bold text-dark-75 text-hover-primary font-size-lg mb-1">@item.Name.EllipsisAt(30)</a>
+                        <span class="text-muted font-weight-bold" data-toggle="tooltip" title="Created">@item.CreatedDate.ToShortDateString()</span>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="d-flex align-items-center bg-light-success rounded p-5 mb-0">
+                <i class="fa fa-check-circle text-success mr-5"></i>
+                <div class="d-flex flex-column flex-grow-1 mr-2">
+                    <span class="font-weight-bold text-dark-75 font-size-lg mb-1">Great news. You're all caught up!</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>

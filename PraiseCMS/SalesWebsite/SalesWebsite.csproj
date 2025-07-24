@@ -1,0 +1,1282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{949830CC-360B-4085-BD87-2A536DDA4833}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SalesWebsite</RootNamespace>
+    <AssemblyName>SalesWebsite</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44327</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <WebGreaseLibPath>..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.4\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AboutUsController.cs" />
+    <Compile Include="Controllers\AnalyticsController.cs" />
+    <Compile Include="Controllers\ContactController.cs" />
+    <Compile Include="Controllers\DocumentationController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\BlogController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KnowledgeBaseController.cs" />
+    <Compile Include="Controllers\MarketingController.cs" />
+    <Compile Include="Controllers\MobileAppController.cs" />
+    <Compile Include="Controllers\MobileController.cs" />
+    <Compile Include="Controllers\FeaturesController.cs" />
+    <Compile Include="Controllers\PaymentsController.cs" />
+    <Compile Include="Controllers\PricingController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\ScheduleDemoController.cs" />
+    <Compile Include="Controllers\TermsController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\LowercaseRouteHandler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\blog\css\aos.css" />
+    <Content Include="Content\blog\css\cookieconsent.min.css" />
+    <Content Include="Content\blog\css\dashcore.css" />
+    <Content Include="Content\blog\css\dashcore.min.css" />
+    <Content Include="Content\blog\css\demo.css" />
+    <Content Include="Content\blog\css\fontawesome.css" />
+    <Content Include="Content\blog\css\lib.min.css" />
+    <Content Include="Content\blog\css\magnific-popup.css" />
+    <Content Include="Content\blog\css\odometer-theme-minimal.css" />
+    <Content Include="Content\blog\css\prism-okaidia.css" />
+    <Content Include="Content\blog\css\rtl.css" />
+    <Content Include="Content\blog\css\simplebar.css" />
+    <Content Include="Content\blog\css\smart_wizard_all.css" />
+    <Content Include="Content\blog\css\swiper-bundle.css" />
+    <Content Include="Content\blog\fonts\fa-brands-400.svg" />
+    <Content Include="Content\blog\fonts\fa-regular-400.svg" />
+    <Content Include="Content\blog\fonts\fa-solid-900.svg" />
+    <Content Include="Content\blog\img\automate-social\build.svg" />
+    <Content Include="Content\blog\img\automate-social\header\heart.svg" />
+    <Content Include="Content\blog\img\automate-social\header\like.svg" />
+    <Content Include="Content\blog\img\automate-social\header\main-shape.svg" />
+    <Content Include="Content\blog\img\automate-social\header\smile.svg" />
+    <Content Include="Content\blog\img\automate-social\icons\1.svg" />
+    <Content Include="Content\blog\img\automate-social\icons\2.svg" />
+    <Content Include="Content\blog\img\automate-social\icons\3.svg" />
+    <Content Include="Content\blog\img\automate-social\icons\4.svg" />
+    <Content Include="Content\blog\img\automate-social\icons\5.svg" />
+    <Content Include="Content\blog\img\automate-social\icons\6.svg" />
+    <Content Include="Content\blog\img\automate-social\icons\7.svg" />
+    <Content Include="Content\blog\img\automate-social\marketing.svg" />
+    <Content Include="Content\blog\img\avatar\1.jpg" />
+    <Content Include="Content\blog\img\avatar\2.jpg" />
+    <Content Include="Content\blog\img\avatar\3.jpg" />
+    <Content Include="Content\blog\img\avatar\4.jpg" />
+    <Content Include="Content\blog\img\avatar\5.jpg" />
+    <Content Include="Content\blog\img\avatar\6.jpg" />
+    <Content Include="Content\blog\img\avatar\7.jpg" />
+    <Content Include="Content\blog\img\avatar\author.jpg" />
+    <Content Include="Content\blog\img\avatar\team\1.jpg" />
+    <Content Include="Content\blog\img\avatar\team\2.jpg" />
+    <Content Include="Content\blog\img\avatar\team\3.jpg" />
+    <Content Include="Content\blog\img\avatar\team\4.jpg" />
+    <Content Include="Content\blog\img\avatar\team\5.jpg" />
+    <Content Include="Content\blog\img\avatar\team\6.jpg" />
+    <Content Include="Content\blog\img\avatar\user.png" />
+    <Content Include="Content\blog\img\bg\asset-1.svg" />
+    <Content Include="Content\blog\img\bg\bubbles-light.jpg" />
+    <Content Include="Content\blog\img\bg\grid.jpg" />
+    <Content Include="Content\blog\img\bg\hot-air-balloon.jpg" />
+    <Content Include="Content\blog\img\bg\online-payment-2.svg" />
+    <Content Include="Content\blog\img\bg\online-payment.svg" />
+    <Content Include="Content\blog\img\bg\social\-social-heading.svg" />
+    <Content Include="Content\blog\img\bg\social\bg-path.svg" />
+    <Content Include="Content\blog\img\bg\social\bg-shape.svg" />
+    <Content Include="Content\blog\img\bg\social\social-heading.svg" />
+    <Content Include="Content\blog\img\bg\social\social.svg" />
+    <Content Include="Content\blog\img\bg\sunrise.jpg" />
+    <Content Include="Content\blog\img\bg\waves.jpg" />
+    <Content Include="Content\blog\img\blocks\sliders\1.jpg" />
+    <Content Include="Content\blog\img\blocks\sliders\2.jpg" />
+    <Content Include="Content\blog\img\blocks\sliders\3.jpg" />
+    <Content Include="Content\blog\img\blocks\sliders\4.jpg" />
+    <Content Include="Content\blog\img\blocks\sliders\5.jpg" />
+    <Content Include="Content\blog\img\blog\1.svg" />
+    <Content Include="Content\blog\img\demo\logo\angular.svg" />
+    <Content Include="Content\blog\img\demo\logo\bootstrap.svg" />
+    <Content Include="Content\blog\img\demo\logo\jquery.svg" />
+    <Content Include="Content\blog\img\demo\logo\webpack.svg" />
+    <Content Include="Content\blog\img\demo\screen\1.png" />
+    <Content Include="Content\blog\img\demo\screen\10.png" />
+    <Content Include="Content\blog\img\demo\screen\11.png" />
+    <Content Include="Content\blog\img\demo\screen\12.png" />
+    <Content Include="Content\blog\img\demo\screen\13.png" />
+    <Content Include="Content\blog\img\demo\screen\14.png" />
+    <Content Include="Content\blog\img\demo\screen\2.png" />
+    <Content Include="Content\blog\img\demo\screen\3.png" />
+    <Content Include="Content\blog\img\demo\screen\4.png" />
+    <Content Include="Content\blog\img\demo\screen\5.png" />
+    <Content Include="Content\blog\img\demo\screen\6.png" />
+    <Content Include="Content\blog\img\demo\screen\7.png" />
+    <Content Include="Content\blog\img\demo\screen\8.png" />
+    <Content Include="Content\blog\img\demo\screen\9.png" />
+    <Content Include="Content\blog\img\demo\screen\admin\1.png" />
+    <Content Include="Content\blog\img\demo\screen\admin\2.png" />
+    <Content Include="Content\blog\img\demo\screen\admin\3.png" />
+    <Content Include="Content\blog\img\demo\screen\blog.png" />
+    <Content Include="Content\blog\img\demo\screen\coming.png" />
+    <Content Include="Content\blog\img\flags\al.svg" />
+    <Content Include="Content\blog\img\flags\gb.svg" />
+    <Content Include="Content\blog\img\icons\configuration.svg" />
+    <Content Include="Content\blog\img\integration\bitnami.svg" />
+    <Content Include="Content\blog\img\integration\blossom.svg" />
+    <Content Include="Content\blog\img\integration\dockbit.svg" />
+    <Content Include="Content\blog\img\integration\dropbox.svg" />
+    <Content Include="Content\blog\img\integration\jquery.svg" />
+    <Content Include="Content\blog\img\integration\monero.svg" />
+    <Content Include="Content\blog\img\integration\slack.svg" />
+    <Content Include="Content\blog\img\integration\spritesheet.png" />
+    <Content Include="Content\blog\img\integration\steps\payment.svg" />
+    <Content Include="Content\blog\img\integration\steps\plan.svg" />
+    <Content Include="Content\blog\img\integration\steps\work.svg" />
+    <Content Include="Content\blog\img\integration\tech-globe.svg" />
+    <Content Include="Content\blog\img\integration\whatsapp.svg" />
+    <Content Include="Content\blog\img\integration\zapier.svg" />
+    <Content Include="Content\blog\img\lcards\done.svg" />
+    <Content Include="Content\blog\img\lcards\goals.svg" />
+    <Content Include="Content\blog\img\lcards\grow.svg" />
+    <Content Include="Content\blog\img\lcards\time.svg" />
+    <Content Include="Content\blog\img\logo-light.png" />
+    <Content Include="Content\blog\img\logo.png" />
+    <Content Include="Content\blog\img\logos\1.png" />
+    <Content Include="Content\blog\img\logos\1.svg" />
+    <Content Include="Content\blog\img\logos\2.png" />
+    <Content Include="Content\blog\img\logos\2.svg" />
+    <Content Include="Content\blog\img\logos\3.png" />
+    <Content Include="Content\blog\img\logos\3.svg" />
+    <Content Include="Content\blog\img\logos\4.png" />
+    <Content Include="Content\blog\img\logos\4.svg" />
+    <Content Include="Content\blog\img\logos\5.png" />
+    <Content Include="Content\blog\img\logos\5.svg" />
+    <Content Include="Content\blog\img\logos\6.png" />
+    <Content Include="Content\blog\img\logos\companies\1.svg" />
+    <Content Include="Content\blog\img\logos\companies\2.svg" />
+    <Content Include="Content\blog\img\logos\es6.svg" />
+    <Content Include="Content\blog\img\logos\gulp.svg" />
+    <Content Include="Content\blog\img\logos\javascript.svg" />
+    <Content Include="Content\blog\img\logos\node-sass.svg" />
+    <Content Include="Content\blog\img\logos\trust\1.svg" />
+    <Content Include="Content\blog\img\logos\trust\2.svg" />
+    <Content Include="Content\blog\img\logos\trust\3.svg" />
+    <Content Include="Content\blog\img\logos\trust\4.svg" />
+    <Content Include="Content\blog\img\logos\trust\5.svg" />
+    <Content Include="Content\blog\img\logos\trust\6.svg" />
+    <Content Include="Content\blog\img\logos\trust\7.svg" />
+    <Content Include="Content\blog\img\logos\trust\8.svg" />
+    <Content Include="Content\blog\img\logos\trust\9.svg" />
+    <Content Include="Content\blog\img\logos\webpack.svg" />
+    <Content Include="Content\blog\img\payment-services\bg.png" />
+    <Content Include="Content\blog\img\payment-services\gift.png" />
+    <Content Include="Content\blog\img\payment-services\person.png" />
+    <Content Include="Content\blog\img\payment-services\secure.svg" />
+    <Content Include="Content\blog\img\payment-services\security.png" />
+    <Content Include="Content\blog\img\payments\receive.svg" />
+    <Content Include="Content\blog\img\payments\send.svg" />
+    <Content Include="Content\blog\img\screens\app\1.png" />
+    <Content Include="Content\blog\img\screens\app\2-highlight.png" />
+    <Content Include="Content\blog\img\screens\app\2.png" />
+    <Content Include="Content\blog\img\screens\app\3.png" />
+    <Content Include="Content\blog\img\screens\app\4.png" />
+    <Content Include="Content\blog\img\screens\app\5.png" />
+    <Content Include="Content\blog\img\screens\app\6.png" />
+    <Content Include="Content\blog\img\screens\app\pieces\1.png" />
+    <Content Include="Content\blog\img\screens\app\pieces\2.png" />
+    <Content Include="Content\blog\img\screens\app\pieces\3.png" />
+    <Content Include="Content\blog\img\screens\app\pieces\4.png" />
+    <Content Include="Content\blog\img\screens\app\pieces\5.png" />
+    <Content Include="Content\blog\img\screens\dash\1.png" />
+    <Content Include="Content\blog\img\screens\dash\2.1.png" />
+    <Content Include="Content\blog\img\screens\dash\2.png" />
+    <Content Include="Content\blog\img\screens\dash\3.png" />
+    <Content Include="Content\blog\img\screens\dash\4.png" />
+    <Content Include="Content\blog\img\screens\dash\calendar.png" />
+    <Content Include="Content\blog\img\screens\dash\dash\1.png" />
+    <Content Include="Content\blog\img\screens\dash\dash\2.png" />
+    <Content Include="Content\blog\img\screens\dash\dash\3.png" />
+    <Content Include="Content\blog\img\screens\dash\dash\4.png" />
+    <Content Include="Content\blog\img\screens\dash\dash\calendar.png" />
+    <Content Include="Content\blog\img\screens\dash\dash\inbox.png" />
+    <Content Include="Content\blog\img\screens\dash\dash\invoice.png" />
+    <Content Include="Content\blog\img\screens\dash\datatables.png" />
+    <Content Include="Content\blog\img\screens\dash\inbox.png" />
+    <Content Include="Content\blog\img\screens\dash\invoice.png" />
+    <Content Include="Content\blog\img\screens\designer.png" />
+    <Content Include="Content\blog\img\screens\developer.png" />
+    <Content Include="Content\blog\img\screens\payments\customer-list.png" />
+    <Content Include="Content\blog\img\screens\payments\highlight.png" />
+    <Content Include="Content\blog\img\screens\section\1.png" />
+    <Content Include="Content\blog\img\screens\section\2.png" />
+    <Content Include="Content\blog\img\screens\section\3.png" />
+    <Content Include="Content\blog\img\screens\tablet\1.png" />
+    <Content Include="Content\blog\img\screens\tablet\2.png" />
+    <Content Include="Content\blog\img\screens\tablet\3.png" />
+    <Content Include="Content\blog\img\screens\tablet\4.png" />
+    <Content Include="Content\blog\img\section\forgot.svg" />
+    <Content Include="Content\blog\img\section\login.svg" />
+    <Content Include="Content\blog\img\section\register.svg" />
+    <Content Include="Content\blog\img\section\status\403.svg" />
+    <Content Include="Content\blog\img\section\status\404.svg" />
+    <Content Include="Content\blog\img\section\status\500.svg" />
+    <Content Include="Content\blog\img\shop\brands\1.svg" />
+    <Content Include="Content\blog\img\shop\brands\10.svg" />
+    <Content Include="Content\blog\img\shop\brands\11.svg" />
+    <Content Include="Content\blog\img\shop\brands\12.svg" />
+    <Content Include="Content\blog\img\shop\brands\2.svg" />
+    <Content Include="Content\blog\img\shop\brands\3.svg" />
+    <Content Include="Content\blog\img\shop\brands\4.svg" />
+    <Content Include="Content\blog\img\shop\brands\5.svg" />
+    <Content Include="Content\blog\img\shop\brands\6.svg" />
+    <Content Include="Content\blog\img\shop\brands\7.svg" />
+    <Content Include="Content\blog\img\shop\brands\8.svg" />
+    <Content Include="Content\blog\img\shop\brands\9.svg" />
+    <Content Include="Content\blog\img\shop\home\--app-deals.jpg" />
+    <Content Include="Content\blog\img\shop\home\01.jpg" />
+    <Content Include="Content\blog\img\shop\home\667753-PPH8UP-398.jpg" />
+    <Content Include="Content\blog\img\shop\home\app-deals.jpg" />
+    <Content Include="Content\blog\img\shop\home\blue-headphones.jpg" />
+    <Content Include="Content\blog\img\shop\home\enjoy.jpg" />
+    <Content Include="Content\blog\img\shop\home\happy-girl.jpg" />
+    <Content Include="Content\blog\img\shop\icons\fic\001-add.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\002-gift-card.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\003-add-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\004-rupees.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\005-bag.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\006-shopping-cart.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\007-address.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\008-shopping-cart-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\009-shopping-online.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\010-shopping-bag.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\011-shopping-bag-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\012-shopping-bag-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\013-shopping-bag-3.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\014-shopping-cart-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\015-gift-card-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\016-location.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\017-card.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\018-cargo-truck.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\019-cash.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\020-chat.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\021-chat-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\022-cargo-truck-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\023-truck.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\024-delivery-truck.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\025-delivery-truck-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\026-delivery-truck-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\027-discount.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\028-discount-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\029-dollar-symbol.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\030-shopping-cart-3.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\031-gift-card-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\032-email.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\033-shopping-cart-4.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\034-trolley.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\035-gift-card-3.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\036-voucher.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\037-gift-card-4.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\038-gift-card-5.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\039-location-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\040-shopping-online-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\041-location-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\042-location-3.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\043-logistics-delivery.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\044-logistic.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\045-map.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\046-message.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\047-message-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\048-shopping-online-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\049-shopping-online-3.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\050-shopping-online-4.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\051-rupee.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\052-rupee-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\053-letter.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\054-shopping-online-5.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\055-open.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\056-box.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\057-package.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\058-delivery-insurance.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\059-unboxing.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\060-package-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\061-parcel.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\062-ecommerce.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\063-card-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\064-payment-method.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\065-refresh.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\066-remove.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\067-remove-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\068-dollar-symbol-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\069-gift-card-6.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\070-remove-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\071-rupees-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\072-sale.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\073-dollar-symbol-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\074-rupee-2.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\075-secure-shopping.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\076-security.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\077-delivery-insurance-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\078-gift-card-7.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\079-delivery-truck-3.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\080-boat.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\081-shopping-bag-4.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\082-shopping-bag-5.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\083-shopping-bag-6.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\084-invoice.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\085-shopping-cart-5.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\086-shopping-cart-6.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\087-shopping-mall.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\088-shopping-bag-7.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\089-ecommerce-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\090-tag.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\091-tag-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\092-trolley-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\093-delivery-truck-4.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\094-truck-1.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\095-shopping-cart-7.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\096-gift-card-8.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\097-location-4.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\098-delivery-man.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\099-medal.svg" />
+    <Content Include="Content\blog\img\shop\icons\fic\100-mobile-shopping.svg" />
+    <Content Include="Content\blog\img\shop\payment-methods.png" />
+    <Content Include="Content\blog\img\shop\products\audioclassicmic.png" />
+    <Content Include="Content\blog\img\shop\products\computerconnection.png" />
+    <Content Include="Content\blog\img\shop\products\drone.png" />
+    <Content Include="Content\blog\img\shop\products\dualshock.png" />
+    <Content Include="Content\blog\img\shop\products\earphones.jpg" />
+    <Content Include="Content\blog\img\shop\products\externalharddrive.png" />
+    <Content Include="Content\blog\img\shop\products\headphone.jpg" />
+    <Content Include="Content\blog\img\shop\products\headphones-yellow-bg.jpg" />
+    <Content Include="Content\blog\img\shop\products\innovative.jpg" />
+    <Content Include="Content\blog\img\shop\products\modernspeakers.jpg" />
+    <Content Include="Content\blog\img\shop\products\monitor.png" />
+    <Content Include="Content\blog\img\shop\products\smartphone.jpg" />
+    <Content Include="Content\blog\img\shop\products\speaker.jpg" />
+    <Content Include="Content\blog\img\shop\products\tablet-with-pen.png" />
+    <Content Include="Content\blog\img\shop\products\vrglasses.jpg" />
+    <Content Include="Content\blog\img\shop\products\vrglasses.png" />
+    <Content Include="Content\blog\img\shop\products\vrglassesdual.png" />
+    <Content Include="Content\blog\img\shop\products\wearable.jpg" />
+    <Content Include="Content\blog\img\shop\products\wifi.jpg" />
+    <Content Include="Content\blog\img\shop\products\wiredmouse.png" />
+    <Content Include="Content\blog\img\shop\products\wireless-headphones.png" />
+    <Content Include="Content\blog\img\shps\abs-shp-1.svg" />
+    <Content Include="Content\blog\img\shps\abs-shp-2.svg" />
+    <Content Include="Content\blog\img\shps\abs-shp-3.svg" />
+    <Content Include="Content\blog\img\shps\area.svg" />
+    <Content Include="Content\blog\img\shps\bullets\1.svg" />
+    <Content Include="Content\blog\img\shps\bullets\2.svg" />
+    <Content Include="Content\blog\img\shps\bullets\3.svg" />
+    <Content Include="Content\blog\img\shps\bullets\bl1.svg" />
+    <Content Include="Content\blog\img\shps\heart-lines.svg" />
+    <Content Include="Content\blog\img\shps\map-dots.svg" />
+    <Content Include="Content\blog\img\shps\map.png" />
+    <Content Include="Content\blog\img\shps\map.svg" />
+    <Content Include="Content\blog\img\shps\mountains.svg" />
+    <Content Include="Content\blog\img\shps\payments\configure.svg" />
+    <Content Include="Content\blog\img\shps\payments\get.svg" />
+    <Content Include="Content\blog\img\shps\payments\receive.svg" />
+    <Content Include="Content\blog\img\shps\payments\register-click.svg" />
+    <Content Include="Content\blog\img\shps\payments\register.svg" />
+    <Content Include="Content\blog\img\shps\payments\send.svg" />
+    <Content Include="Content\blog\img\shps\payments\shape-2.svg" />
+    <Content Include="Content\blog\img\shps\payments\shape-3.svg" />
+    <Content Include="Content\blog\img\shps\payments\shape-4.svg" />
+    <Content Include="Content\blog\img\shps\payments\shape-5.svg" />
+    <Content Include="Content\blog\img\shps\payments\shape.svg" />
+    <Content Include="Content\blog\img\shps\payments\wallet.svg" />
+    <Content Include="Content\blog\img\shps\pyramids.svg" />
+    <Content Include="Content\blog\img\shps\shape-1.svg" />
+    <Content Include="Content\blog\img\shps\shape-2.svg" />
+    <Content Include="Content\blog\img\shps\shape-3.svg" />
+    <Content Include="Content\blog\img\shps\shape-4.svg" />
+    <Content Include="Content\blog\img\shps\waves-p.svg" />
+    <Content Include="Content\blog\img\shps\waves.svg" />
+    <Content Include="Content\blog\img\smart-business\header\anim-1.svg" />
+    <Content Include="Content\blog\img\smart-business\header\anim-2.svg" />
+    <Content Include="Content\blog\img\smart-business\header\anim-3.svg" />
+    <Content Include="Content\blog\img\smart-business\header\bg-shape.svg" />
+    <Content Include="Content\blog\img\smart-business\header\main-shape.svg" />
+    <Content Include="Content\blog\img\smart-business\header\stripes.svg" />
+    <Content Include="Content\blog\img\smart-business\icons\chat.svg" />
+    <Content Include="Content\blog\img\smart-business\icons\graph.svg" />
+    <Content Include="Content\blog\img\smart-business\icons\like.svg" />
+    <Content Include="Content\blog\img\smart-business\icons\money.svg" />
+    <Content Include="Content\blog\img\smart-business\icons\strategy.svg" />
+    <Content Include="Content\blog\img\smart-business\icons\user.svg" />
+    <Content Include="Content\blog\img\smart-business\icons\worldwide.svg" />
+    <Content Include="Content\blog\img\smart-business\reviews\1.jpg" />
+    <Content Include="Content\blog\img\smart-business\reviews\2.jpg" />
+    <Content Include="Content\blog\img\smart-business\reviews\3.jpg" />
+    <Content Include="Content\blog\img\smart-business\reviews\4.jpg" />
+    <Content Include="Content\blog\img\smart-business\reviews\5.jpg" />
+    <Content Include="Content\blog\img\smart-business\reviews\6.jpg" />
+    <Content Include="Content\blog\img\smart-business\reviews\7.jpg" />
+    <Content Include="Content\blog\img\smart-business\reviews\signature.svg" />
+    <Content Include="Content\blog\img\svg\1.svg" />
+    <Content Include="Content\blog\img\svg\2.svg" />
+    <Content Include="Content\blog\img\svg\3.svg" />
+    <Content Include="Content\blog\img\svg\4.svg" />
+    <Content Include="Content\blog\img\svg\apple.svg" />
+    <Content Include="Content\blog\img\svg\cloud.svg" />
+    <Content Include="Content\blog\img\svg\design.svg" />
+    <Content Include="Content\blog\img\svg\developer\1.svg" />
+    <Content Include="Content\blog\img\svg\developer\2.svg" />
+    <Content Include="Content\blog\img\svg\developer\3.svg" />
+    <Content Include="Content\blog\img\svg\developer\4.svg" />
+    <Content Include="Content\blog\img\svg\developer\5.svg" />
+    <Content Include="Content\blog\img\svg\developer\6.svg" />
+    <Content Include="Content\blog\img\svg\developer\7.svg" />
+    <Content Include="Content\blog\img\svg\google-play.svg" />
+    <Content Include="Content\blog\img\svg\marketing.svg" />
+    <Content Include="Content\blog\img\svg\mobile.svg" />
+    <Content Include="Content\blog\img\svg\partners\1.png" />
+    <Content Include="Content\blog\img\svg\partners\1.svg" />
+    <Content Include="Content\blog\img\svg\partners\2.png" />
+    <Content Include="Content\blog\img\svg\partners\2.svg" />
+    <Content Include="Content\blog\img\svg\partners\3.png" />
+    <Content Include="Content\blog\img\svg\partners\3.svg" />
+    <Content Include="Content\blog\img\svg\partners\4.png" />
+    <Content Include="Content\blog\img\svg\partners\4.svg" />
+    <Content Include="Content\blog\img\svg\partners\5.png" />
+    <Content Include="Content\blog\img\svg\partners\5.svg" />
+    <Content Include="Content\blog\img\svg\partners\6.png" />
+    <Content Include="Content\blog\img\svg\partners\6.svg" />
+    <Content Include="Content\blog\img\testimonials\1.jpg" />
+    <Content Include="Content\blog\img\testimonials\2.jpg" />
+    <Content Include="Content\blog\img\testimonials\3.1.jpg" />
+    <Content Include="Content\blog\img\testimonials\3.jpg" />
+    <Content Include="Content\blog\img\testimonials\4.jpg" />
+    <Content Include="Content\blog\img\testimonials\5.jpg" />
+    <Content Include="Content\blog\img\testimonials\5s-logo.png" />
+    <Content Include="Content\blog\img\testimonials\6.jpg" />
+    <Content Include="Content\blog\js\aos.js" />
+    <Content Include="Content\blog\js\bootstrap.bundle.js" />
+    <Content Include="Content\blog\js\card.js" />
+    <Content Include="Content\blog\js\common.js" />
+    <Content Include="Content\blog\js\cookie-consent-custom-css.js" />
+    <Content Include="Content\blog\js\cookie-consent-informational.js" />
+    <Content Include="Content\blog\js\cookie-consent-location.js" />
+    <Content Include="Content\blog\js\cookie-consent-opt-in.js" />
+    <Content Include="Content\blog\js\cookie-consent-opt-out.js" />
+    <Content Include="Content\blog\js\cookie-consent-themes.js" />
+    <Content Include="Content\blog\js\cookie-consent-util.js" />
+    <Content Include="Content\blog\js\cookieconsent.js" />
+    <Content Include="Content\blog\js\core.min.js" />
+    <Content Include="Content\blog\js\counterup2.js" />
+    <Content Include="Content\blog\js\credit-card.js" />
+    <Content Include="Content\blog\js\dashcore.min.js" />
+    <Content Include="Content\blog\js\demo.js" />
+    <Content Include="Content\blog\js\feather.js" />
+    <Content Include="Content\blog\js\forms.js" />
+    <Content Include="Content\blog\js\jquery.animatebar.js" />
+    <Content Include="Content\blog\js\jquery.easing.js" />
+    <Content Include="Content\blog\js\jquery.js" />
+    <Content Include="Content\blog\js\jquery.magnific-popup.js" />
+    <Content Include="Content\blog\js\jquery.smartWizard.js" />
+    <Content Include="Content\blog\js\jquery.validate.js" />
+    <Content Include="Content\blog\js\lib.min.js" />
+    <Content Include="Content\blog\js\noframework.waypoints.js" />
+    <Content Include="Content\blog\js\noise.js" />
+    <Content Include="Content\blog\js\odometer.js" />
+    <Content Include="Content\blog\js\pricing.js" />
+    <Content Include="Content\blog\js\prism.js" />
+    <Content Include="Content\blog\js\shop.js" />
+    <Content Include="Content\blog\js\simplebar.js" />
+    <Content Include="Content\blog\js\site.js" />
+    <Content Include="Content\blog\js\stripe-bubbles.js" />
+    <Content Include="Content\blog\js\stripe-menu.js" />
+    <Content Include="Content\blog\js\svg.js" />
+    <Content Include="Content\blog\js\swiper-bundle.js" />
+    <Content Include="Content\blog\js\typed.js" />
+    <Content Include="Content\blog\js\wizards.js" />
+    <Content Include="Content\css\aos.css" />
+    <Content Include="Content\css\bootstrap.css" />
+    <Content Include="Content\css\cookieconsent.min.css" />
+    <Content Include="Content\css\demo.css" />
+    <Content Include="Content\css\fontawesome-all.css" />
+    <Content Include="Content\css\helper.css" />
+    <Content Include="Content\css\magnific-popup.css" />
+    <Content Include="Content\css\odometer-theme-minimal.css" />
+    <Content Include="Content\css\pe-icon-7-stroke.css" />
+    <Content Include="Content\css\prettify.css" />
+    <Content Include="Content\css\simplebar.css" />
+    <Content Include="Content\css\smart_wizard.css" />
+    <Content Include="Content\css\smart_wizard_theme_arrows.css" />
+    <Content Include="Content\css\smart_wizard_theme_circles.css" />
+    <Content Include="Content\css\smart_wizard_theme_dots.css" />
+    <Content Include="Content\css\styles.css" />
+    <Content Include="Content\css\swiper.css" />
+    <Content Include="Content\img\avatar\1.jpg" />
+    <Content Include="Content\img\avatar\2.jpg" />
+    <Content Include="Content\img\avatar\3.jpg" />
+    <Content Include="Content\img\avatar\4.jpg" />
+    <Content Include="Content\img\avatar\5.jpg" />
+    <Content Include="Content\img\avatar\6.jpg" />
+    <Content Include="Content\img\avatar\7.jpg" />
+    <Content Include="Content\img\avatar\author.jpg" />
+    <Content Include="Content\blog\img\avatar\cale_coggins_profile.jpg" />
+    <Content Include="Content\img\avatar\team\1.jpg" />
+    <Content Include="Content\img\avatar\team\2.jpg" />
+    <Content Include="Content\img\avatar\team\3.jpg" />
+    <Content Include="Content\img\avatar\team\4.jpg" />
+    <Content Include="Content\img\avatar\team\5.jpg" />
+    <Content Include="Content\img\avatar\team\6.jpg" />
+    <Content Include="Content\img\avatar\user.png" />
+    <Content Include="Content\img\bg\asset-1.svg" />
+    <Content Include="Content\img\bg\bubbles-light.jpg" />
+    <Content Include="Content\img\bg\grid.jpg" />
+    <Content Include="Content\img\bg\hot-air-balloon.jpg" />
+    <Content Include="Content\img\bg\offline-giving.png" />
+    <Content Include="Content\img\bg\offline-giving.svg" />
+    <Content Include="Content\img\bg\online-payment-2.svg" />
+    <Content Include="Content\img\bg\online-payment.svg" />
+    <Content Include="Content\img\bg\people.png" />
+    <Content Include="Content\img\bg\people.svg" />
+    <Content Include="Content\img\bg\prayer-request.png" />
+    <Content Include="Content\img\bg\prayer-request.svg" />
+    <Content Include="Content\img\bg\social\-social-heading.svg" />
+    <Content Include="Content\img\bg\social\bg-path.svg" />
+    <Content Include="Content\img\bg\social\bg-shape.svg" />
+    <Content Include="Content\img\bg\social\social-heading.svg" />
+    <Content Include="Content\img\bg\social\social.svg" />
+    <Content Include="Content\img\bg\sunrise.jpg" />
+    <Content Include="Content\img\bg\waves.jpg" />
+    <Content Include="Content\img\blog\1.svg" />
+    <Content Include="Content\img\demo\angular.svg" />
+    <Content Include="Content\img\demo\logo\angular.svg" />
+    <Content Include="Content\img\demo\logo\bootstrap.svg" />
+    <Content Include="Content\img\demo\logo\jquery.svg" />
+    <Content Include="Content\img\demo\screen\1.png" />
+    <Content Include="Content\img\demo\screen\2.png" />
+    <Content Include="Content\img\demo\screen\3.png" />
+    <Content Include="Content\img\demo\screen\4.png" />
+    <Content Include="Content\img\demo\screen\5.png" />
+    <Content Include="Content\img\demo\screen\6.png" />
+    <Content Include="Content\img\demo\screen\7.png" />
+    <Content Include="Content\img\demo\screen\8.png" />
+    <Content Include="Content\img\demo\screen\9.png" />
+    <Content Include="Content\img\demo\screen\admin\1.png" />
+    <Content Include="Content\img\demo\screen\admin\2.png" />
+    <Content Include="Content\img\demo\screen\admin\3.png" />
+    <Content Include="Content\img\demo\screen\blog.png" />
+    <Content Include="Content\img\demo\screen\coming.png" />
+    <Content Include="Content\img\icons\configuration.svg" />
+    <Content Include="Content\img\icon_logo_dark.png" />
+    <Content Include="Content\img\icon_logo_white.png" />
+    <Content Include="Content\img\integration\bitnami.svg" />
+    <Content Include="Content\img\integration\blossom.svg" />
+    <Content Include="Content\img\integration\dockbit.svg" />
+    <Content Include="Content\img\integration\dropbox.svg" />
+    <Content Include="Content\img\integration\jquery.svg" />
+    <Content Include="Content\img\integration\monero.svg" />
+    <Content Include="Content\img\integration\slack.svg" />
+    <Content Include="Content\img\integration\whatsapp.svg" />
+    <Content Include="Content\img\integration\zapier.svg" />
+    <Content Include="Content\img\logos\1.png" />
+    <Content Include="Content\img\logos\1.svg" />
+    <Content Include="Content\img\logos\2.png" />
+    <Content Include="Content\img\logos\2.svg" />
+    <Content Include="Content\img\logos\3.png" />
+    <Content Include="Content\img\logos\3.svg" />
+    <Content Include="Content\img\logos\4.png" />
+    <Content Include="Content\img\logos\4.svg" />
+    <Content Include="Content\img\logos\5.png" />
+    <Content Include="Content\img\logos\5.svg" />
+    <Content Include="Content\img\logos\6.png" />
+    <Content Include="Content\img\logos\trust\1.svg" />
+    <Content Include="Content\img\logos\trust\2.svg" />
+    <Content Include="Content\img\logos\trust\3.svg" />
+    <Content Include="Content\img\logos\trust\4.svg" />
+    <Content Include="Content\img\logos\trust\5.svg" />
+    <Content Include="Content\img\logos\trust\6.svg" />
+    <Content Include="Content\img\logos\trust\7.svg" />
+    <Content Include="Content\img\logos\trust\8.svg" />
+    <Content Include="Content\img\logos\trust\9.svg" />
+    <Content Include="Content\img\praise_logo.png" />
+    <Content Include="Content\img\praise_logo_white.png" />
+    <Content Include="Content\img\praise_logo_white_blue.png" />
+    <Content Include="Content\img\screens\app\1.png" />
+    <Content Include="Content\img\screens\app\2-highlight.png" />
+    <Content Include="Content\img\screens\app\2.png" />
+    <Content Include="Content\img\screens\app\3.png" />
+    <Content Include="Content\img\screens\app\4.png" />
+    <Content Include="Content\img\screens\app\5.png" />
+    <Content Include="Content\img\screens\app\6.png" />
+    <Content Include="Content\img\screens\app\dashboard_mobile.png" />
+    <Content Include="Content\img\screens\app\iphone_portrait_1.png" />
+    <Content Include="Content\img\screens\app\iphone_portrait_2.png" />
+    <Content Include="Content\img\screens\dash\1.png" />
+    <Content Include="Content\img\screens\dash\2.1.png" />
+    <Content Include="Content\img\screens\dash\2.png" />
+    <Content Include="Content\img\screens\dash\3.png" />
+    <Content Include="Content\img\screens\dash\4.png" />
+    <Content Include="Content\img\screens\dash\calendar.png" />
+    <Content Include="Content\img\screens\dash\dashboard_wide.png" />
+    <Content Include="Content\img\screens\dash\dash\1.png" />
+    <Content Include="Content\img\screens\dash\dash\2.png" />
+    <Content Include="Content\img\screens\dash\dash\3.png" />
+    <Content Include="Content\img\screens\dash\dash\4.png" />
+    <Content Include="Content\img\screens\dash\dash\calendar.png" />
+    <Content Include="Content\img\screens\dash\dash\inbox.png" />
+    <Content Include="Content\img\screens\dash\dash\invoice.png" />
+    <Content Include="Content\img\screens\dash\datatables.png" />
+    <Content Include="Content\img\screens\dash\giving_workflow.png" />
+    <Content Include="Content\img\screens\dash\inbox.png" />
+    <Content Include="Content\img\screens\dash\invoice.png" />
+    <Content Include="Content\img\screens\dash\people_list.png" />
+    <Content Include="Content\img\screens\dash\prayer_requests.png" />
+    <Content Include="Content\img\screens\designer.png" />
+    <Content Include="Content\img\screens\developer.png" />
+    <Content Include="Content\img\screens\GivingSummary.png" />
+    <Content Include="Content\img\screens\payments\customer-list.png" />
+    <Content Include="Content\img\screens\payments\highlight.png" />
+    <Content Include="Content\img\screens\section\1.png" />
+    <Content Include="Content\img\screens\section\2.png" />
+    <Content Include="Content\img\screens\section\3.png" />
+    <Content Include="Content\img\screens\tablet\-1.png" />
+    <Content Include="Content\img\screens\tablet\1.png" />
+    <Content Include="Content\img\screens\tablet\2.png" />
+    <Content Include="Content\img\screens\tablet\3.png" />
+    <Content Include="Content\img\screens\tablet\4.png" />
+    <Content Include="Content\img\screens\tablet\ipad_landscape.png" />
+    <Content Include="Content\img\screens\tablet\ipad_portrait.png" />
+    <Content Include="Content\img\section\forgot.svg" />
+    <Content Include="Content\img\section\login.svg" />
+    <Content Include="Content\img\section\register.svg" />
+    <Content Include="Content\img\section\status\403.svg" />
+    <Content Include="Content\img\section\status\404.svg" />
+    <Content Include="Content\img\section\status\500.svg" />
+    <Content Include="Content\img\shps\abs-shp-1.svg" />
+    <Content Include="Content\img\shps\abs-shp-2.svg" />
+    <Content Include="Content\img\shps\abs-shp-3.svg" />
+    <Content Include="Content\img\shps\area.svg" />
+    <Content Include="Content\img\shps\bullets\1.svg" />
+    <Content Include="Content\img\shps\bullets\2.svg" />
+    <Content Include="Content\img\shps\bullets\3.svg" />
+    <Content Include="Content\img\shps\bullets\bl1.svg" />
+    <Content Include="Content\img\shps\heart-lines.svg" />
+    <Content Include="Content\img\shps\map-dots.svg" />
+    <Content Include="Content\img\shps\map.png" />
+    <Content Include="Content\img\shps\map.svg" />
+    <Content Include="Content\img\shps\mountains.svg" />
+    <Content Include="Content\img\shps\payments\configure.svg" />
+    <Content Include="Content\img\shps\payments\get.svg" />
+    <Content Include="Content\img\shps\payments\receive.svg" />
+    <Content Include="Content\img\shps\payments\register-click.svg" />
+    <Content Include="Content\img\shps\payments\register.svg" />
+    <Content Include="Content\img\shps\payments\send.svg" />
+    <Content Include="Content\img\shps\payments\shape-2.svg" />
+    <Content Include="Content\img\shps\payments\shape-3.svg" />
+    <Content Include="Content\img\shps\payments\shape-4.svg" />
+    <Content Include="Content\img\shps\payments\shape-5.svg" />
+    <Content Include="Content\img\shps\payments\shape.svg" />
+    <Content Include="Content\img\shps\payments\wallet.svg" />
+    <Content Include="Content\img\shps\pyramids.svg" />
+    <Content Include="Content\img\shps\shape-1.svg" />
+    <Content Include="Content\img\shps\shape-2.svg" />
+    <Content Include="Content\img\shps\shape-3.svg" />
+    <Content Include="Content\img\shps\shape-4.svg" />
+    <Content Include="Content\img\shps\waves-p.svg" />
+    <Content Include="Content\img\shps\waves.svg" />
+    <Content Include="Content\img\svg\1.svg" />
+    <Content Include="Content\img\svg\2.svg" />
+    <Content Include="Content\img\svg\3.svg" />
+    <Content Include="Content\img\svg\4.svg" />
+    <Content Include="Content\img\svg\apple.svg" />
+    <Content Include="Content\img\svg\cloud.svg" />
+    <Content Include="Content\img\svg\design.svg" />
+    <Content Include="Content\img\svg\developer\1.svg" />
+    <Content Include="Content\img\svg\developer\2.svg" />
+    <Content Include="Content\img\svg\developer\3.svg" />
+    <Content Include="Content\img\svg\developer\4.svg" />
+    <Content Include="Content\img\svg\developer\5.svg" />
+    <Content Include="Content\img\svg\developer\6.svg" />
+    <Content Include="Content\img\svg\developer\7.svg" />
+    <Content Include="Content\img\svg\flags\AD.svg" />
+    <Content Include="Content\img\svg\flags\AE.svg" />
+    <Content Include="Content\img\svg\flags\AF.svg" />
+    <Content Include="Content\img\svg\flags\AG.svg" />
+    <Content Include="Content\img\svg\flags\AI.svg" />
+    <Content Include="Content\img\svg\flags\AL.svg" />
+    <Content Include="Content\img\svg\flags\AM.svg" />
+    <Content Include="Content\img\svg\flags\AO.svg" />
+    <Content Include="Content\img\svg\flags\AR.svg" />
+    <Content Include="Content\img\svg\flags\AS.svg" />
+    <Content Include="Content\img\svg\flags\AT.svg" />
+    <Content Include="Content\img\svg\flags\AU.svg" />
+    <Content Include="Content\img\svg\flags\AW.svg" />
+    <Content Include="Content\img\svg\flags\AZ.svg" />
+    <Content Include="Content\img\svg\flags\BA.svg" />
+    <Content Include="Content\img\svg\flags\BB.svg" />
+    <Content Include="Content\img\svg\flags\BD.svg" />
+    <Content Include="Content\img\svg\flags\BE.svg" />
+    <Content Include="Content\img\svg\flags\BF.svg" />
+    <Content Include="Content\img\svg\flags\BG.svg" />
+    <Content Include="Content\img\svg\flags\BH.svg" />
+    <Content Include="Content\img\svg\flags\BI.svg" />
+    <Content Include="Content\img\svg\flags\BJ.svg" />
+    <Content Include="Content\img\svg\flags\BM.svg" />
+    <Content Include="Content\img\svg\flags\BN.svg" />
+    <Content Include="Content\img\svg\flags\BO.svg" />
+    <Content Include="Content\img\svg\flags\BR.svg" />
+    <Content Include="Content\img\svg\flags\BS.svg" />
+    <Content Include="Content\img\svg\flags\BT.svg" />
+    <Content Include="Content\img\svg\flags\BW.svg" />
+    <Content Include="Content\img\svg\flags\BY.svg" />
+    <Content Include="Content\img\svg\flags\BZ.svg" />
+    <Content Include="Content\img\svg\flags\CA.svg" />
+    <Content Include="Content\img\svg\flags\CC.svg" />
+    <Content Include="Content\img\svg\flags\CF.svg" />
+    <Content Include="Content\img\svg\flags\CH.svg" />
+    <Content Include="Content\img\svg\flags\CK.svg" />
+    <Content Include="Content\img\svg\flags\CL.svg" />
+    <Content Include="Content\img\svg\flags\CM.svg" />
+    <Content Include="Content\img\svg\flags\CN.svg" />
+    <Content Include="Content\img\svg\flags\CO.svg" />
+    <Content Include="Content\img\svg\flags\CR.svg" />
+    <Content Include="Content\img\svg\flags\CS.svg" />
+    <Content Include="Content\img\svg\flags\CU.svg" />
+    <Content Include="Content\img\svg\flags\CV.svg" />
+    <Content Include="Content\img\svg\flags\CX.svg" />
+    <Content Include="Content\img\svg\flags\CY.svg" />
+    <Content Include="Content\img\svg\flags\CZ.svg" />
+    <Content Include="Content\img\svg\flags\DE.svg" />
+    <Content Include="Content\img\svg\flags\DJ.svg" />
+    <Content Include="Content\img\svg\flags\DK.svg" />
+    <Content Include="Content\img\svg\flags\DM.svg" />
+    <Content Include="Content\img\svg\flags\DO.svg" />
+    <Content Include="Content\img\svg\flags\DZ.svg" />
+    <Content Include="Content\img\svg\flags\EC.svg" />
+    <Content Include="Content\img\svg\flags\EE.svg" />
+    <Content Include="Content\img\svg\flags\EG.svg" />
+    <Content Include="Content\img\svg\flags\ER.svg" />
+    <Content Include="Content\img\svg\flags\ES.svg" />
+    <Content Include="Content\img\svg\flags\ET.svg" />
+    <Content Include="Content\img\svg\flags\FI.svg" />
+    <Content Include="Content\img\svg\flags\FJ.svg" />
+    <Content Include="Content\img\svg\flags\FK.svg" />
+    <Content Include="Content\img\svg\flags\FM.svg" />
+    <Content Include="Content\img\svg\flags\FO.svg" />
+    <Content Include="Content\img\svg\flags\FR.svg" />
+    <Content Include="Content\img\svg\flags\GA.svg" />
+    <Content Include="Content\img\svg\flags\GB.svg" />
+    <Content Include="Content\img\svg\flags\GD.svg" />
+    <Content Include="Content\img\svg\flags\GE.svg" />
+    <Content Include="Content\img\svg\flags\GH.svg" />
+    <Content Include="Content\img\svg\flags\GI.svg" />
+    <Content Include="Content\img\svg\flags\GL.svg" />
+    <Content Include="Content\img\svg\flags\GM.svg" />
+    <Content Include="Content\img\svg\flags\GN.svg" />
+    <Content Include="Content\img\svg\flags\GQ.svg" />
+    <Content Include="Content\img\svg\flags\GR.svg" />
+    <Content Include="Content\img\svg\flags\GT.svg" />
+    <Content Include="Content\img\svg\flags\GU.svg" />
+    <Content Include="Content\img\svg\flags\GW.svg" />
+    <Content Include="Content\img\svg\flags\HK.svg" />
+    <Content Include="Content\img\svg\flags\HN.svg" />
+    <Content Include="Content\img\svg\flags\HR.svg" />
+    <Content Include="Content\img\svg\flags\HT.svg" />
+    <Content Include="Content\img\svg\flags\HU.svg" />
+    <Content Include="Content\img\svg\flags\ID.svg" />
+    <Content Include="Content\img\svg\flags\IE.svg" />
+    <Content Include="Content\img\svg\flags\IL.svg" />
+    <Content Include="Content\img\svg\flags\IN.svg" />
+    <Content Include="Content\img\svg\flags\IO.svg" />
+    <Content Include="Content\img\svg\flags\IQ.svg" />
+    <Content Include="Content\img\svg\flags\IR.svg" />
+    <Content Include="Content\img\svg\flags\IS.svg" />
+    <Content Include="Content\img\svg\flags\IT.svg" />
+    <Content Include="Content\img\svg\flags\JM.svg" />
+    <Content Include="Content\img\svg\flags\JO.svg" />
+    <Content Include="Content\img\svg\flags\JP.svg" />
+    <Content Include="Content\img\svg\flags\KE.svg" />
+    <Content Include="Content\img\svg\flags\KG.svg" />
+    <Content Include="Content\img\svg\flags\KH.svg" />
+    <Content Include="Content\img\svg\flags\KM.svg" />
+    <Content Include="Content\img\svg\flags\KN.svg" />
+    <Content Include="Content\img\svg\flags\KW.svg" />
+    <Content Include="Content\img\svg\flags\KY.svg" />
+    <Content Include="Content\img\svg\flags\KZ.svg" />
+    <Content Include="Content\img\svg\flags\LA.svg" />
+    <Content Include="Content\img\svg\flags\LB.svg" />
+    <Content Include="Content\img\svg\flags\LI.svg" />
+    <Content Include="Content\img\svg\flags\LK.svg" />
+    <Content Include="Content\img\svg\flags\LR.svg" />
+    <Content Include="Content\img\svg\flags\LS.svg" />
+    <Content Include="Content\img\svg\flags\LT.svg" />
+    <Content Include="Content\img\svg\flags\LU.svg" />
+    <Content Include="Content\img\svg\flags\LV.svg" />
+    <Content Include="Content\img\svg\flags\LY.svg" />
+    <Content Include="Content\img\svg\flags\MA.svg" />
+    <Content Include="Content\img\svg\flags\MC.svg" />
+    <Content Include="Content\img\svg\flags\MD.svg" />
+    <Content Include="Content\img\svg\flags\MG.svg" />
+    <Content Include="Content\img\svg\flags\MH.svg" />
+    <Content Include="Content\img\svg\flags\ML.svg" />
+    <Content Include="Content\img\svg\flags\MM.svg" />
+    <Content Include="Content\img\svg\flags\MN.svg" />
+    <Content Include="Content\img\svg\flags\MO.svg" />
+    <Content Include="Content\img\svg\flags\MQ.svg" />
+    <Content Include="Content\img\svg\flags\MR.svg" />
+    <Content Include="Content\img\svg\flags\MS.svg" />
+    <Content Include="Content\img\svg\flags\MT.svg" />
+    <Content Include="Content\img\svg\flags\MU.svg" />
+    <Content Include="Content\img\svg\flags\MV.svg" />
+    <Content Include="Content\img\svg\flags\MW.svg" />
+    <Content Include="Content\img\svg\flags\MX.svg" />
+    <Content Include="Content\img\svg\flags\MY.svg" />
+    <Content Include="Content\img\svg\flags\MZ.svg" />
+    <Content Include="Content\img\svg\flags\NA.svg" />
+    <Content Include="Content\img\svg\flags\NE.svg" />
+    <Content Include="Content\img\svg\flags\NF.svg" />
+    <Content Include="Content\img\svg\flags\NG.svg" />
+    <Content Include="Content\img\svg\flags\NI.svg" />
+    <Content Include="Content\img\svg\flags\NL.svg" />
+    <Content Include="Content\img\svg\flags\NO.svg" />
+    <Content Include="Content\img\svg\flags\NP.svg" />
+    <Content Include="Content\img\svg\flags\NR.svg" />
+    <Content Include="Content\img\svg\flags\NU.svg" />
+    <Content Include="Content\img\svg\flags\NZ.svg" />
+    <Content Include="Content\img\svg\flags\OM.svg" />
+    <Content Include="Content\img\svg\flags\PA.svg" />
+    <Content Include="Content\img\svg\flags\PE.svg" />
+    <Content Include="Content\img\svg\flags\PF.svg" />
+    <Content Include="Content\img\svg\flags\PG.svg" />
+    <Content Include="Content\img\svg\flags\PH.svg" />
+    <Content Include="Content\img\svg\flags\PK.svg" />
+    <Content Include="Content\img\svg\flags\PL.svg" />
+    <Content Include="Content\img\svg\flags\PR.svg" />
+    <Content Include="Content\img\svg\flags\PT.svg" />
+    <Content Include="Content\img\svg\flags\PW.svg" />
+    <Content Include="Content\img\svg\flags\PY.svg" />
+    <Content Include="Content\img\svg\flags\QA.svg" />
+    <Content Include="Content\img\svg\flags\RO.svg" />
+    <Content Include="Content\img\svg\flags\RU.svg" />
+    <Content Include="Content\img\svg\flags\RW.svg" />
+    <Content Include="Content\img\svg\flags\SA.svg" />
+    <Content Include="Content\img\svg\flags\SB.svg" />
+    <Content Include="Content\img\svg\flags\SC.svg" />
+    <Content Include="Content\img\svg\flags\SD.svg" />
+    <Content Include="Content\img\svg\flags\SE.svg" />
+    <Content Include="Content\img\svg\flags\SG.svg" />
+    <Content Include="Content\img\svg\flags\SI.svg" />
+    <Content Include="Content\img\svg\flags\SK.svg" />
+    <Content Include="Content\img\svg\flags\SL.svg" />
+    <Content Include="Content\img\svg\flags\SM.svg" />
+    <Content Include="Content\img\svg\flags\SN.svg" />
+    <Content Include="Content\img\svg\flags\SO.svg" />
+    <Content Include="Content\img\svg\flags\SR.svg" />
+    <Content Include="Content\img\svg\flags\ST.svg" />
+    <Content Include="Content\img\svg\flags\SV.svg" />
+    <Content Include="Content\img\svg\flags\SY.svg" />
+    <Content Include="Content\img\svg\flags\TC.svg" />
+    <Content Include="Content\img\svg\flags\TD.svg" />
+    <Content Include="Content\img\svg\flags\TG.svg" />
+    <Content Include="Content\img\svg\flags\TH.svg" />
+    <Content Include="Content\img\svg\flags\TJ.svg" />
+    <Content Include="Content\img\svg\flags\TK.svg" />
+    <Content Include="Content\img\svg\flags\TM.svg" />
+    <Content Include="Content\img\svg\flags\TN.svg" />
+    <Content Include="Content\img\svg\flags\TO.svg" />
+    <Content Include="Content\img\svg\flags\TR.svg" />
+    <Content Include="Content\img\svg\flags\TT.svg" />
+    <Content Include="Content\img\svg\flags\TW.svg" />
+    <Content Include="Content\img\svg\flags\TZ.svg" />
+    <Content Include="Content\img\svg\flags\UA.svg" />
+    <Content Include="Content\img\svg\flags\UG.svg" />
+    <Content Include="Content\img\svg\flags\US.svg" />
+    <Content Include="Content\img\svg\flags\UY.svg" />
+    <Content Include="Content\img\svg\flags\VA.svg" />
+    <Content Include="Content\img\svg\flags\VE.svg" />
+    <Content Include="Content\img\svg\flags\VG.svg" />
+    <Content Include="Content\img\svg\flags\VN.svg" />
+    <Content Include="Content\img\svg\flags\VU.svg" />
+    <Content Include="Content\img\svg\flags\WS.svg" />
+    <Content Include="Content\img\svg\flags\YE.svg" />
+    <Content Include="Content\img\svg\flags\ZA.svg" />
+    <Content Include="Content\img\svg\flags\ZM.svg" />
+    <Content Include="Content\img\svg\flags\ZW.svg" />
+    <Content Include="Content\img\svg\google-play.svg" />
+    <Content Include="Content\img\svg\marketing.svg" />
+    <Content Include="Content\img\svg\mobile.svg" />
+    <Content Include="Content\img\svg\partners\1.png" />
+    <Content Include="Content\img\svg\partners\1.svg" />
+    <Content Include="Content\img\svg\partners\2.png" />
+    <Content Include="Content\img\svg\partners\2.svg" />
+    <Content Include="Content\img\svg\partners\3.png" />
+    <Content Include="Content\img\svg\partners\3.svg" />
+    <Content Include="Content\img\svg\partners\4.png" />
+    <Content Include="Content\img\svg\partners\4.svg" />
+    <Content Include="Content\img\svg\partners\5.png" />
+    <Content Include="Content\img\svg\partners\5.svg" />
+    <Content Include="Content\img\svg\partners\6.png" />
+    <Content Include="Content\img\svg\partners\6.svg" />
+    <Content Include="Content\img\testimonials\1.jpg" />
+    <Content Include="Content\img\testimonials\2.jpg" />
+    <Content Include="Content\img\testimonials\3.jpg" />
+    <Content Include="Content\img\testimonials\5s-logo.png" />
+    <Content Include="Content\img\v6\header\anim-1.svg" />
+    <Content Include="Content\img\v6\header\anim-2.svg" />
+    <Content Include="Content\img\v6\header\anim-3.svg" />
+    <Content Include="Content\img\v6\header\bg-shape.svg" />
+    <Content Include="Content\img\v6\header\main-shape.svg" />
+    <Content Include="Content\img\v6\header\stripes.svg" />
+    <Content Include="Content\img\v6\icons\chat.svg" />
+    <Content Include="Content\img\v6\icons\graph.svg" />
+    <Content Include="Content\img\v6\icons\like.svg" />
+    <Content Include="Content\img\v6\icons\money.svg" />
+    <Content Include="Content\img\v6\icons\strategy.svg" />
+    <Content Include="Content\img\v6\icons\user.svg" />
+    <Content Include="Content\img\v6\icons\worldwide.svg" />
+    <Content Include="Content\img\v6\reviews\1.jpg" />
+    <Content Include="Content\img\v6\reviews\2.jpg" />
+    <Content Include="Content\img\v6\reviews\3.jpg" />
+    <Content Include="Content\img\v6\reviews\4.jpg" />
+    <Content Include="Content\img\v6\reviews\5.jpg" />
+    <Content Include="Content\img\v6\reviews\6.jpg" />
+    <Content Include="Content\img\v6\reviews\7.jpg" />
+    <Content Include="Content\img\v6\reviews\signature.svg" />
+    <Content Include="Content\img\v8\header\heart.svg" />
+    <Content Include="Content\img\v8\header\like.svg" />
+    <Content Include="Content\img\v8\header\main-shape.svg" />
+    <Content Include="Content\img\v8\header\smile.svg" />
+    <Content Include="Content\img\v8\icons\1.svg" />
+    <Content Include="Content\img\v8\icons\2.svg" />
+    <Content Include="Content\img\v8\icons\3.svg" />
+    <Content Include="Content\img\v8\icons\4.svg" />
+    <Content Include="Content\img\v8\icons\5.svg" />
+    <Content Include="Content\img\v8\icons\6.svg" />
+    <Content Include="Content\img\v8\icons\7.svg" />
+    <Content Include="Content\img\v8\icons\8.svg" />
+    <Content Include="Content\img\v8\marketing.svg" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\fa-brands-400.svg" />
+    <Content Include="fonts\fa-regular-400.svg" />
+    <Content Include="fonts\fa-solid-900.svg" />
+    <Content Include="fonts\Pe-icon-7-stroke.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\01.cookie-consent-util.js" />
+    <Content Include="Scripts\02.1.cookie-consent-themes.js" />
+    <Content Include="Scripts\02.2.cookie-consent-custom-css.js" />
+    <Content Include="Scripts\02.3.cookie-consent-informational.js" />
+    <Content Include="Scripts\02.4.cookie-consent-opt-out.js" />
+    <Content Include="Scripts\02.5.cookie-consent-opt-in.js" />
+    <Content Include="Scripts\02.6.cookie-consent-location.js" />
+    <Content Include="Scripts\aos.js" />
+    <Content Include="Scripts\common-script.js" />
+    <Content Include="Scripts\cookieconsent.min.js" />
+    <Content Include="Scripts\demo.js" />
+    <Content Include="Scripts\ContactForm.js" />
+    <Content Include="Scripts\DemoContactForm.js" />
+    <Content Include="Scripts\forms.js" />
+    <Content Include="fonts\fa-brands-400.eot" />
+    <Content Include="fonts\fa-brands-400.ttf" />
+    <Content Include="fonts\fa-brands-400.woff" />
+    <Content Include="fonts\fa-brands-400.woff2" />
+    <Content Include="fonts\fa-regular-400.eot" />
+    <Content Include="fonts\fa-regular-400.ttf" />
+    <Content Include="fonts\fa-regular-400.woff" />
+    <Content Include="fonts\fa-regular-400.woff2" />
+    <Content Include="fonts\fa-solid-900.eot" />
+    <Content Include="fonts\fa-solid-900.ttf" />
+    <Content Include="fonts\fa-solid-900.woff" />
+    <Content Include="fonts\fa-solid-900.woff2" />
+    <Content Include="fonts\Pe-icon-7-stroke.eot" />
+    <Content Include="fonts\Pe-icon-7-stroke.ttf" />
+    <Content Include="fonts\Pe-icon-7-stroke.woff" />
+    <Content Include="Content\files\PCI_Compliance.pdf" />
+    <Content Include="Content\blog\fonts\fa-brands-400.eot" />
+    <Content Include="Content\blog\fonts\fa-brands-400.ttf" />
+    <Content Include="Content\blog\fonts\fa-brands-400.woff" />
+    <Content Include="Content\blog\fonts\fa-brands-400.woff2" />
+    <Content Include="Content\blog\fonts\fa-regular-400.eot" />
+    <Content Include="Content\blog\fonts\fa-regular-400.ttf" />
+    <Content Include="Content\blog\fonts\fa-regular-400.woff" />
+    <Content Include="Content\blog\fonts\fa-regular-400.woff2" />
+    <Content Include="Content\blog\fonts\fa-solid-900.eot" />
+    <Content Include="Content\blog\fonts\fa-solid-900.ttf" />
+    <Content Include="Content\blog\fonts\fa-solid-900.woff" />
+    <Content Include="Content\blog\fonts\fa-solid-900.woff2" />
+    <None Include="packages.config" />
+    <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <Content Include="Scripts\jquery-mask.js" />
+    <Content Include="Scripts\jquery.animatebar.js" />
+    <Content Include="Scripts\jquery.counterup.js" />
+    <Content Include="Scripts\jquery.easing.min.js" />
+    <Content Include="Scripts\jquery.js" />
+    <Content Include="Scripts\jquery.magnific-popup.js" />
+    <Content Include="Scripts\jquery.smartWizard.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jquery.waypoints.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\modernizr-2.8.3.min.js" />
+    <Content Include="Scripts\odometer.min.js" />
+    <Content Include="Scripts\particles.js" />
+    <Content Include="Scripts\popper.js" />
+    <Content Include="Scripts\prettify.js" />
+    <Content Include="Scripts\simplebar.js" />
+    <Content Include="Scripts\site.js" />
+    <Content Include="Scripts\stripe-menu.js" />
+    <Content Include="Scripts\swiper.js" />
+    <Content Include="Scripts\typed.js" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\AboutUs\Index.cshtml" />
+    <Content Include="Views\Analytics\Index.cshtml" />
+    <Content Include="Views\Contact\Index.cshtml" />
+    <Content Include="Views\Documentation\Index.cshtml" />
+    <Content Include="Views\Marketing\Index.cshtml" />
+    <Content Include="Views\Marketing\Social.cshtml" />
+    <Content Include="Views\MobileApp\Index.cshtml" />
+    <Content Include="Views\Mobile\Index.cshtml" />
+    <Content Include="Views\Payments\Index.cshtml" />
+    <Content Include="Views\Pricing\Index.cshtml" />
+    <Content Include="Views\Reports\Index.cshtml" />
+    <Content Include="Views\ScheduleDemo\Index.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
+    <Content Include="Views\Shared\_Head.cshtml" />
+    <Content Include="Views\Shared\_Navbar.cshtml" />
+    <Content Include="Views\Terms\Index.cshtml" />
+    <Content Include="Views\Features\GivingFunds.cshtml" />
+    <Content Include="Views\Features\People.cshtml" />
+    <Content Include="Views\Features\OfflineGiving.cshtml" />
+    <Content Include="Views\Features\PrayerRequests.cshtml" />
+    <Content Include="Views\Features\Analytics.cshtml" />
+    <Content Include="Views\Features\Giving.cshtml" />
+    <Content Include="Views\KnowledgeBase\Index.cshtml" />
+    <Content Include="Views\Error\_NoAccess.cshtml" />
+    <Content Include="Views\Error\GenericError.cshtml" />
+    <Content Include="Views\Error\NoAccess.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Shared\_ErrorLayout.cshtml" />
+    <Content Include="Views\Blog\Index.cshtml" />
+    <Content Include="Views\Shared\_BlogLayout.cshtml" />
+    <Content Include="Views\Blog\Post.cshtml" />
+    <Content Include="Views\Blog\LatestPosts.cshtml" />
+    <Content Include="Views\Blog\Category.cshtml" />
+    <Content Include="Views\Blog\Categories.cshtml" />
+    <Content Include="Views\Shared\_BlogNavbar.cshtml" />
+    <Content Include="Views\Shared\_BlogRightSidebar.cshtml" />
+    <Content Include="Views\Shared\_BlogFooter.cshtml" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Scripts\jquery-3.3.1.min.map" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PraiseCMS.BusinessLayer\PraiseCMS.BusinessLayer.csproj">
+      <Project>{53b1cc7e-b860-4b2d-95fd-75c9ca01ff6e}</Project>
+      <Name>PraiseCMS.BusinessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PraiseCMS.DataAccess\PraiseCMS.DataAccess.csproj">
+      <Project>{adcb302b-c6fb-461f-b6b3-e3bd3b0f4023}</Project>
+      <Name>PraiseCMS.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PraiseCMS.Shared\PraiseCMS.Shared.csproj">
+      <Project>{db83f98f-870a-4262-90d6-7008c6b40cdb}</Project>
+      <Name>PraiseCMS.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PraiseCMS.Web\PraiseCMS.Web.csproj">
+      <Project>{DBB17C25-32B0-4AC9-B054-EF50A9488808}</Project>
+      <Name>PraiseCMS.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ProdDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>57701</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44327/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

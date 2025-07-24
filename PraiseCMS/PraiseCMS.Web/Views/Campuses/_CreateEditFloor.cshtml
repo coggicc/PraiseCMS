@@ -1,0 +1,74 @@
+﻿@model PraiseCMS.DataAccess.Models.Floor
+@{
+    var buildings = ViewData.ContainsKey("Buildings") ? (List<Building>)ViewData["Buildings"] : new List<Building>();
+}
+<div id="floor-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "floor-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Name:</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(x => x.FloorName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.FloorName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Campus:</label>
+            <div class="col-lg-8">
+                @Html.DropDownListFor(x => x.CampusId, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id, x => SessionVariables.Campuses.Count() == 1 && x.Id == SessionVariables.Campuses.First().Id), "Select a campus...", new { @class = "form-control select2" })
+                @Html.ValidationMessageFor(x => x.CampusId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-4 col-form-label">Building:</label>
+            <div class="col-lg-8">
+                @Html.DropDownListFor(x => x.BuildingId, new SelectList(new List<Building>(), "Id", "BuildingName", buildings.Count() == 1 && SessionVariables.Campuses.Count() == 1 ? buildings.First().Id : null), "Select a building...", new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.BuildingId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    }
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        var buildingsList = @Html.Raw(Json.Encode(buildings));
+        var campusList = @Html.Raw(Json.Encode(SessionVariables.Campuses));
+        var buildingByCampus = [];
+        function bindBuildings(campusId, selectedId) {
+            $("#BuildingId").val('');
+            if (campusId) {
+                buildingByCampus = buildingsList.filter(x => x.CampusId === campusId);
+            } else {
+                buildingByCampus = buildingsList;
+            }
+            var $sel = $("#BuildingId").empty();
+            $sel.append('<option value="">Select a building...</option>');
+            $.each(buildingByCampus, function () {
+                $sel.append("<option value='" + this.Id + "'>" + this.BuildingName + "</option>");
+            });
+            if ((campusList.length === 1 || $("#CampusId").val()) && buildingByCampus.length === 1) {
+                $("#BuildingId").val(buildingByCampus[0].Id);
+            }
+            if (selectedId) {
+                $("#BuildingId").val(selectedId);
+            }
+        }
+        $(document).on("change", "#CampusId", function () {
+            bindBuildings($(this).val());
+        });
+        $(function () {
+            if ('@Model.CampusId' !== null && '@Model.CampusId' !== '' && '@Model.BuildingId' !== null && '@Model.BuildingId' !== '') {
+                bindBuildings('@Model.CampusId','@Model.BuildingId');
+            } else if ('@Model.CampusId' !== null && '@Model.CampusId' !== '' && ('@Model.BuildingId' === null || '@Model.BuildingId' === '')) {
+                bindBuildings('@Model.CampusId');
+            }
+        });
+    </script>
+}

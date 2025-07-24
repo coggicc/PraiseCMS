@@ -1,0 +1,25 @@
+﻿@model PraiseCMS.DataAccess.Models.EmailTemplate
+
+<div id="email-template-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "email-template-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.Type)
+        @Html.HiddenFor(x => x.TypeId)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+        <div class="form-group">
+            <label>Name:</label>
+            @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Give this email template a name..." })
+            @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Body:</label>
+            @Html.TextAreaFor(x => x.Body, new { @class = "form-control", placeholder = "", style = "min-height: 250px;" })
+            @Html.ValidationMessageFor(x => x.Body, "", new { @class = "text-danger" })
+        </div>
+        @*<p>Add Keywords Here: {current-date} {name}</p>*@
+    }
+</div>

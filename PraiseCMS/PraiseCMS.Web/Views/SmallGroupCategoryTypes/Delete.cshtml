@@ -1,0 +1,72 @@
+﻿@model PraiseCMS.DataAccess.Models.SmallGroupCategoryType
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>SmallGroupCategoryType</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(x => x.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.ChurchId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.ChurchId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.CreatedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.CreatedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.CreatedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.CreatedBy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.ModifiedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.ModifiedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.ModifiedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.ModifiedBy)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

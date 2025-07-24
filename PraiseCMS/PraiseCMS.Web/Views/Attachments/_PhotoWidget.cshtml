@@ -1,0 +1,137 @@
+﻿@*@model AttachmentsViewSD
+    @{
+        var view = Model.Attachments != null ? Model : new AttachmentProvider().GetAttachmentsView(Model.Type, Model.TypeId, Model.ReturnUrl);
+    }
+
+    <style>
+        #_PhotoWidget-@view.TypeId .arrows {
+            display: inline-block;
+            margin-right: 10px;
+            width: 12px;
+            height: 24px;
+        }
+
+        #_PhotoWidget-@view.TypeId .arrows a {
+            font-size: 12px;
+            display: inline-block;
+            float: left;
+            color: #CCC;
+        }
+    </style>
+
+    <div id="_PhotoWidget-@view.TypeId">
+        <table class="table table-bordered" style="margin: 0;">
+            @if (!Model.InsideModal)
+            {
+                <thead>
+                    <tr>
+                        <th>Photos</th>
+                    </tr>
+                </thead>
+            }
+            <tbody>
+                @if (!Model.DisableDragAndDrop)
+                {
+                    <tr>
+                        <td>
+                            @using (Html.BeginForm("_UploadPhotos", "Attachments", FormMethod.Post, new { @class = "dropzone form-horizontal", id = "photo-drop-form-" + view.TypeId, enctype = "multipart/form-data" }))
+                            {
+                                @Html.ValidationSummary()
+
+                                @Html.Hidden("type", view.Type)
+                                @Html.Hidden("typeId", view.TypeId)
+                                @Html.Hidden("returnUrl", view.ReturnUrl)
+                            }
+
+                            <script>
+                            Dropzone.autoDiscover = false;
+                            $("form#photo-drop-form-@view.TypeId").dropzone({
+                                dictDefaultMessage: "<i class='ti-cloud-up' style='font-size: 48px;margin-top: -10px;'></i><h3 style='font-size: 18px;'>Drag &amp; Drop Photos Here</h3><span style='display:block;margin: 15px 0;font-size: 12px;'>or</span><a href='#' class='btn btn-primary'>Browse Files</a>",
+                                paramName: "file",
+                                maxFilesize: 25,
+                                acceptedFiles: ".jpeg,.jpg,.png,.gif,.bmp",
+                                init: function () {
+                                    this.on('queuecomplete', function () {
+                                        window.location.replace("@view.ReturnUrl");
+                                    });
+                                }
+                            });
+                            </script>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>
+                        @Html.AjaxModalLink(view.Attachments.Any() ? "Add Another Photo" : "Add Photo", "/attachments/_create?type=" + Url.Encode(view.Type) + "&typeId=" + view.TypeId + "&returnUrl=" + Url.Encode(view.ReturnUrl), "Add New Photo", "Save", "save-progress", "", "", null, Model.InsideModal)
+                    </td>
+                </tr>
+                @if (view.Attachments.Any())
+                {
+                    foreach (var attachment in view.Attachments)
+                    {
+                        var user = view.Users.FirstOrDefault(x => x.Id.Equals(attachment.CreatedBy));
+                        var style = attachment.SortOrder == 1 ? "background: #EEE;border-bottom: 1px dashed #DDD !important;" : "";
+
+                        <tr>
+                            <td style="@style">
+                                @if (!Model.InsideModal)
+                                {
+                                    <span style="float:right;margin-top: 8px;" class="hidden-xs-down">
+                                        Uploaded
+                                        @if (user != null)
+                                        {
+                                            <span>by @user.Name</span>
+                                        }
+                                        on @attachment.DateCreated.ToShortDateString()
+                                        <span>|</span>
+                                        @if (!string.IsNullOrEmpty(Model.Type) && Model.Type.EqualsIgnoreCase("My Photo", "Job Photo"))
+                                        {
+                                            @Html.AjaxModalLink("Disposition", "/units/_dispositionphoto/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl) + "&unitId=" + Model.TypeId, "Disposition Photo", "Save", "save-progress", "", "", "", Model.InsideModal)
+                                            <span>|</span>
+                                        }
+                                        @Html.AjaxModalLink("Edit Photo", "/attachments/_edit/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl), "Edit Photo", "Save", "save-progress", "margin-left: 5px;", "/attachments/delete/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl), null, Model.InsideModal)
+                                    </span>
+                                    <div class="arrows">
+                                        <a data-ajax="true" data-ajax-method="get" href="/attachments/_moveattachmentup/@attachment.Id?widget=@Url.Encode("_PhotoWidget")&returnUrl=@Url.Encode(view.ReturnUrl)"><i class="ti-angle-up"></i></a>
+                                        <a data-ajax="true" data-ajax-method="get" href="/attachments/_moveattachmentdown/@attachment.Id?widget=@Url.Encode("_PhotoWidget")&returnUrl=@Url.Encode(view.ReturnUrl)"><i class="ti-angle-down"></i></a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span style="float:right;margin-top: 8px;" class="hidden-xs-down">
+                                        @if (!string.IsNullOrEmpty(Model.Type) && Model.Type.EqualsIgnoreCase("My Photo", "Job Photo"))
+                                        {
+                                            @Html.AjaxModalLink("Disposition", "/units/_dispositionphoto/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl) + "&unitId=" + Model.TypeId, "Disposition Photo", "Save", "save-progress", "", "", "", Model.InsideModal)
+                                            <span>|</span>
+                                        }
+                                        @Html.AjaxModalLink("Edit Photo", "/attachments/_edit/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl), "Edit Photo", "Save", "save-progress", "margin-left: 5px;", "/attachments/delete/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl), null, Model.InsideModal)
+                                    </span>
+                                }
+
+                                <a href="@Html.AmazonLink(attachment.FileName)" data-lightbox="1" data-title="@attachment.Name">
+                                    <img src="@Html.AmazonLink(attachment.FileName, ApplicationCache.Instance.AmazonConfiguration.IconDirectory)" alt="@attachment.Name" style="height: 35px;margin-right: 6px;" />
+                                    <span class="hidden-xs-down">@attachment.Name.EllipsisAt(40)</span>
+                                </a>
+                                <div class="hidden-sm-up" style="display:inline-block;">
+                                    @if (!string.IsNullOrEmpty(Model.Type) && Model.Type.EqualsIgnoreCase("My Photo", "Job Photo"))
+                                    {
+                                        @Html.AjaxModalLink("Disposition", "/units/_dispositionphoto/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl) + "&unitId=" + Model.TypeId, "Disposition Photo", "Save", "save-progress", "", "", "", Model.InsideModal)
+                                        <span>|</span>
+                                    }
+                                    @Html.AjaxModalLink("Edit Photo", "/attachments/_edit/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl), "Edit Photo", "Save", "save-progress", "margin-left: 5px;", "/attachments/delete/" + attachment.Id + "?returnUrl=" + Url.Encode(view.ReturnUrl), null, Model.InsideModal)
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            No photos added yet, drag and drop your files or click "Add Photo" above to get started
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>*@

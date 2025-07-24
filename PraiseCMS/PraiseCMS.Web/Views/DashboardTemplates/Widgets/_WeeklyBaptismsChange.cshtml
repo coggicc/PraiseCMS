@@ -1,0 +1,48 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+@{
+    var comparison = Model.WeeklyBaptismComparison;
+    var isDecrease = false;
+    var statusClass = "text-success";
+    var progressBarClass = "bg-success";
+    var changeText = "Increase";
+    var percentChange = "0%";
+
+    if (comparison != null)
+    {
+        isDecrease = comparison.Difference < 0;
+        statusClass = isDecrease ? "text-danger" : "text-success";
+        progressBarClass = isDecrease ? "bg-danger" : "bg-success";
+        changeText = isDecrease ? "Decrease" : "Increase";
+        percentChange = comparison.PercentChange.ToString("0") + "%";
+    }
+}
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder w-75">Weekly Baptisms Change</h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-10">
+        @if (comparison != null)
+        {
+            <div class="font-weight-bold text-muted font-size-sm">
+                <span class="text-dark-75 font-weight-bolder font-size-h2 mr-2">
+                    @percentChange
+                </span>
+                <span class="@statusClass">@changeText</span>
+                <div class="progress progress-xs mt-7 bg-@progressBarClass-o-60">
+                    <div class="progress-bar @progressBarClass" role="progressbar" style="width: @percentChange;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="font-weight-bold text-muted font-size-sm">
+                No data available.
+            </div>
+        }
+    </div>
+</div>

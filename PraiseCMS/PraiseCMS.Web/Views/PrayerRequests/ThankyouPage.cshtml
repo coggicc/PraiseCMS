@@ -1,0 +1,59 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ResponseModel
+@{
+    var appVersion = "app.version".AppSetting<string>("v9.9.9");
+    Layout = null;
+    ViewBag.Title = "Prayer Request Received";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="../../../../">
+    <meta charset="utf-8" />
+    <title>Thank You | Praise CMS</title>
+    <meta name="description" content="Singin page example" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700|Roboto:300,400,500,600,700">
+    <link href="~/Content/assets/sass/style.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link href="~/Content/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/header/base/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/header/menu/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/brand/dark.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/aside/dark.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="~/Content/assets/media/logos/favicon.ico" />
+    <link href="~/Content/assets/css/pages/login/login-3.css" rel="stylesheet" type="text/css" />
+    <style>
+        p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+    <div class="d-flex flex-column flex-root">
+        <div class="login login-3 wizard d-flex flex-column flex-lg-row flex-column-fluid">
+            <div class="login-content flex-column-fluid d-flex flex-column p-10">
+                <div class="d-flex flex-row-fluid flex-center">
+                    <div class="col-12 col-lg-6 text-center">
+                        <span class="fa-stack fa-5x animate__animated animate__bounceInDown">
+                            <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                            <i class="@(Model.Success ? "far fa-thumbs-up" : "fas fa-exclamation") fa-inverse fa-stack-1x" style="font-size:64px;"></i>
+                        </span>
+                        <div class="m-10">
+                            <p class="font-weight-bold">Your message has been sent.</p>
+                            <p class="text-dark-50">@(!string.IsNullOrEmpty(Model.Message) ? Html.Raw(Model.Message).ToString() : "Thank you!")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>var KTAppSettings = { "breakpoints": { "sm": 576, "md": 768, "lg": 992, "xl": 1200, "xxl": 1200 }, "colors": { "theme": { "base": { "white": "#ffffff", "primary": "#3699FF", "secondary": "#E5EAEE", "success": "#1BC5BD", "info": "#8950FC", "warning": "#FFA800", "danger": "#F64E60", "light": "#F3F6F9", "dark": "#212121" }, "light": { "white": "#ffffff", "primary": "#E1F0FF", "secondary": "#ECF0F3", "success": "#C9F7F5", "info": "#EEE5FF", "warning": "#FFF4DE", "danger": "#FFE2E5", "light": "#F3F6F9", "dark": "#D6D6E0" }, "inverse": { "white": "#ffffff", "primary": "#ffffff", "secondary": "#212121", "success": "#ffffff", "info": "#ffffff", "warning": "#ffffff", "danger": "#ffffff", "light": "#464E5F", "dark": "#ffffff" } }, "gray": { "gray-100": "#F3F6F9", "gray-200": "#ECF0F3", "gray-300": "#E5EAEE", "gray-400": "#D6D6E0", "gray-500": "#B5B5C3", "gray-600": "#80808F", "gray-700": "#464E5F", "gray-800": "#1B283F", "gray-900": "#212121" } }, "font-family": "Poppins" };</script>
+    <script src="~/Content/assets/plugins/global/plugins.bundle.js?v=7.0.4"></script>
+    <script src="~/Content/assets/js/scripts.bundle.js?v=7.0.4"></script>
+    <script src="~/Content/assets/js/pages/custom/login/login-3.js?v=7.0.4"></script>
+</body>
+</html>

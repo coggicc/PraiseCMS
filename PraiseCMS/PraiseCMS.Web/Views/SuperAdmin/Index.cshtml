@@ -1,0 +1,68 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SuperAdminViewModel
+
+@{
+    ViewBag.Title = "Super Admin Dashboard";
+}
+
+@*@section leftsubheader{
+        @Html.Partial("_PeopleSubheader")
+    }*@
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-database fa-4x text-success mt-4 mb-4"></i>
+                <h3 class="font-weight-bold mb-4">Generate Data</h3>
+                <a href="superadmin/GenerateData" class="btn btn-outline-primary font-weight-bold">Generate Data</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-user fa-4x text-info mt-4 mb-4"></i>
+                <h3 class="font-weight-bold mb-4">Delete Person</h3>
+                <a href="superadmin/DeletePerson" class="btn btn-outline-primary font-weight-bold">Delete Person</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom card-stretch gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-praying-hands fa-4x text-danger my-4"></i>
+                <h3 class="font-weight-bold mb-4">Create Merchant Account</h3>
+                @using (Html.BeginForm("Index", "SuperAdmin", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true)
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SelectedChurchId, "Select a Church")
+                        @Html.DropDownListFor(x => x.SelectedChurchId, Model.Churches.ToSelectList(x => x.Display, x => x.Id), "Select a church...", new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(model => model.SelectedChurchId)
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary">Submit</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-globe-asia fa-4x text-dark mt-4 mb-4"></i>
+                <h3 class="font-weight-bold mb-4">Blacklist IPs</h3>
+                <a href="/superadmin/blacklistedips" class="btn btn-outline-primary font-weight-bold">View Blacklisted IPs</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-globe-americas fa-4x text-warning mt-4 mb-4"></i>
+                <h3 class="font-weight-bold mb-4">Whitelist IPs</h3>
+                <a href="superadmin/whitelistedips" class="btn btn-outline-primary font-weight-bold">View Whitelisted IPs</a>
+            </div>
+        </div>
+    </div>
+</div>

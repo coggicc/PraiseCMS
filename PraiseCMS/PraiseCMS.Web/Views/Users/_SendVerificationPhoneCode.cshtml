@@ -1,0 +1,69 @@
+﻿@model PraiseCMS.DataAccess.Models.ApplicationUser
+@{
+    Layout = null;
+}
+
+<style type="text/css">
+    .phone_verification_form_container .form-heading {
+        padding-bottom: 3px;
+    }
+
+        .phone_verification_form_container .form-heading h3 {
+            color: #000;
+        }
+
+    .phone_verification_form_container .form-text {
+        line-height: 23px;
+    }
+
+    .phone_verification_form_container .form-group {
+        margin-top: 30px;
+    }
+
+    .phone_verification_form_container .form-control {
+        font-size: 32px;
+        border: 0;
+    }
+
+    .validation-summary-errors.text-danger ul {
+        padding: 0px 5px;
+    }
+
+    .validation-summary-errors.text-danger li {
+        list-style: none;
+        background-color: #fef2f2;
+        padding: 15px 10px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div id="phone_verification_form_container" class="phone_verification_form_container text-center">
+    @using (Ajax.BeginForm("_SendVerificationPhoneCode", RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "phone_verification_form_container" }, new { @class = "form", id = "phone_verification_form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="form-heading">
+            <h3>Check Your Text Messages</h3>
+        </div>
+        <div class="form-text">
+            Please enter the verification code sent to @Model.PhoneNumber.
+        </div>
+        <div class="form-group row">
+            <div class="input-group">
+                <input type="text" name="verificationCode" id="verificationCode" class="form-control text-center" placeholder="000000" maxlength="6" autocomplete="off" />
+            </div>
+        </div>
+    }
+    <a id="SendPhoneCode" data-ajax="true" onclick="StartLoading()" data-ajax-method="get" href="/users/_RetrySendVerificationPhoneCode?id=@Url.Encode(Model.Id)"><span class="form-text">Didn't get a code?</span></a>
+</div>
+
+<script type="text/javascript">
+    $(document).on("keyup", "#verificationCode", function () {
+        var $length = $(this).val().length;
+        if ($length == 6) {
+            $("#phone_verification_form").submit();
+        }
+    });
+</script>

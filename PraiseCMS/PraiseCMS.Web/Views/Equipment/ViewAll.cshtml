@@ -1,0 +1,73 @@
+﻿@model PraiseCMS.DataAccess.Models.EquipmentView
+
+@{
+    ViewBag.Title = "Equipment";
+}
+
+@section subheader{
+    <div class="d-flex align-items-center">
+        <a href="/equipment/categories" class="btn btn-light-dark btn-sm mr-2">View Categories</a>
+        @Html.AjaxModalLink("Add Equipment", "/equipment/_addequipment", "Add Equipment", "Save", "btn btn-sm btn-light-primary")
+    </div>
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                <i class="kt-font-brand fa fa-toolbox"></i>
+                @ViewBag.Title
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                @if (Model.EquipmentList.Any())
+                {
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.EquipmentCategories.Any())
+                        {
+                            foreach (var cat in Model.EquipmentCategories)
+                            {
+                                <tr class="table-secondary">
+                                    <td colspan="3" style="padding-left:15px;">@cat.Display</td>
+                                </tr>
+                                if (Model.EquipmentList.Any(x => x.EquipmentCategoryId.Equals(cat.Id)))
+                                {
+                                    foreach (var item in Model.EquipmentList.Where(x => x.EquipmentCategoryId.Equals(cat.Id)).OrderBy(x => x.Name))
+                                    {
+                                        <tr>
+                                            <td style="padding-left:30px;">
+                                                @Html.AjaxModalLink(item.Name, "/equipment/_editequipment/" + item.Id, "Edit Equipment", "Save", "", "", "/equipment/deleteequipment/" + item.Id, "", false, ModalSizes.Default)
+                                            </td>
+                                            <td>@item.Description</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="3" style="padding-left:30px;">You don't have any equipment for this category yet.</td></tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="3" style="padding-left:15px;">You don't have any equipment for this category yet.</td></tr>
+                        }
+                    </tbody>
+                }
+                else
+                {
+                    <tr><td colspan="3">You don't have any equipment for this category yet.</td></tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>

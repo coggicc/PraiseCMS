@@ -1,0 +1,18 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+
+@{
+    var widgets = SessionVariables.Widgets != null ? SessionVariables.Widgets.Where(x => x.Widget.IsNotNullOrEmpty() && x.Widget.Location == WidgetLocations.Main).ToList() : new List<WidgetSortable>();
+}
+
+<div class="row">
+    @if (widgets.Any())
+    {
+        foreach (var item in widgets.Where(item => item.Widget.FileName.IsNotNullOrEmpty()))
+        {
+            <div class="@item.Widget.LayoutSize">
+                @Html.Partial(item.Widget.FileName.WidgetPartialViewUrl())
+            </div>
+        }
+    }
+</div>

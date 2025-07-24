@@ -1,0 +1,12 @@
+﻿@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div>
+        @Html.Raw(ViewBag.Message)
+    </div>
+}
+else
+{
+    <div>
+        Access to this area of the application has been restricted for your user account. Please contact your administrator if you need access.
+    </div>
+}

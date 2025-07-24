@@ -1,0 +1,79 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.ServiceArea>
+
+@{
+    ViewBag.Title = "Service Areas";
+}
+
+@section leftsubheader{
+    <a href="/settings" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 @Html.IsActive("settings", "Index", true)">Church Info</a>
+    <a href="/campuses" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 @Html.IsActive("campuses", "Index", true)">Campuses</a>
+    <a href="/campuses/buildings" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 @Html.IsActive("campuses", "buildings", true)">Buildings</a>
+    <a href="/campuses/floors" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 @Html.IsActive("campuses", "floors", true)">Floors</a>
+    <a href="/campuses/rooms" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 @Html.IsActive("campuses", "rooms", true)">Rooms</a>
+    <a href="/serviceareas" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 @Html.IsActive("serviceareas", "Index", true)">Service Areas</a>
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Create Service Area", "/serviceareas/_createservicearea/", "Create Service Area", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Requirements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.AjaxModalLink(item.Name, "/serviceareas/_editservicearea/" + item.Id, "Edit Service Area", "Save", "", "", "/serviceareas/delete/" + item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                                <td>
+                                    @{
+                                        var requirements = item.Requirements.SplitToList().OrderBy(x => x).ToList();
+                                        foreach (var req in requirements)
+                                        {
+                                            <span class="label label-lg label-light-dark label-pill label-inline mr-2">@req</span>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-7">
+                    <h5 class="mt-md-10 mt-lg-14" style="font-size:30px;">Service Areas</h5>
+                    <p style="font-size:18px;">We've compiled a list of common service areas that you can use, or feel free to create your own.</p>
+                    @Html.AjaxModalLink("Create Service Area", "/serviceareas/_createservicearea/", "Create Service Area", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+                </div>
+                <div class="col-md-5">
+                    <img src="~/Content/assets/image/service-areas.svg" class="img-fluid" alt="Service Areas"/>
+                </div>
+            </div>
+        }
+    </div>
+</div>

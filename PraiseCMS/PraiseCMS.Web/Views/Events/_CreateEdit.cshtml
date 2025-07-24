@@ -1,0 +1,190 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ChurchEventViewModel
+
+<div id="event-div">
+    @Html.Partial("~/Views/Shared/_Alert.cshtml")
+
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "event-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Event.Id)
+        @Html.HiddenFor(x => x.Event.ChurchId)
+        @Html.HiddenFor(x => x.Event.CreatedBy)
+        @Html.HiddenFor(x => x.Event.CreatedDate)
+
+        <div class="form-group">
+            <label>Type:</label>
+            <div class="row">
+                <div class="col-9">
+                    @Html.DropDownListFor(x => x.Event.ChurchEventTypeId, Model.EventTypes.ToSelectList(x => x.Type, x => x.Id).OrderBy(x => x.Text), "Select an event type...", new { @class = "form-control select2", style = "width:100%;" })
+                    <span class="form-text text-muted"><a target="_blank" href="/churcheventtypes">View or modify event types.</a></span>
+                </div>
+                <div class="col-3">
+                    <a href="/churcheventtypes/_CreateChurchEventType" id="newEventType-btn" class="btn btn-light-primary btn-sm font-weight-bold" data-toggle="modal" data-target="#newEventType">Add New</a>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(x => x.Event.ChurchEventTypeId, "", new { @class = "text-danger" })
+        </div>
+        @*<div class="form-group">
+            <label>Description:</label>
+            @Html.TextAreaFor(x => x.Event.Description, new { @class = "form-control", rows = "3" })
+            @Html.ValidationMessageFor(x => x.Event.Description, "", new { @class = "text-danger" })
+        </div>*@
+        <div class="form-group">
+            <label>Campuses:</label>
+            @if (RouteHelpers.Creating)
+            {
+                <div class="checkbox-list">
+                    @{
+                        string isChecked = null;
+                    }
+                    @if (SessionVariables.Campuses.Count() == 1)
+                    {
+                        isChecked = "checked";
+                    }
+
+                    @foreach (var item in SessionVariables.Campuses)
+                    {
+                        <label class="checkbox">
+                            <input class="cbx_campus" type="checkbox" name="Campuses" value="@item.Id" @isChecked> @item.Name
+                            <span></span>
+                        </label>
+                    }
+                    <div class="separator separator-dashed my-5"></div>
+                    <label class="checkbox">
+                        <input type="checkbox" value="All" @isChecked id="kt-checkbox-selectall"> Select All/None
+                        <span></span>
+                    </label>
+                </div>
+            }
+            else
+            {
+                <div class="checkbox-list">
+                    @{
+                        var checkedAll = "checked";
+                        foreach (var item in SessionVariables.Campuses)
+                        {
+                            //var isContain = Model.Event.CampusId.IsNotNullOrEmpty() && Model.Event.CampusId.Contains(item.Id);
+                            var isChecked = string.Empty;
+
+                            //if (isContain)
+                            //{
+                            //    isChecked = "checked";
+                            //}
+                            //else
+                            //{
+                            //    checkedAll = string.Empty;
+                            //}
+                            <label class="checkbox">
+                                <input class="cbx_campus edit_campus" type="checkbox" name="Campuses" value="@item.Id" @isChecked> @item.Name
+                                <span></span>
+                            </label>
+                        }
+                    }
+                    <div class="separator separator-dashed my-5"></div>
+                    <label class="checkbox">
+                        <input type="checkbox" class="edit_campus_all" value="All" id="kt-checkbox-selectall" @checkedAll> Select All/None
+                        <span></span>
+                    </label>
+                </div>
+            }
+        </div>
+    }
+</div>
+<div class="modal fade" id="newEventType" tabindex="-1" role="dialog" aria-labelledby="newEventTypeLable" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Church Event Type</h5>
+                <button type="button" class="close" onclick="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="newEventType-body">
+                <div style="text-align:center;">
+                    <i class="mr-5">Please wait...</i>
+                    <i class="spinner-border text-primary"></i>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-primary font-weight-bold mr-2" onclick="saveNewEventType()">Save</button>
+                <button type="button" class="btn btn-light-dark font-weight-bold" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function closeModal() {
+        $('#newEventType').modal('toggle');
+        setTimeout(function () {
+            $('body').addClass('modal-open');
+        }, 500);
+    }
+    $(document).on('change', '.edit_campus', function (e) {
+        var ckBox = $(this);
+        if (!ckBox.prop('checked')) {
+            $.get("/events/CheckCampusTime", ({ campusId: $(this).val(), eventId: $('#Event_Id').val() }), function (result) {
+                if (result) {
+                    ckBox.prop('checked', true);
+                    let checkedAll = true;
+                    $.each($(".cbx_campus"), function () {
+                        if (!$(this).prop("checked")) {
+                            checkedAll = false;
+                        }
+                    });
+                    $("#kt-checkbox-selectall").prop("checked", checkedAll);
+                    wizardValidationMessage('This campus already has event times scheduled. You must remove any event times associated with this campus prior to removing the campus from the event.', 'warning', false, 'Warning');
+                }
+            });
+        }
+    });
+
+    $(document).on('change', '.edit_campus_all', function (e) {
+        var ckBox = $(this);
+        if (!ckBox.prop('checked')) {
+            $.get("/events/GetScheduledCampuses", ({ eventId: $('#Event_Id').val() }), function (result) {
+                if (result.length) {
+                    $.each(result, function (i, v) {
+                        $(":checkbox[value=" + v + "]").prop("checked", "true");
+                    });
+                    ckBox.prop('checked', true);
+                    let checkedAll = true;
+                    $.each($(".cbx_campus"), function () {
+                        if (!$(this).prop("checked")) {
+                            checkedAll = false;
+                        }
+                    });
+                    $("#kt-checkbox-selectall").prop("checked", checkedAll);
+                    wizardValidationMessage('There are events scheduled for one of these campuses. You must remove any event times prior to removing campuses from the event.', 'warning', false, 'Warning');
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '#newEventType-btn', function (e) {
+        e.preventDefault();
+        $.get($(this).attr("href"), null, function (result) {
+            $("#newEventType-body").html("").html(result);
+        });
+    });
+
+    function saveNewEventType() {
+        var form = $('#churchEventTypeForm');
+        let url = $(form).attr("action").split('?')[0];
+        $.post(url + "?returnValue=true", $(form).serialize(), function (result) {
+            if (result.selectedId) {
+                var $sel = $("#Event_ChurchEventTypeId").empty();
+                $sel.append('<option value="">Select an event type</option>');
+                $.each(result.list, function () {
+                    $sel.append("<option value='" + this.Id + "'>" + this.Type + "</option>");
+                });
+                $("#Event_ChurchEventTypeId").val(result.selectedId);
+                Notify("success", "Added", "The church event type has been created.", "/churcheventtypes", "_blank");
+                closeModal();
+            } else {
+                $("#newEventType-body").html("").html(result);
+            }
+        });
+    }
+</script>

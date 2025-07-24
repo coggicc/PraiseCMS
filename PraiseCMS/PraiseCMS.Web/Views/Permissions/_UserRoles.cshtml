@@ -1,0 +1,15 @@
+﻿@model PraiseCMS.DataAccess.Models.PermissionViewModel
+
+@foreach (var role in Model.ApplicationRoles)
+{
+    var user = Model.ApplicationSingleUser.Roles.FirstOrDefault(x => x.RoleId == role.Id);
+
+    if (user != null)
+    {
+        <a href="javascript:;" data-action="RemoveRoleFromUser" data-userId="@user.UserId" data-roleId="@role.Id" class="assign-role btn btn-light-dark font-weight-bold btn-sm active">@role.Name</a>
+    }
+    else
+    {
+        <a href="javascript:;" data-action="AssignRoleToUser" data-userId="@Model.ApplicationSingleUser.Id" data-roleId="@role.Id" class="assign-role btn btn-light-dark font-weight-bold btn-sm">@role.Name</a>
+    }
+}

@@ -1,0 +1,548 @@
+﻿@using System.Configuration
+
+@{
+    ViewBag.Title = "Index";
+}
+<header class="section header color-1 header-v8">
+    <div class="shape-wrapper">
+        <div class="shape shape-background shape-main gradient gradient-34"></div>
+        <div class="shape shape-background shape-main shadow"></div>
+        <div class="shape shape-background shape-top"></div>
+        <div class="shape shape-background shape-right"></div>
+    </div>
+    <div class="container overflow-hidden">
+        <div class="row gap-y">
+            <div class="col-lg-6">
+                <h1 class="extra-bold display-md-3 display-lg-2 font-lg mb-5">
+                    Automate
+                    <span class="d-block light font-md">campaign management</span>
+                </h1>
+                <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab dolore excepturi explicabo, harum in laudantium nulla officiis reprehenderit!</p>
+                <form action="srv/register.php" class="form" data-response-message-animation="slide-in-left" novalidate>
+                    <div class="input-group-register py-4">
+                        <input type="email" name="Subscribe[email]" class="form-control shadow-lg bg-1 form-control-rounded" placeholder="Enter your email" required="">
+                        <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-rounded btn-success btn-lg text-capitalize" type="submit">Sign up free</a>
+                    </div>
+                </form>
+                <div class="response-message">
+                    <i class="fas fa-envelope font-lg"></i>
+                    <p class="font-md m-0">Check your email</p>
+                    <p class="response">We sent you an email with a link to get started. You'll be in your account in no time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-shape-wrapper">
+        <div class="bubbles-wrapper">
+            <div data-aos="fade-up">
+                <img src="~/Content/img/v8/header/main-shape.svg" class="img-responsive main-shape floating" alt="">
+            </div>
+            <ul class="animations m-0">
+                <li class="bubble icon icon-xxl">
+                    <img src="~/Content/img/v8/header/like.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/smile.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-lg">
+                    <img src="~/Content/img/v8/header/heart.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/heart.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xxl">
+                    <img src="~/Content/img/v8/header/smile.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/like.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xxl">
+                    <img src="~/Content/img/v8/header/smile.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/heart.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-lg">
+                    <img src="~/Content/img/v8/header/smile.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/like.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xxl">
+                    <img src="~/Content/img/v8/header/like.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/heart.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xxl">
+                    <img src="~/Content/img/v8/header/like.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/heart.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-lg">
+                    <img src="~/Content/img/v8/header/smile.svg" alt="" class="img-responsive">
+                </li>
+                <li class="bubble icon icon-xl">
+                    <img src="~/Content/img/v8/header/like.svg" alt="" class="img-responsive">
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+<section class="section features-carousel b-b">
+    <div class="container pt-0">
+        <div class="cards-wrapper">
+            <div class="swiper-container" data-sw-show-items="4" data-sw-autoplay="3500" data-sw-loop="true" data-sw-nav-arrows=".features-nav" data-sw-breakpoints='{"1024": {"slidesPerView": 4,"spaceBetween": 40},"992": {"slidesPerView": 3,"spaceBetween": 30},"768": {"slidesPerView": 2,"spaceBetween": 30},"576": {"slidesPerView": 1,"spaceBetween": 10}}'>
+                <div class="swiper-wrapper px-1">
+                    <div class="swiper-slide px-2 px-sm-1 py--4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <div class="logo mx-auto my-3">
+                                    <img src="~/Content/img/v8/icons/1.svg" class="img-responsive" alt="">
+                                </div>
+                                <hr class="w-50 mx-auto my-3">
+                                <p class="bold mt-4">Social Integration</p>
+                                <p class="regular small color-2">Consequuntur ea sapiente ut</p>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-around">
+                                <div class="roi">
+                                    <p class="color-5 lead bold mb-0">1.5k</p>
+                                    <p class="color-2 small mt-0">New subscribers</p>
+                                </div>
+                                <a href="javascript:;">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide px-2 px-sm-1 py--4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <div class="logo mx-auto my-3">
+                                    <img src="~/Content/img/v8/icons/2.svg" class="img-responsive" alt="">
+                                </div>
+                                <hr class="w-50 mx-auto my-3">
+                                <p class="bold mt-4">Design Strategy</p>
+                                <p class="regular small color-2">Alias eum expedita illo rem!</p>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-around">
+                                <div class="roi">
+                                    <p class="color-5 lead bold mb-0">1.5k</p>
+                                    <p class="color-2 small mt-0">New subscribers</p>
+                                </div>
+                                <a href="javascript:;">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide px-2 px-sm-1 py--4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <div class="logo mx-auto my-3">
+                                    <img src="~/Content/img/v8/icons/3.svg" class="img-responsive" alt="">
+                                </div>
+                                <hr class="w-50 mx-auto my-3">
+                                <p class="bold mt-4">Save Money</p>
+                                <p class="regular small color-2">Consectetur adipisicing elit</p>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-around">
+                                <div class="roi">
+                                    <p class="color-5 lead bold mb-0">1.5k</p>
+                                    <p class="color-2 small mt-0">New subscribers</p>
+                                </div>
+                                <a href="javascript:;">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide px-2 px-sm-1 py--4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <div class="logo mx-auto my-3">
+                                    <img src="~/Content/img/v8/icons/4.svg" class="img-responsive" alt="">
+                                </div>
+                                <hr class="w-50 mx-auto my-3">
+                                <p class="bold mt-4">Business Brain</p>
+                                <p class="regular small color-2">Rem repellendus rerum, vel!</p>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-around">
+                                <div class="roi">
+                                    <p class="color-5 lead bold mb-0">1.5k</p>
+                                    <p class="color-2 small mt-0">New subscribers</p>
+                                </div>
+                                <a href="javascript:;">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide px-2 px-sm-1 py--4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <div class="logo mx-auto my-3">
+                                    <img src="~/Content/img/v8/icons/5.svg" class="img-responsive" alt="">
+                                </div>
+                                <hr class="w-50 mx-auto my-3">
+                                <p class="bold mt-4">Worldwide Support</p>
+                                <p class="regular small color-2">Consectetur adipisicing elit</p>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-around">
+                                <div class="roi">
+                                    <p class="color-5 lead bold mb-0">1.5k</p>
+                                    <p class="color-2 small mt-0">New subscribers</p>
+                                </div>
+                                <a href="javascript:;">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide px-2 px-sm-1 py--4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <div class="logo mx-auto my-3">
+                                    <img src="~/Content/img/v8/icons/6.svg" class="img-responsive" alt="">
+                                </div>
+                                <hr class="w-50 mx-auto my-3">
+                                <p class="bold mt-4">Social Settings</p>
+                                <p class="regular small color-2">Facilis numquam odio sit amet.</p>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-around">
+                                <div class="roi">
+                                    <p class="color-5 lead bold mb-0">1.5k</p>
+                                    <p class="color-2 small mt-0">New subscribers</p>
+                                </div>
+                                <a href="javascript:;">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide px-2 px-sm-1 py--4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <div class="logo mx-auto my-3">
+                                    <img src="~/Content/img/v8/icons/7.svg" class="img-responsive" alt="">
+                                </div>
+                                <hr class="w-50 mx-auto my-3">
+                                <p class="bold mt-4">Insightful Statistics</p>
+                                <p class="regular small color-2">facere quasi rem suscipit!</p>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-around">
+                                <div class="roi">
+                                    <p class="color-5 lead bold mb-0">1.5k</p>
+                                    <p class="color-2 small mt-0">New subscribers</p>
+                                </div>
+                                <a href="javascript:;">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accent features-nav features-nav-next">
+                    <span class="text-uppercase small">Next</span>
+                    <i class="features-nav-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section get-started">
+    <div class="container bring-to-front">
+        <div class="section-heading text-center">
+            <h2 class="extra-bold">All-in-one Marketing Solution</h2>
+            <p class="lead color2">
+                <span class="accent">Everything you need in one solution</span>, introducing Marketing Automation Tool, a powerful product for growing your business.
+            </p>
+        </div>
+        <div class="pb-8 position-relative">
+            <div class="browser shadow-lg mx-auto" data-aos="fade-up">
+                <div class="screen">
+                    <img src="~/Content/img/screens/dash/4.png" class="img-responsive" alt="">
+                </div>
+            </div>
+            <div class="floating-box bg-1">
+                <!-- data-aos="fade-right" -->
+                <div class="p-4 p-lg-5 shadow-lg rounded text-center">
+                    <p class="lead regular">Communicate better, put all your customer information in one single place, get insights ans stats in a nutshell</p>
+                    <p class="handwritten highlight font-md mt-5">No credit card needed</p>
+                    <a href="javascript:;" class="btn btn-rounded btn-lg btn-accent">Start Now</a>
+                    <hr class="w-50 mx-auto my-4">
+                    <p class="small color-2">By registering you will get 14 days of free access to the full featured solution</p>
+                </div>
+            </div>
+            <a href="https://www.youtube.com/watch?v=MXghcI8hcWU" class="modal-popup mfp-iframe play-video btn btn-3 btn-circle color-1 shadow" data-aos="fade-left" data-effect="mfp-fade" data-type="iframe">
+                <!-- <a href="javascript:;" class="play-video btn btn-3 btn-circle color-1 shadow" data-aos="fade-left"> -->
+                <i class="fas fa-play font-lg"></i>
+            </a>
+        </div>
+    </div>
+</section>
+<section class="section why-us overflow-hidden">
+    <div class="shape-wrapper">
+        <div class="absolute shape-background top right"></div>
+    </div>
+    <div class="container">
+        <div class="section-heading text-center">
+            <h2 class="bold">Why DashCore</h2>
+            <p class="lead color-2">Our mission is to provide you with an all-in-one template so you don't have to look aside in order to get what you need</p>
+        </div>
+        <div class="row gap-y">
+            <div class="col-md-6">
+                <ul class="list-unstyled why-icon-list">
+                    <li class="list-item">
+                        <div class="media">
+                            <div class="rounded-circle bg-info shadow-info color-1 p-3 icon-xl d-flex align-items-center justify-content-center mr-3">
+                                <i class="pe pe-7s-plug pe-2x"></i>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="bold">Integrations</h5>
+                                <p class="my-0">Aut debitis deserunt ea explicabo hic id incidunt, minus</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-item">
+                        <div class="media">
+                            <div class="rounded-circle bg-success shadow-success color-1 p-3 icon-xl d-flex align-items-center justify-content-center mr-3">
+                                <i class="pe pe-7s-cash pe-2x"></i>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="bold">Payments</h5>
+                                <p class="my-0">Amet assumenda aut consequatur, corporis dolorum ea esse</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-item">
+                        <div class="media">
+                            <div class="rounded-circle bg-4 shadow-4 color-1 p-3 icon-xl d-flex align-items-center justify-content-center mr-3">
+                                <i class="pe pe-7s-like pe-2x"></i>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="bold">Marketing</h5>
+                                <p class="my-0">Aliquam amet assumenda debitis dicta distinctio eaque enim</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-item">
+                        <div class="media">
+                            <div class="rounded-circle bg-danger shadow-danger color-1 p-3 icon-xl d-flex align-items-center justify-content-center mr-3">
+                                <i class="pe pe-7s-graph1 pe-2x"></i>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="bold">Analytics</h5>
+                                <p class="my-0">Accusantium consequuntur eaque eius itaque labore, neque</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <figure data-aos="fade-left">
+                    <img src="~/Content/img/v8/marketing.svg" class="img-responsive" alt="">
+                    <!-- <img src="~/Content/img/v8/register-click.svg" class="img-responsive absolute w-50 aos-init aos-animate" alt="" style="bottom: 10%; left: 125px;" data-aos="fade-up"> -->
+                </figure>
+            </div>
+        </div>
+        <div class="mt-5 text-center">
+            <a href="javascript:;" class="btn btn-accent btn-rounded">Register for a free demo</a>
+            <p class="small">- or -</p>
+            <a href="javascript:;" class="btn btn-link">Contact us</a>
+        </div>
+    </div>
+</section>
+<section class="section color-1 advanced-automation-solution overflow-hidden">
+    <div class="shape-wrapper">
+        <div class="shape shape-background mountain top shape-left"></div>
+    </div>
+    <div class="container">
+        <div class="section-heading text-center">
+            <h2 class="bold">Advanced Marketing Automation Solution</h2>
+            <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae consequatur dicta, dignissimos fugiat nisi rerum similique voluptates? Aspernatur at beatae excepturi laboriosam molestiae quae reprehenderit sit suscipit tempora, voluptatibus voluptatum?</p>
+        </div>
+        <div class="bg-1 shadow-lg rounded">
+            <div class="browser">
+                <div class="screen">
+                    <img src="~/Content/img/screens/dash/1.png" class="img-responsive rounded-bottom" alt="">
+                </div>
+                <div class="bubbles-speech d-none d-md-block">
+                    <span class="absolute small shadow speech-bubble" style="top: 47%; left: 1%;" data-aos="slide-up">Accesible option</span>
+                    <span class="absolute small shadow speech-bubble" style="top: 69%; left: 61%;" data-aos="slide-up">Inline editing box</span>
+                    <span class="absolute small shadow speech-bubble" style="top: 15%; left: 85%;" data-aos="slide-up">Interaction options</span>
+                    <span class="absolute small shadow speech-bubble" style="top: 7%; left: 30%;" data-aos="slide-up">Easy search box</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section image-background overlay overlay-1 alpha-5 contain" style="background-image: url(../../Content/img/shps/map-dots.svg);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-5 mr-md-auto">
+                <span class="small text-uppercase badge badge-3">Why customer trust us</span>
+                <p class="font-md display-md-1 light m-0">
+                    <span class="counter extra-bold">123</span>K
+                </p>
+                <p class="m-0 font-md">
+                    <span class="bold">Happy</span> Customers
+                </p>
+                <hr class="my-4 w-25">
+                <p class="small color-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias atque aut earum esse et exercitationem fuga</p>
+            </div>
+            <div class="col-md-6">
+                <i class="accent mb-4 pe pe-7s-plug pe-3x"></i>
+                <div class="section-heading">
+                    <h2 class="bold font-md display-md-4">Tons of successful implementations</h2>
+                    <p class="lead color-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias at commodi cum dignissimos ducimus hic nemo quia ut velit.</p>
+                </div>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cupiditate dignissimos dolorem libero officiis quo repellendus voluptatibus! A assumenda eius excepturi labore minima nesciunt quod ratione, reiciendis repellat sapiente veritatis vero!</p>
+                <a href="javascript:;" class="btn btn-rounded btn-3 mt-4">Learn more</a>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="shape-wrapper">
+        <div class="shape shape-background shape-right"></div>
+        <div class="shape shape-background top shape-left bg-4 op-1"></div>
+    </div>
+    <div class="container">
+        <div class="row align-items-center text-center text-lg-left">
+            <div class="col-12 col-md-7 col-lg-6 mr-lg-auto text-center text-md-left">
+                <p class="small accent bold">You're covered</p>
+                <h2 class="bold">Get the very best of us by doing the best of you</h2>
+                <p class="color-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis dolores dolorum, error est excepturi exercitationem hic iusto minus nam officia optio quasi tempore voluptatibus. Aut dolore in nostrum quae voluptatem!</p>
+            </div>
+            <div class="col-12 col-md-5 col-lg-5">
+                <div class="row no-gutters">
+                    <div class="col-6 mb-3 pr-3">
+                        <div class="rounded shadow-box p-2 p-sm-3 d-flex align-items-center flex-wrap bg-1">
+                            <i class="pe pe-3x mr-4 pe-7s-user color-2"></i>
+                            <div class="text-left">
+                                <p class="counter font-md bold m-0 color-4">954</p>
+                                <p class="m-0">Users</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="rounded shadow-box p-2 p-sm-3 d-flex align-items-center flex-wrap bg-1">
+                            <i class="pe pe-3x mr-4 pe-7s-cloud-download color-2"></i>
+                            <div class="text-left">
+                                <p class="counter font-md bold m-0 color-4">37</p>
+                                <p class="m-0">Downloads</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 pr-3">
+                        <div class="rounded shadow-box p-2 p-sm-3 d-flex align-items-center flex-wrap bg-1">
+                            <i class="pe pe-3x mr-4 pe-7s-plugin color-2"></i>
+                            <div class="text-left">
+                                <p class="counter font-md bold m-0 color-4">19</p>
+                                <p class="m-0">Plugins</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="rounded shadow-box p-2 p-sm-3 d-flex align-items-center flex-wrap bg-3 color-1">
+                            <i class="pe pe-3x mr-4 pe-7s-diamond op-7"></i>
+                            <div class="text-left">
+                                <p class="counter font-md bold m-0">31</p>
+                                <p class="m-0">Projects</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section bg-6">
+    <div class="container">
+        <h4 class="bold text-center mb-5 color-2">Part of our happy customers</h4>
+        <div class="row gap-y">
+            <div class="col-md-3 col-xs-4 col-6 px-md-5">
+                <img src="~/Content/img/logos/1.png" alt="" class="img-responsive mx-auto op-7" style="max-height: 60px">
+            </div>
+            <div class="col-md-3 col-xs-4 col-6 px-md-5">
+                <img src="~/Content/img/logos/2.png" alt="" class="img-responsive mx-auto op-7" style="max-height: 60px">
+            </div>
+            <div class="col-md-3 col-xs-4 col-6 px-md-5">
+                <img src="~/Content/img/logos/3.png" alt="" class="img-responsive mx-auto op-7" style="max-height: 60px">
+            </div>
+            <div class="col-md-3 col-xs-4 col-6 px-md-5">
+                <img src="~/Content/img/logos/4.png" alt="" class="img-responsive mx-auto op-7" style="max-height: 60px">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section bg-6">
+    <div class="container bring-to-front py-0">
+        <div class="shadow bg-1 p-5 rounded">
+            <div class="testimonials-slider">
+                <div class="swiper-container pb-5">
+                    <div class="swiper-wrapper text-center w-50">
+                        <div class="swiper-slide">
+                            <div class="d-flex flex-column align-items-center">
+                                <img src="~/Content/img/avatar/1.jpg" alt="" class="rounded-circle shadow mb-4">
+                                <p class="w-75 lead mt-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus asperiores consequatur cum distinctio, dolorem earum error esse ex fugiat inventore maiores minima, non placeat praesentium quam quas ut, vero voluptatem.</p>
+                                <hr class="w-50">
+                                <footer>
+                                    <cite class="bold accent text-capitalize">— Jane Doe,</cite>
+                                    <span class="small color-2 mt-0">Awesome Company</span>
+                                </footer>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="d-flex flex-column align-items-center">
+                                <img src="~/Content/img/avatar/2.jpg" alt="" class="rounded-circle shadow mb-4">
+                                <p class="w-75 lead mt-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus asperiores consequatur cum distinctio, dolorem earum error esse ex fugiat inventore maiores minima, non placeat praesentium quam quas ut, vero voluptatem.</p>
+                                <hr class="w-50">
+                                <footer>
+                                    <cite class="bold accent text-capitalize">— Jane Doe,</cite>
+                                    <span class="small color-2 mt-0">Awesome Company</span>
+                                </footer>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="d-flex flex-column align-items-center">
+                                <img src="~/Content/img/avatar/3.jpg" alt="" class="rounded-circle shadow mb-4">
+                                <p class="w-75 lead mt-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus asperiores consequatur cum distinctio, dolorem earum error esse ex fugiat inventore maiores minima, non placeat praesentium quam quas ut, vero voluptatem.</p>
+                                <hr class="w-50">
+                                <footer>
+                                    <cite class="bold accent text-capitalize">— Jane Doe,</cite>
+                                    <span class="small color-2 mt-0">Awesome Company</span>
+                                </footer>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="d-flex flex-column align-items-center">
+                                <img src="~/Content/img/avatar/4.jpg" alt="" class="rounded-circle shadow mb-4">
+                                <p class="w-75 lead mt-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus asperiores consequatur cum distinctio, dolorem earum error esse ex fugiat inventore maiores minima, non placeat praesentium quam quas ut, vero voluptatem.</p>
+                                <hr class="w-50">
+                                <footer>
+                                    <cite class="bold accent text-capitalize">— Jane Doe,</cite>
+                                    <span class="small color-2 mt-0">Awesome Company</span>
+                                </footer>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section bg-1 edge top-left b-b">
+    <div class="container pt-5">
+        <div class="d-flex align-items-center flex-column flex-md-row">
+            <div class="text-center text-md-left">
+                <p class="light mb-0 accent lead">Ready to get started?</p>
+                <h2 class="mt-0">Create an account now</h2>
+            </div>
+            <a href="register.html" class="btn btn-accent btn-rounded mt-3 mt-md-0 ml-md-auto">Create DashCore account</a>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,127 @@
+﻿@model PraiseCMS.DataAccess.Models.EventDashboard
+@{
+    ViewBag.Title = "Events";
+}
+
+<link href="~/Scripts/mini-calendar/style.css" rel="stylesheet" />
+<link href="~/Scripts/mini-calendar/theme.css" rel="stylesheet" />
+<style>
+    .line-height-3 {
+        line-height: 3;
+    }
+
+    .week .day.selected span {
+        background: #3699FF;
+    }
+</style>
+
+@section leftsubheader{
+    @Html.Partial("_EventsSubheader")
+}
+
+@section subheader{
+    <span class="text-muted font-weight-bold mr-4" style="margin:auto;">Select a Campus:</span>
+    @Html.DropDownList("CampusFilter", SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id).OrderBy(x => x.Text), "All Campuses", new { @class = "form-control select2", style = "width:150px;" })
+}
+
+<div class="dashboard-div">
+    @Html.Partial("_Dashboard", Model)
+</div>
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-receipt fa-4x text-warning mt-4 mb-10"></i>
+                    <h3 class="font-weight-bold mb-5">View Check-Ins</h3>
+                    <h4 class="text-muted font-size-sm mb-5">View or search check-in dashboard.</h4>
+                    <a href="/Events/CheckIns" class="btn btn-light-primary font-weight-bold" style="width:75%;">Go to Check-Ins</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="far fa-calendar-plus fa-4x text-success mt-4 mb-10"></i>
+                    <h3 class="font-weight-bold mb-5">Manage Events</h3>
+                    <h4 class="text-muted font-size-sm mb-5">Easily manage events for your church.</h4>
+                    <a href="/Events/manage" class="btn btn-light-primary font-weight-bold" style="width:75%;">Manage Events</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-id-badge fa-4x text-danger mt-4 mb-10"></i>
+                    <h3 class="font-weight-bold mb-5">Create Labels</h3>
+                    <h4 class="text-muted font-size-sm mb-5">Quickly add a label to your event.</h4>
+                    <a href="#" class="btn btn-light-primary font-weight-bold" style="width:75%;">View Labels</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-calendar-alt fa-4x text-dark mt-4 mb-10"></i>
+                    <h3 class="font-weight-bold mb-5">Attendance</h3>
+                    <h4 class="text-muted font-size-sm mb-5">Check attendance of church members.</h4>
+                    <a href="/attendance" class="btn btn-light-primary font-weight-bold" style="width:75%;">View Attendance</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/mini-calendar/calendar.js"></script>
+<script type="text/javascript">
+    var selectedDate = new Date();
+    var defaultConfig = {
+        weekDayLength: 1,
+        date: new Date(),
+        onClickDate: function (date, formattedDate) {
+            $('.calendar-wrapper').updateCalendarOptions({
+                date: date
+            });
+            getEventsByDate(formattedDate);
+        },
+        showYearDropdown: true,
+        startOnMonday: false
+    };
+
+    $(function () {
+        $('.calendar-wrapper').calendar(defaultConfig);
+        $('#date-events').css('max-height', parseInt($(".calendar-wrapper").height() - $(".buttons-container").height()) + 1);
+    });
+
+    function getEventsByDate(date) {
+        $.get("/events/GetEventsByDate", { date: date, campusId: $('#CampusFilter').val() }, function (result) {
+            if (result.Success === false) {
+                ShowErrorAlert(result.Message);
+            } else {
+                selectedDate = date;
+                $('#eventsPartialDiv').html('');
+                $('#eventsPartialDiv').html(result);
+                $('#date-events').css('max-height', parseInt($(".calendar-wrapper").height() - $(".buttons-container").height()) + 1);
+            }
+        });
+    }
+
+    $(document).on('change', '#CampusFilter', function () {
+        $.get("/events/GetDashboard", { date: selectedDate, campusId: $(this).val() }, function (result) {
+            if (result.Success === false) {
+                ShowErrorAlert(result.Message);
+            } else {
+                $('.dashboard-div').html('');
+                $('.dashboard-div').html(result);
+                defaultConfig.date = selectedDate;
+                $('.calendar-wrapper').calendar(defaultConfig);
+                $('#date-events').css('max-height', parseInt($(".calendar-wrapper").height() - $(".buttons-container").height()) + 1);
+            }
+        });
+    });
+</script>

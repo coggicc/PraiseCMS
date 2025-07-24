@@ -1,0 +1,153 @@
+﻿@model PraiseCMS.DataAccess.Models.SermonNote
+@using PraiseCMS.DataAccess.Singletons;
+<style>
+    .line {
+        margin-bottom: 2rem !important;
+    }
+
+    .space {
+        margin-top: 3rem !important;
+    }
+
+    .border {
+        border-bottom: 1px solid !important;
+    }
+
+    .mg-lft-5 {
+        margin-left: 20px !important;
+    }
+
+    .mg-lft-6 {
+        margin-left: 27px !important;
+    }
+
+    .page-footer {
+        text-align: right;
+        font-size: 10px;
+        padding-right: 3%;
+    }
+</style>
+<div class="page" id="sermonnotes-div">
+    <div class="kt-section kt-section--first">
+        <div class="kt-section__body">
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td style="width:47%;padding-left:3%;padding-right: 3%;">
+                            @if (SessionVariables.CurrentChurch != null && SessionVariables.CurrentChurch.Logo != null)
+                            {
+                                <img src="@Html.AmazonLink(SessionVariables.CurrentChurch.Logo, "Uploads/Logos")" height="50" class="mx-2 w-auto" />
+                            }
+                            else
+                            {
+                                <img src="@ApplicationCache.Instance.SiteConfiguration.Url/Content/assets/image/highlands_logo.png" height="50" class="mx-2 w-auto" />
+                            }
+                            <hr style="margin-bottom: 0;" />
+                            <span>CHOOSE JOY</span>
+                            <br />                           
+                            <h2>21 Days of Prayer</h2>
+                            <div class="mg-lft-5">
+                                <p>@DateTime.Now.ToShortDateString()</p>
+                                <p>Prayer Service: Monday through Friday 6-7am, Saturday 9-10am at campus or online</p>
+                            </div>
+                            <br />
+                            <h2>Choose Joy</h2>
+                            <div class="mg-lft-5">
+                                <p>
+                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                                    Lorem Ipsum has been the industry's
+                                    standard dummy text ever since the 1500s,
+                                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                                    It has survived not only five centuries,
+                                    but also the leap into electronic typesetting,
+                                    remaining essentially unchanged.
+                                    It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
+                                    and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                                    It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
+                                    and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                                </p>
+                                <p>
+                                    The standard chunk of Lorem Ipsum used since the 1500s
+                                    is reproduced below for those interested.
+                                    Sections 1.10.32 and 1.10.33 from
+                                </p>
+                            </div>
+                            <h2>The First Choise</h2>
+                            <div class="mg-lft-5">
+                                <p>
+                                    The standard chunk of Lorem Ipsum used since the 1500s
+                                    is reproduced below for those interested.
+                                    Sections 1.10.32 and 1.10.33 from
+                                </p>
+                                <H4><b><span>1.&nbsp;&nbsp; Prayer</span> <span><u>replaces worry.</u></span></b></H4>
+                                <p class="mg-lft-6">
+                                    It is a long established fact that a reader will be distracted
+                                    by the readable content.
+                                    <br />
+                                    The point of using Lorem Ipsum is that it has a more-or-less
+                                    normal distribution of letters, as opposed to using 'Content here,
+                                    content here',
+                                    <br />
+                                    Many desktop publishing packages and web page editors
+                                    now use Lorem Ipsum as their default model text, and
+                                    a search<br />
+                                    Many desktop publishing packages and web page editors
+                                </p>
+                                <H4><b><span>2.&nbsp;&nbsp; Prayer</span> <span><u>relinquishes control.</u></span></b></H4>
+                                <p class="mg-lft-6">
+                                    It is a long established fact that a reader will be distracted
+                                    by the readable content.
+                                    <br />
+                                    The point of using Lorem Ipsum is that it has a more-or-less
+                                    normal distribution of letters, as opposed to using 'Content here,
+                                    content here',
+                                </p>
+                                <H4><b><span>3.&nbsp;&nbsp; Prayer</span> <span><u>regulates thinking.</u></span></b></H4>
+                                <p class="mg-lft-6">
+                                    It is a long established fact that a reader will be distracted
+                                    The point of using Lorem Ipsum is that it has a more-or-less
+                                    normal distribution of letters, as opposed to using 'Content here,
+                                    content here',
+                                    <br />
+                                    Many desktop publishing packages and web page editors
+                                    now use Lorem Ipsum
+                                </p>
+                                <H4><b><span>4.&nbsp;&nbsp; Prayer</span> <span><u>reveals contentment.</u></span></b></H4>
+                                <p class="mg-lft-6">
+                                    It is a long established fact that a reader will be distracted
+                                    by the readable content.
+                                    The point of using Lorem Ipsum is that it has a more-or-less
+                                    normal distribution of letters,
+                                    <br />
+                                    Many desktop publishing packages and web page editor
+                                </p>
+                                <H4><b><span>5.&nbsp;&nbsp; Prayer</span> <span><u>relies on God.</u></span></b></H4>
+                                <p class="mg-lft-6">
+                                    It is a long established fact that a reader will be distracted
+                                    by the readable content.
+                                    <br />
+                                    The point of using Lorem Ipsum is that it has a more-or-less
+                                    <br />
+                                    Many desktop publishing packages and web page editors
+                                </p>
+                                <div class="mg-lft-6">
+                                    <H4><b><span>Prayer doesn't</span> <span><u>move God toward us.</u></span></b></H4>
+                                    <H4><b><span>Prayer</span> <span><u>move us toward God.</u></span></b></H4>
+                                </div>
+                            </div>
+                        </td>
+                        @*<td style="width:6%"></td>
+                            <td style="width:47%;padding-right: 3%;">
+                                <img height="50" class="mx-2 w-auto" />
+                                <hr />
+                                <br />
+
+                            </td>*@
+                    </tr>
+                    <tr><td class="page-footer"><br /><br />All scripture is from the New International Version unless otherwise notes.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

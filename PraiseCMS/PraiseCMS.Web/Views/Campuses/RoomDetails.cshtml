@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Building Details";
+}
+
+@section leftsubheader{
+    @Html.Partial("_CampusesSubheader")
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @*@Html.AjaxModalLink("Create Building", "/campuses/_CreateBuilding", "Create Building", "Save", "btn btn-light-primary font-weight-bold", "")*@
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th width="40%">Name</th>
+                        <th width="40%" class="text-center">Campus</th>
+                        <th width="20%" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @*@foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("BuildingDetails", "Campuses", new { id = item.Id })">@item.BuildingName</a>
+                            </td>
+                            <td class="text-center">
+                                
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    }*@
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

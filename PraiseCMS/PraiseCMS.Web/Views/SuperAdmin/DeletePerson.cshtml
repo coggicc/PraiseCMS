@@ -1,0 +1,26 @@
+﻿@model DeletePersonViewModel
+
+@{
+    ViewBag.Title = "Delete Person";
+}
+<div class="card card-custom card-stretch">
+
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "deletePerson", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="card-body">
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Person Id:</label>
+                <div class="col">
+                    @Html.DropDownListFor(model => model.SelectedPersonId, Model.People, "Select a Person...", new { @class = "form-control select2", style = "width:100%;" })
+                    @Html.ValidationMessageFor(model => model.SelectedPersonId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-light-danger font-weight-bold mr-2">Delete Person</button>
+            </div>
+        </div>
+    }
+</div>

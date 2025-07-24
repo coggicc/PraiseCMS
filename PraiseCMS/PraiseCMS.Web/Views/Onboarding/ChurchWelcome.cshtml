@@ -1,0 +1,410 @@
+﻿@model PraiseCMS.DataAccess.Models.ChurchOnboardingView
+@using PraiseCMS.Shared.Methods
+
+@{
+    Layout = null;
+    ViewBag.Title = "Church Information";
+    var appVersion = "app.version".AppSetting<string>("v9.9.9");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="">
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Praise CMS</title>
+    <meta name="description" content="Updates and statistics">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700|Roboto:300,400,500,600,700">
+    <link href="~/Content/assets/css/pages/wizard/wizard-1.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/plugins/global/plugins.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/style.bundle.css?v=7.0.4" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/header/base/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/header/menu/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/brand/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/css/themes/layout/aside/light.css" rel="stylesheet" type="text/css" />
+    <script src="~/Content/assets/plugins/global/plugins.bundle.js?v=7.0.4"></script>
+    <script src="~/Scripts/jquery.mask.js"></script>
+    <link rel="shortcut icon" href="~/Content/assets/media/logos/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="~/Content/assets/media/logos/favicon.ico" type="image/x-icon">
+</head>
+<body id="kt_body" class="header-fixed header-mobile-fixed">
+    <div id="kt_header_mobile" class="header-mobile align-items-center header-mobile-fixed">
+        <a href="/account/login">
+            <img alt="Logo" src="~/Content/assets/media/logos/praise_logo.png" />
+        </a>
+    </div>
+    <div class="d-flex flex-column flex-root">
+        <div class="d-flex flex-row flex-column page">
+            <div class="d-flex flex-column flex-row wrapper" id="kt_wrapper">
+                <div id="kt_header" class="header header-fixed">
+                    <div class="container d-flex align-items-stretch justify-content-between">
+                        <div class="header-menu-wrapper header-menu-wrapper-left" id="kt_header_menu_wrapper">
+                            <div class="header-logo">
+                                <a href="/account/login">
+                                    <img alt="Logo" src="~/Content/assets/media/logos/praise_logo.png" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content d-flex flex-column" id="kt_content">
+                    <div class="d-flex flex-column-fluid">
+                        <div class="container">
+                            <div class="card card-custom gutter-b">
+                                <div class="card-body">
+                                    <div class="alert alert-success mb-5 p-5" role="alert">
+                                        <h4 class="alert-heading">Thanks for signing up!</h4>
+                                        <div class="border-bottom border-white opacity-20 mb-5"></div>
+                                        <p class="mb-0">Please fill out the form below to create your Praise church account.</p>
+                                    </div>
+                                    <div class="wizard wizard-1" id="kt_wizard_v1" data-wizard-state="step-first" data-wizard-clickable="false">
+                                        <div class="wizard-nav border-bottom">
+                                            <div class="wizard-steps p-8 p-lg-10">
+                                                <div id="step-1" class="wizard-step" data-wizard-type="step" data-wizard-state="current">
+                                                    <div class="wizard-label">
+                                                        <i class="wizard-icon flaticon-list"></i>
+                                                        <h3 class="wizard-title">1. Church Details</h3>
+                                                    </div>
+                                                    <span class="svg-icon svg-icon-xl wizard-arrow">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                <polygon points="0 0 24 0 24 24 0 24" />
+                                                                <rect fill="#000000" opacity="0.3" transform="translate(12.000000, 12.000000) rotate(-90.000000) translate(-12.000000, -12.000000)" x="11" y="5" width="2" height="14" rx="1" />
+                                                                <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                            </g>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <div id="step-2" class="wizard-step" data-wizard-type="step">
+                                                    <div class="wizard-label">
+                                                        <i class="wizard-icon flaticon-bus-stop"></i>
+                                                        <h3 class="wizard-title">2. Address Details</h3>
+                                                    </div>
+                                                    <span class="svg-icon svg-icon-xl wizard-arrow">
+
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                <polygon points="0 0 24 0 24 24 0 24" />
+                                                                <rect fill="#000000" opacity="0.3" transform="translate(12.000000, 12.000000) rotate(-90.000000) translate(-12.000000, -12.000000)" x="11" y="5" width="2" height="14" rx="1" />
+                                                                <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                            </g>
+                                                        </svg>
+
+                                                    </span>
+                                                </div>
+                                                <div id="step-3" class="wizard-step" data-wizard-type="step">
+                                                    <div class="wizard-label">
+                                                        <i class="wizard-icon flaticon-user"></i>
+                                                        <h3 class="wizard-title">3. Admin Details</h3>
+                                                    </div>
+                                                    <span class="svg-icon svg-icon-xl wizard-arrow">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                <polygon points="0 0 24 0 24 24 0 24" />
+                                                                <rect fill="#000000" opacity="0.3" transform="translate(12.000000, 12.000000) rotate(-90.000000) translate(-12.000000, -12.000000)" x="11" y="5" width="2" height="14" rx="1" />
+                                                                <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                            </g>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <div id="step-4" class="wizard-step" data-wizard-type="step">
+                                                    <div class="wizard-label">
+                                                        <i class="wizard-icon flaticon-globe"></i>
+                                                        <h3 class="wizard-title">4. Review and Submit</h3>
+                                                    </div>
+                                                    <span class="svg-icon svg-icon-xl wizard-arrow last">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                <polygon points="0 0 24 0 24 24 0 24" />
+                                                                <rect fill="#000000" opacity="0.3" transform="translate(12.000000, 12.000000) rotate(-90.000000) translate(-12.000000, -12.000000)" x="11" y="5" width="2" height="14" rx="1" />
+                                                                <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                            </g>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center my-10 px-8 my-lg-15 px-lg-10">
+                                            <div class="col-xl-12 col-xxl-7">
+                                                <div id="alert-container" class="text-center">
+                                                </div>
+                                                @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { id = "kt_form", @class = "form", enctype = "multipart/form-data" }))
+                                                {
+                                                    @Html.AntiForgeryToken()
+
+                                                    @Html.HiddenFor(x => x.Church.Id)
+                                                    @Html.HiddenFor(x => x.Plan)
+                                                    @Html.HiddenFor(x => x.Church.PrimaryUserId)
+                                                    <div class="pb-5" data-wizard-type="step-content" data-wizard-state="current">
+                                                        <h4 class="mb-10 font-weight-bold text-dark">Enter Your Core Church Details</h4>
+                                                        <div class="form-group">
+                                                            <label>Church Name*</label>
+                                                            @Html.TextBoxFor(x => x.Church.Name, new { @class = "form-control form-control-lg" })
+                                                            @Html.ValidationMessageFor(x => x.Church.Name, "", new { @class = "text-danger" })
+                                                            <span class="form-text text-muted">How do you want your church's name to appear in the system?</span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Church Phone*</label>
+                                                            @Html.TextBoxFor(x => x.Church.Phone, new { @class = "form-control form-control-lg phone", onblur = "checkForRequiredField(this)" })
+                                                            @Html.ValidationMessageFor(x => x.Church.Phone, "", new { @class = "text-danger" })
+                                                            <span class="form-text text-muted">Please enter your church's primary phone number.</span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Church Email*<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="This is your church's primary email. Don't have one? No worries! Just add the email of the person that will be the church administrator."></i></label>
+                                                            @Html.TextBoxFor(x => x.Church.Email, new { @class = "form-control form-control-lg", type = "email", placeholder = "example@email.com", onblur = "checkForValidEmailById(this,'key')" })
+                                                            @Html.ValidationMessageFor(x => x.Church.Email, "", new { @class = "text-danger" })
+                                                            <span class="form-text text-muted">Please enter your church's primary email.</span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Denomination*</label>
+                                                            @Html.DropDownListFor(x => x.Church.Denomination, Model.Denominations.ToSelectList(x => x.Display, x => x.Id), "Select a denomination...", new { @class = "form-control select2", onchange = "checkForRequiredField(this)" })
+                                                            @Html.ValidationMessageFor(x => x.Church.Denomination, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="pb-5" data-wizard-type="step-content">
+                                                        <h4 class="mb-2 font-weight-bold text-dark">Add Your Church's Primary Address</h4>
+                                                        <p class="mb-10">Tell us where your church is physically located. If you have multiple campuses, then just use your primary campus' information. We'll add your other campuses later.</p>
+                                                        <div class="form-group">
+                                                            <label>Address*</label>
+                                                            @Html.EditorFor(x => x.Church.PhysicalAddress1, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                                                            @Html.ValidationMessageFor(x => x.Church.PhysicalAddress1, "", new { @class = "text-danger" })
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Apt/Unit/Suite</label>
+                                                            @Html.EditorFor(x => x.Church.PhysicalAddress2, new { htmlAttributes = new { @class = "form-control form-control-lg" } })
+                                                            @Html.ValidationMessageFor(x => x.Church.PhysicalAddress2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>City*</label>
+                                                            @Html.EditorFor(x => x.Church.PhysicalCity, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                                                            @Html.ValidationMessageFor(x => x.Church.PhysicalCity, "", new { @class = "text-danger" })
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>State*</label>
+                                                            @Html.DropDownListFor(x => x.Church.PhysicalState, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { @class = "form-control form-control-lg select2", style = "width:100%;", onchange = "checkForRequiredField(this)" })
+                                                            @Html.ValidationMessageFor(x => x.Church.PhysicalState, "", new { @class = "text-danger" })
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Zip*</label>
+                                                            @Html.EditorFor(x => x.Church.PhysicalZip, new { htmlAttributes = new { @class = "form-control form-control-lg numeric", maxlength = "5" } })
+                                                            @Html.ValidationMessageFor(x => x.Church.PhysicalZip, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="pb-5" data-wizard-type="step-content">
+                                                        <h4 class="mb-10 font-weight-bold text-dark">Administrator Details</h4>
+                                                        <p class="mb-10"><span class="font-weight-bold">Your current administrator is @SessionVariables.CurrentUser.User.Display.</span> Optionally, you can add another person as an admistrator.</p>
+                                                        <p class="mb-10"><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseOne2">Add Another Administrator</button></p>
+                                                        <div class="accordion accordion-light accordion-toggle-arrow" id="accordionExample2">
+                                                            <div id="collapseOne2" class="collapse" data-parent="#accordionExample2">
+                                                                <div class="form-group">
+                                                                    <label>First Name*</label>
+                                                                    @Html.EditorFor(x => x.AdminUserFirstname, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>Last Name*</label>
+                                                                    @Html.EditorFor(x => x.AdminUserLastname, new { htmlAttributes = new { @class = "form-control form-control-lg formal" } })
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>Email*</label>
+                                                                    @Html.EditorFor(x => x.AdminUserEmail, new { htmlAttributes = new { @class = "form-control form-control-lg", onblur = "checkForValidEmailById(this,'key')" } })
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>Phone*</label>
+                                                                    @Html.EditorFor(x => x.AdminUserPhone, new { htmlAttributes = new { @class = "form-control form-control-lg phone", onblur = "checkForRequiredField(this)" } })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="pb-5" data-wizard-type="step-content">
+                                                        <h4 class="mb-10 font-weight-bold text-dark">Review your church and administrator details</h4>
+                                                        <a href="#" onclick="trigger('1')">
+                                                            <h6 class="font-weight-bolder mb-3">Core Church Details:</h6>
+                                                        </a>
+                                                        <div class="text-dark-50 line-height-lg">
+                                                            <div><b>Church Name:</b> <span id="yChurchName"></span></div>
+                                                            <div><b>Phone:</b> <span id="yPhone"></span></div>
+                                                            <div><b>Email:</b> <span id="yEmail"></span></div>
+                                                            <div><b>Denomination:</b> <span id="yDenomination"></span></div>
+                                                        </div>
+                                                        <div class="separator separator-dashed my-5"></div>
+                                                        <a href="#" onclick="trigger('2')">
+                                                            <h6 class="font-weight-bolder mb-3">Address Details:</h6>
+                                                        </a>
+                                                        <div class="text-dark-50 line-height-lg">
+                                                            <div><b>Address:</b> <span id="ycAddress"></span></div>
+                                                            <div id="ycAptDiv"><b>Apt/Unit/Suite:</b> <span id="ycApt"></span></div>
+                                                            <div><b>City:</b> <span id="ycCity"></span></div>
+                                                            <div><b>State:</b> <span id="ycState"></span></div>
+                                                            <div><b>Zip:</b> <span id="ycZip"></span></div>
+                                                        </div>
+                                                        <div class="separator separator-dashed my-5"></div>
+                                                        <a href="#" onclick="trigger('3')">
+                                                            <h6 class="font-weight-bolder mb-3">Administrator Details:</h6>
+                                                        </a>
+                                                        <div class="text-dark-50 line-height-lg">
+                                                            <div>Your current administrator is @SessionVariables.CurrentUser.User.Display.</div>
+                                                            <br />
+                                                            <div id="adminNote">This user will be given the administrator role also.</div>
+                                                            <div id="adminNameDiv"><b>Name:</b> <span id="adminName"></span></div>
+                                                            <div id="adminPhoneDiv"><b>Email:</b> <span id="adminPhone"></span></div>
+                                                            <div id="adminEmailDiv"><b>Phone:</b> <span id="adminEmail"></span></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between border-top mt-5 pt-10">
+                                                        <div class="mr-2">
+                                                            <button type="button" class="btn btn-light-primary font-weight-bold text-uppercase px-9 py-4" data-wizard-type="action-prev">Previous</button>
+                                                        </div>
+                                                        <div>
+                                                            <button type="button" id="btn_form_submit" class="btn btn-success font-weight-bold text-uppercase px-9 py-4" data-wizard-type="action-submit">Submit</button>
+                                                            <button type="button" class="btn btn-primary font-weight-bold text-uppercase px-9 py-4" data-wizard-type="action-next" id="btn-next">Next</button>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer bg-white py-4 d-flex flex-lg-column" id="kt_footer">
+                    <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
+                        <div class="text-dark order-2 order-md-1">
+                            <span class="text-muted font-weight-bold mr-2">&copy;&nbsp;@DateTime.Now.Year Praise, LLC. All rights reserved.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>var KTAppSettings = { "breakpoints": { "sm": 576, "md": 768, "lg": 992, "xl": 1200, "xxl": 1200 }, "colors": { "theme": { "base": { "white": "#ffffff", "primary": "#3699FF", "secondary": "#E5EAEE", "success": "#1BC5BD", "info": "#8950FC", "warning": "#FFA800", "danger": "#F64E60", "light": "#F3F6F9", "dark": "#212121" }, "light": { "white": "#ffffff", "primary": "#E1F0FF", "secondary": "#ECF0F3", "success": "#C9F7F5", "info": "#EEE5FF", "warning": "#FFF4DE", "danger": "#FFE2E5", "light": "#F3F6F9", "dark": "#D6D6E0" }, "inverse": { "white": "#ffffff", "primary": "#ffffff", "secondary": "#212121", "success": "#ffffff", "info": "#ffffff", "warning": "#ffffff", "danger": "#ffffff", "light": "#464E5F", "dark": "#ffffff" } }, "gray": { "gray-100": "#F3F6F9", "gray-200": "#ECF0F3", "gray-300": "#E5EAEE", "gray-400": "#D6D6E0", "gray-500": "#B5B5C3", "gray-600": "#80808F", "gray-700": "#464E5F", "gray-800": "#1B283F", "gray-900": "#212121" } }, "font-family": "Poppins" };</script>
+    <script src="~/Content/assets/js/scripts.bundle.js?v=7.0.4"></script>
+    <script src="~/Scripts/global.js?v=@appVersion"></script>
+    <script src="~/Scripts/wizard.js?v=7.0.4"></script>
+    <script src="~/Content/assets/js/pages/widgets.js?v=7.0.4"></script>
+    <script src="~/Content/assets/js/pages/crud/forms/widgets/select2.js?v=7.0.4"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/form-validate/form-validate.js?v=@appVersion"></script>
+    <script type="text/javascript">
+        const emailRegex = /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        function validationMessage(id) {
+            let pClass = $('#' + id).parent().attr('class');
+            let sClass = $('#' + id).attr('class');
+
+            if (pClass.includes('has-success')) {
+                pClass = pClass.replace('has-success', 'has-danger');
+            }
+            else {
+                pClass = pClass + " has-danger";
+            }
+
+            if (sClass.includes('is-valid')) {
+                sClass = sClass.replace('is-valid', 'is-invalid');
+            }
+            else {
+                sClass = sClass + " is-invalid";
+            }
+
+            $('#' + id).parent().attr('class', pClass);
+            $('#' + id).attr('class', sClass);
+
+            $("#" + id).parent().attr('id', 'p_' + id);
+            let pid = $("#" + id).parent().attr('id');
+
+            if (!$("#" + id).parent()[0].lastChild.lastElementChild && id === 'Church_Denomination') {
+                $("#" + pid + " div:last-child").append("<div data-field='Church.Denomination' data-validator='notEmpty' class='fv-help-block'>Please select a denomination</div>");
+            }
+
+            if (!$("#" + id).parent()[0].lastChild.lastElementChild && id === 'Church_Email') {
+                $("#" + pid + " div:last-child").append('<div data-field="Church.Email" data-validator="notEmpty" class="fv-help-block">Please enter a valid email</div>');
+            }
+
+            if (!$("#" + id).parent()[0].lastChild.lastElementChild && id === 'Church_Phone') {
+                $("#" + pid + " div:last-child").append('<div data-field="Church.Phone" data-validator="notEmpty" class="fv-help-block">Please enter a valid phone number</div>');
+            }
+
+            if (!$("#" + id).parent()[0].lastChild.lastElementChild && id === 'Church_PhysicalState') {
+                $("#" + pid + " div:last-child").append("<div data-field='Church.PhysicalState' data-validator='notEmpty' class='fv-help-block'>Please select a state</div>");
+            }
+
+            //if (!$("#" + id).parent()[0].lastChild.lastElementChild && id === 'Church_TimeZone') {
+            //    $("#" + pid + " div:last-child").append('<div data-field="Church.TimeZone" data-validator="notEmpty" class="fv-help-block">Please select a timezone</div>');
+            //}
+
+            if (!$("#" + id).parent()[0].lastChild.lastElementChild && id === 'AdminUserEmail') {
+                $("#" + pid + " div:last-child").append('<div data-field="AdminUserEmail" data-validator="notEmpty" class="fv-help-block">Please enter a valid email</div>');
+            }
+
+            if (!$("#" + id).parent()[0].lastChild.lastElementChild && id === 'AdminUserPhone') {
+                $("#" + pid + " div:last-child").append('<div data-field="AdminUserPhone" data-validator="notEmpty" class="fv-help-block">Please enter a valid phone number</div>');
+            }
+
+            $('#' + id).parent().attr('class', pClass);
+            $('#' + id).attr('class', sClass);
+        }
+
+        function checkForRequiredField(e) {
+            let val = $(e).val();
+            let id = e.id;
+
+            if (val) {
+                if (id === 'Church_Phone') {
+                    let phone = val.replace("-", "").replace("(", "").replace(")", "").replaceAll("_", "").replace(" ", "");
+                    if (phone.length !== 10) {
+                        validationMessage(id);
+                        return false;
+                    }
+                }
+                if (id === 'AdminUserPhone') {
+                    let aphone = val.replace("-", "").replace("(", "").replace(")", "").replaceAll("_", "").replace(" ", "");
+                    if (aphone.length !== 10) {
+                        validationMessage(id);
+                        return false;
+                    }
+                }
+
+                if (id !== 'Church_Denomination' && id !== 'Church_PhysicalState') {
+                    $('#' + id).parent().attr('class', 'form-group fv-plugins-icon-container has-success');
+                    $('#' + id).attr('class', 'form-control form-control-lg is-valid');
+                }
+
+                if ($(e).parent()[0].lastChild.lastElementChild) {
+                    $(e).parent()[0].lastChild.lastElementChild.remove();
+                }
+                return true;
+            }
+            else {
+                validationMessage(id);
+                return false;
+            }
+        }
+        function trigger(id) {
+            $('#step-' + id).trigger("click");
+        }
+
+        function checkForValidEmailById(e, type) {
+            let val;
+            let id;
+            if (type === 'key') {
+                val = $(e).val();
+                id = e.id;
+            }
+            else {
+                val = $("#" + e).val();
+                id = e;
+            }
+
+            if (emailRegex.test(val)) {
+                return true;
+            }
+            else {
+                validationMessage(id);
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

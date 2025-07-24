@@ -1,0 +1,98 @@
+﻿@{
+    string dateRange = ViewBag.startDate + "-" + ViewBag.endDate;
+    if (ViewBag.startDate == ViewBag.endDate)
+    {
+        dateRange = ViewBag.startDate;
+    }
+}
+@using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Get, new { @class = "kt-form", enctype = "multipart/form-data", id = "dateRangeForm" }))
+{
+    if (RouteHelpers.CurrentAction.ToLower().Equals(ActionName.FundReport.ToLower()) && RouteHelpers.CurrentController.ToLower().Equals(ControllerName.Reports.ToLower()))
+    {
+        <input type="hidden" name="fundId" id="fundId" value="@ViewBag.fundId" />
+    }
+    else if (RouteHelpers.CurrentAction.ToLower().Equals(ActionName.CampusGivingReport.ToLower()) && RouteHelpers.CurrentController.ToLower().Equals(ControllerName.Reports.ToLower()))
+    {
+        <input type="hidden" name="campusId" id="campusId" value="@ViewBag.CampusId" />
+    }
+    <input type="hidden" name="startDate" id="startDate" value="@ViewBag.startDate" />
+    <input type="hidden" name="endDate" id="endDate" value="@ViewBag.endDate" />
+    <input type="hidden" id="dateRange" name="dateRange" />
+    <input type="hidden" id="dateRangeTitle" name="dateRangeTitle" />
+}
+
+<span class="ml-5 mr-2">Report Date Range:</span>
+<a href="javascript:;" class="btn btn-light btn-sm font-weight-bold mr-2" id="dashboard_daterangepicker_shared" data-toggle="tooltip" title="Select Date Range" data-placement="top">
+    <span class="text-muted font-weight-bold mr-2" id="dashboard_daterangepicker_shared_title"></span>
+    <span class="text-primary font-weight-bold" id="dashboard_daterangepicker_shared_date">@dateRange</span>
+    <span class="svg-icon svg-icon-sm svg-icon-primary ml-1">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <rect x="0" y="0" width="24" height="24" />
+                <rect fill="#000000" x="2" y="4" width="19" height="4" rx="1" />
+                <path d="M3,10 L6,10 C6.55228475,10 7,10.4477153 7,11 L7,19 C7,19.5522847 6.55228475,20 6,20 L3,20 C2.44771525,20 2,19.5522847 2,19 L2,11 C2,10.4477153 2.44771525,10 3,10 Z M10,10 L13,10 C13.5522847,10 14,10.4477153 14,11 L14,19 C14,19.5522847 13.5522847,20 13,20 L10,20 C9.44771525,20 9,19.5522847 9,19 L9,11 C9,10.4477153 9.44771525,10 10,10 Z M17,10 L20,10 C20.5522847,10 21,10.4477153 21,11 L21,19 C21,19.5522847 20.5522847,20 20,20 L17,20 C16.4477153,20 16,19.5522847 16,19 L16,11 C16,10.4477153 16.4477153,10 17,10 Z" fill="#000000" opacity="0.3" />
+            </g>
+        </svg>
+    </span>
+</a>
+<script type="text/javascript">
+    $(function () {
+        var picker = $('#dashboard_daterangepicker_shared');
+        var start = moment('@ViewBag.startDate', 'MM/DD/YYYY').startOf('day');
+        var end = moment('@ViewBag.endDate', 'MM/DD/YYYY').endOf('day');
+
+        var dateRanges = {
+            'Today': [moment().startOf('day'), moment().endOf('day')],
+            'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+            'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment().endOf('day')],
+            'Last 30 Days': [moment().subtract(29, 'days').startOf('day'), moment().endOf('day')],
+            'This Week': [moment().startOf('week').startOf('day'), moment().endOf('week').endOf('day')],
+            'Previous Week': [moment().subtract(1, 'week').startOf('week').startOf('day'), moment().subtract(1, 'week').endOf('week').endOf('day')],
+            'This Month': [moment().startOf('month').startOf('day'), moment().endOf('month').endOf('day')],
+            'Previous Month': [moment().subtract(1, 'month').startOf('month').startOf('day'), moment().subtract(1, 'month').endOf('month').endOf('day')],
+            'This Year': [moment().startOf('year').startOf('day'), moment().endOf('year').endOf('day')],
+            'Last Year': [moment().subtract(1, 'year').startOf('year').startOf('day'), moment().subtract(1, 'year').endOf('year').endOf('day')]
+        };
+
+        function updateTitle(start, end) {
+            var title = 'Custom Range';
+
+            $.each(dateRanges, function (label, dates) {
+                if (start.isSame(dates[0]) && end.isSame(dates[1])) {
+                    title = label;
+                }
+            });
+
+            $('#dashboard_daterangepicker_shared_title').html(title);
+
+            if (title === 'Today' || title === 'Yesterday') {
+                $('#dashboard_daterangepicker_shared_date').html(start.format('MM/DD/YYYY'));
+            } else {
+                $('#dashboard_daterangepicker_shared_date').html(start.format('MM/DD/YYYY') + ' - ' + end.format('MM/DD/YYYY'));
+            }
+
+            $("#dateRange").val(start.format('MM/DD/YYYY') + ' - ' + end.format('MM/DD/YYYY'));
+            $("#dateRangeTitle").val(title);
+        }
+
+        picker.daterangepicker({
+            direction: KTUtil.isRTL(),
+            startDate: start,
+            endDate: end,
+            opens: 'right',
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-light-primary',
+            ranges: dateRanges
+        }, updateTitle);
+
+        updateTitle(start, end);
+
+        picker.on('apply.daterangepicker', function (ev, picker) {
+            var start = picker.startDate;
+            var end = picker.endDate;
+            updateTitle(start, end);
+            // Submit the form when the date range changes
+            $("#dateRangeForm").submit();
+        });
+    });
+</script>

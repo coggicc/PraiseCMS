@@ -1,0 +1,222 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.GivingSignUpViewModel
+
+@{
+    var appVersion = "app.version".AppSetting<string>("v9.9.9");
+    Layout = null;
+    ViewBag.Title = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="">
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Praise CMS</title>
+    <meta name="description" content="Updates and statistics">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700|Roboto:300,400,500,600,700">
+    <link href="~/Content/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assets/sass/style.min.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <style type="text/css">
+        .field-validation-error {
+            color: #F64E60;
+            width: 100%;
+            float: left;
+            display: none;
+        }
+
+        .form-control-error {
+            border: 1px solid red !important;
+        }
+    </style>
+</head>
+<body class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--fixed kt-subheader--enabled kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
+    <div class="kt-grid kt-grid--ver kt-grid--root kt-page">
+        <div class="kt-grid kt-grid--hor kt-grid--root  kt-login kt-login--v3 kt-login--signin" id="kt_login">
+            <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" style=" background-image: url(../../Content/assets/media/bg/bg-3.jpg);">
+                <div class="kt-grid__item kt-grid__item--fluid kt-login__wrapper">
+                    <div class="kt-login__container">
+                        <div class="login-branding kt-font-brand">
+                            <h1><i class="fas fa-praying-hands mr-4"></i>PRAISE CMS</h1>
+                            <p>Church Management Software</p>
+                        </div>
+                        <div id="alert-container"></div>
+                        <div id="SignUp_Details" class="kt-login__signin">
+                            <input type="hidden" id="current_State" value="@Model.ResponseStatus" />
+                            @if (Model.ResponseStatus == SignInResponseStatus.LoadRegistrationForm)
+                            {
+                                <div class="kt-login__head">
+                                    <h3 class="kt-login__title">Sign Up</h3>
+                                </div>
+                                using (Html.BeginForm("GivingRegister", RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                    @Html.HiddenFor(x => x.RegisterVia, new { id = "register_via" })
+                                    @Html.ValidationMessage("GivingRegisterModel")
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", name = "login-form-email", placeholder = "First Name" })
+                                        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "field-validation-error" })
+                                    </div>
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", name = "login-form-email", placeholder = "Last Name" })
+                                        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "field-validation-error" })
+                                    </div>
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", name = "login-form-email", placeholder = "Email" })
+                                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-validation-error" })
+                                    </div>
+                                    <div class="input-group">
+                                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", name = "login-form-email", placeholder = "Password" })
+                                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-validation-error" })
+                                    </div>
+                                    <div class="input-group">
+                                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", name = "login-form-email", placeholder = "Confirm Password" })
+                                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-validation-error" })
+                                    </div>
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.Phone, new { @class = "form-control phone", name = "login-form-email", placeholder = "Phone Number" })
+                                        @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "field-validation-error" })
+                                    </div>
+                                    <div class="kt-login__actions">
+                                        <button type="button" class="btn_continue btn btn-brand btn-elevate kt-login__btn-primary" style="width:100%;">Continue</button>
+                                    </div>
+                                }
+                            }
+                            else if (Model.ResponseStatus == SignInResponseStatus.LoadConfirmationCode)
+                            {
+                                <div class="kt-login__head">
+                                    <h3 class="kt-login__title">Verification code</h3>
+                                </div>
+                                using (Html.BeginForm("VerificationCode", RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+                                {
+                                    @Html.ValidationMessage("VerificationCodeModel")
+
+                                    @Html.HiddenFor(x => x.Phone)
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.VerificationCode, new { @class = "form-control", placeholder = "Verification Code" })
+                                        @Html.ValidationMessageFor(m => m.VerificationCode, "", new { @class = "field-validation-error" })
+                                    </div>
+                                    <div class="kt-login__actions">
+                                        <button type="button" class="btn_continue btn btn-brand btn-elevate kt-login__btn-primary" style="width:100%;">Continue</button>
+                                    </div>
+                                }
+                            }
+                            else if (Model.ResponseStatus == SignInResponseStatus.LoadPassword)
+                            {
+                                <div class="kt-login__head">
+                                    <h3 class="kt-login__title">Sign In</h3>
+                                </div>
+                                using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(x => x.IsValid)
+                                    @Html.HiddenFor(x => x.Email)
+                                    @Html.HiddenFor(x => x.RegisterVia, new { id = "register_via" })
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                    <div class="input-group">
+                                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "login-form-password", name = "login-form-password", placeholder = "Password", autocomplete = "current-password" })
+                                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="kt-login__actions">
+                                        <button type="button" class="btn_continue btn btn-brand btn-elevate kt-login__btn-primary" style="width:100%;">Continue</button>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="kt-login__head">
+                                    <h3 class="kt-login__title">Sign In</h3>
+                                </div>
+                                using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new
+                                {
+                                    ReturnUrl = ViewBag.ReturnUrl
+                                }, FormMethod.Post, new { @class = "form", id = "login-form", role = "form", name = "login-form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(x => x.Church.Id)
+                                    @Html.HiddenFor(x => x.Payment.Amount)
+                                    @Html.HiddenFor(x => x.Payment.FundId)
+                                    @Html.HiddenFor(x => x.RegisterVia, new { id = "register_via" })
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                    <div class="login-mobile">
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control phone", name = "login-form-phone", placeholder = "Phone Number" })
+                                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "invalid-feedback" })
+                                            <span class="form-text text-muted">We'll text you to confirm your number. Standard message and data rates may apply.</span>
+                                        </div>
+                                    </div>
+                                    <div class="login-email" style="display:none;">
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", name = "login-form-email", placeholder = "Email Address" })
+                                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "invalid-feedback" })
+                                        </div>
+                                    </div>
+                                    <div class="kt-login__actions">
+                                        <button type="button" class="btn_continue btn btn-brand btn-elevate kt-login__btn-primary" style="width:100%;">Continue</button>
+                                    </div>
+                                    <hr style="border-bottom:.07rem dashed #ebedf2;" />
+                                    <div class="continue-buttons">
+                                        <a href="javascript:;" class="btn btn-outline-dark btn-elevate mb-3 show-email-login" onclick="LoadEmailLogin()" style="width:100%;">
+                                            <i class="fas fa-envelope" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with email</span>
+                                        </a>
+                                        <a href="javascript:;" class="btn btn-outline-dark btn-elevate mb-3 show-mobile-login" onclick="LoadMobileLogin()" style="width:100%; display:none;">
+                                            <i class="fa fa-mobile-alt" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with mobile</span>
+                                        </a>
+                                        @*<a href="/Account/Facebook" class="btn btn-outline-dark btn-elevate mb-3" style="width:100%;">
+                                                <i class="fab fa-facebook" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with Facebook</span>
+                                            </a>
+                                            <a href="/Account/Google" class="btn btn-outline-dark btn-elevate" style="width:100%;">
+                                                <i class="fab fa-google" style="float:left;"></i><span style="text-align:center;width:100%;margin:auto;"> Continue with Google</span>
+                                            </a>*@
+                                    </div>
+                                }
+                            }
+                            <div class="kt-login__account">
+                                <span class="kt-login__account-msg">
+                                    Already have an account?
+                                </span>&nbsp;&nbsp;
+                                <a href="@Url.Action("Login","Account")" class="kt-link kt-link--light kt-login__account-link">Sign In</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Content/assets/plugins/global/plugins.bundle.js" type="text/javascript"></script>
+    <script src="~/Scripts/global.js?v=@appVersion"></script>
+    <script src="~/Content/assets/js/scripts.bundle.js" type="text/javascript"></script>
+    <script src="~/Content/Assets/js/pages/custom/login/login-general.js" type="text/javascript"></script>
+    <script src="~/Content/assets/js/pages/crud/forms/widgets/input-mask.js" type="text/javascript"></script>
+    <script src="~/Scripts/form-validate/form-validate.js?v=@appVersion"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    $(function () {
+        if ('@Model.ResponseStatus' == '@SignInResponseStatus.InvalidAttempt') {
+            LoadEmailLogin();
+        }
+    });
+    function LoadEmailLogin() {
+        $("#Email").val('');
+        $("#login-form-password").val('');
+        $("#register_via, #current_State").val('Email');
+        $(".show-mobile-login").show();
+        $(".login-email").show();
+        $(".login-mobile").hide();
+        $(".show-email-login").hide();
+    }
+    function LoadMobileLogin() {
+        $("#Phone").val('');
+        $("#register_via, #current_State").val('PhoneNumber');
+        $(".show-email-login").show();
+        $(".login-email").hide();
+        $(".login-mobile").show();
+        $(".show-mobile-login").hide();
+    }
+    </script>
+</body>
+</html>

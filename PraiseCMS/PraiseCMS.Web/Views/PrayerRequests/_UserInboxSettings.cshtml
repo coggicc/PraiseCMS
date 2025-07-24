@@ -1,0 +1,21 @@
+﻿@model PraiseCMS.DataAccess.Models.ApplicationUser
+
+<div id="alert-container"></div>
+<div id="user-inbox-setting-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, null, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "user-inbox-setting-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        <div class="form-group row">
+            <label>Inbox Density</label>
+            @Html.DropDownListFor(x => x.InboxDensity, InboxDensity.Items.ToSelectList("", x => x), new { @class = "form-control select2", style = "width:100%;" })
+            <span class="form-text text-muted">Increase or decrease the spacing between prayer requests.</span>
+        </div>
+        <div class="form-group row">
+            <label>Inbox Type</label>
+            @Html.DropDownListFor(x => x.InboxType, InboxType.Items.ToSelectList("", x => x), new { @class = "form-control select2", style = "width:100%;" })
+            <span class="form-text text-muted">Order prayer requests by date (default), starred, or unread first.</span>
+        </div>
+    }
+</div>

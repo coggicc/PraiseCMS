@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Map";
+}
+
+<style type="text/css">
+    .jqvmap-zoomin, .jqvmap-zoomout {
+        width: 14px !important;
+        height: 15px !important;
+    }
+</style>
+
+<div class="card card-custom gutter-b card-stretch">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="kt_jqvmap_usa" class="kt-jqvmap" style="height:500px;"></div>
+    </div>
+</div>
+
+<script src="~/Content/assets/plugins/custom/jqvmap/jqvmap.bundle.js"></script>
+<script src="~/Content/assets/js/pages/features/maps/jqvmap.js"></script>

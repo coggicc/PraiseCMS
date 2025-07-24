@@ -1,0 +1,401 @@
+﻿@using System.Configuration
+<header class="header section overlay gradient gradient-43 alpha-8 color-1 image-background cover" style="background-image: url(../../Content/img/bg/waves.jpg)">
+    <div class="divider-shape">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none" class="shape-waves" style="left: 0; transform: rotate3d(0,1,0,180deg);">
+            <path class="shape-fill shape-fill-1" d="M790.5,93.1c-59.3-5.3-116.8-18-192.6-50c-29.6-12.7-76.9-31-100.5-35.9c-23.6-4.9-52.6-7.8-75.5-5.3c-10.2,1.1-22.6,1.4-50.1,7.4c-27.2,6.3-58.2,16.6-79.4,24.7c-41.3,15.9-94.9,21.9-134,22.6C72,58.2,0,25.8,0,25.8V100h1000V65.3c0,0-51.5,19.4-106.2,25.7C839.5,97,814.1,95.2,790.5,93.1z" />
+        </svg>
+    </div>
+    <div class="container-fluid">
+        <div class="row gap-y align-items-center">
+            <div class="col-lg-5 mx-auto text-center text-lg-left">
+                <h1 class="light display-3 color-1">
+                    <span class="bold d-block">Free Online Giving</span>
+                </h1>
+                <h2 class="light display-5 color-1">
+                    Tools designed for
+                    <span class="bold d-block">life-giving churches</span>
+                </h2>
+                <p class="color-1 lead alpha-8 my-5">Elevate your church operations: Effortlessly manage donations, prayer requests, and real-time giving with our user-friendly platform.</p>
+                @*<p class="color-1 lead alpha-8 my-5">Praise is a streamlined system that makes it easy to give, manage prayer requests, oversee your church family, and more. It's easy to use, fast, and secure.</p>*@
+                <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn btn-1 btn-lg btn-rounded bold px-5">Sign up free</a>
+                <p>No contracts.  Cancel anytime.</p>
+            </div>
+            <div class="col-lg-6 col-md-9 mx-md-auto mx-lg-0 pr-lg-0">
+                <div class="device-twin align-items-center mt-4 mt-lg-0">
+                    <div class="browser shadow" data-aos="fade-left">
+                        <img src="~/Content/img/screens/dash/dashboard_wide.png" alt="Dashboard">
+                    </div>
+                    <div class="front iphone-x absolute d-none d-lg-block" data-aos="fade-right" style="left: -5.5rem; bottom: -3.5rem;">
+                        <div class="screen">
+                            <img src="~/Content/img/screens/app/dashboard_mobile.png" alt="Mobile Dashboard">
+                        </div>
+                        <div class="notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<section id="features" class="section">
+    <div class="container pb-5">
+        <div class="section-heading mb-6 text-center">
+            <h2>Core Features</h2>
+        </div>
+        <div class="row gap-y text-center text-md-left">
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-dollar-sign fa-2x color-4 mb-2"></i>
+                <h5 class="bold">Giving</h5>
+                <p class="color-2">A simplistic, stress-free tithing experience for you and your donors. Recurring and one-time giving made easy. Import cash and check donations quickly.</p>
+                <a href="/features/giving">Learn More</a>
+            </div>                        
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-praying-hands fa-2x color-4 mb-2"></i>
+                <h5 class="bold">Prayer Requests</h5>
+                <p class="color-2">Receive prayer requests online via your existing website or add them through Praise.</p>
+                <a href="/features/prayerrequests">Learn More</a>
+            </div>
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-chart-line fa-2x color-4 mb-2"></i>
+                <h5 class="bold">Analytics & Reporting</h5>
+                <p class="color-2">Real-time reporting designed to maximize member generosity. View who is giving and how often they give.</p>
+                <a href="/features/analytics">Learn More</a>
+            </div>
+            <div class="col-md-6 col-lg-3 py-4 rounded shadow-hover">
+                <i class="fa fa-users fa-2x color-4 mb-2"></i>
+                <h5 class="bold">People</h5>
+                <p class="color-2">Manage individuals, households, and users. Get to know your church family.</p>
+                <a href="/features/people">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="features" class="section">
+    <div class="container">
+        <div class="section-heading mb-6 text-center">
+            <h2>Easy for Donors, Easy for You</h2>
+        </div>
+        <div class="row gap-y text-center text-md-left">
+            <div class="col-md-4 py-4 rounded shadow-hover text-center">
+                <div class="icon-shape mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 276.1 281.01" class="shape shape-xxl drop-shadow">
+                        <defs>
+                            <style>
+                                .cls-shape {
+                                    fill: #1fa2ff;
+                                }
+                            </style>
+                        </defs>
+                        <g id="layer_2" data-name="layer 2">
+                            <g id="OBJECTS">
+                                <path class="cls-shape" d="M261.95,86.82a83.45,83.45,0,0,0-8.57-10.71l0,0s-50.84-57.89-137-73.9l0,0A92.94,92.94,0,0,0,5,77.21c-17.58,85.56,16.63,154.31,16.83,154.72a83.17,83.17,0,0,0,6.67,11.93c21.11,31.38,60.18,43.83,96.07,33.7,0,0,58.12-14.28,123.33-79h0C278.76,169,285.58,121.95,261.95,86.82Z" />
+                            </g>
+                        </g>
+                    </svg>
+                    <i class="pe pe-7s-refresh-2 pe-3x color-1 icon center-xy"></i>
+                </div>
+                <h5 class="bold text-capitalize">Recurring Donations</h5>
+                <p class="">Automate the giving process with recurring donations. Donors specify an amount and frequency and Praise will take care of the rest.</p>
+            </div>
+            <div class="col-md-4 py-4 rounded shadow-hover text-center">
+                <div class="icon-shape mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 276.1 281.01" class="shape shape-xxl drop-shadow">
+                        <g id="layer_2" data-name="layer 2">
+                            <g id="OBJECTS">
+                                <path class="cls-shape" d="M261.95,86.82a83.45,83.45,0,0,0-8.57-10.71l0,0s-50.84-57.89-137-73.9l0,0A92.94,92.94,0,0,0,5,77.21c-17.58,85.56,16.63,154.31,16.83,154.72a83.17,83.17,0,0,0,6.67,11.93c21.11,31.38,60.18,43.83,96.07,33.7,0,0,58.12-14.28,123.33-79h0C278.76,169,285.58,121.95,261.95,86.82Z" />
+                            </g>
+                        </g>
+                    </svg>
+                    <i class="pe pe-7s-user pe-3x color-1 icon center-xy"></i>
+                </div>
+                <h5 class="bold text-capitalize">Simple & Secure Donor Sign-In</h5>
+                <p class="">With just a phone number, donors can give or access their account. We make the giving experience hassle-free.</p>
+            </div>
+            <div class="col-md-4 py-4 rounded shadow-hover text-center">
+                <div class="icon-shape mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 276.1 281.01" class="shape shape-xxl drop-shadow">                        
+                        <g id="layer_2" data-name="layer 2">
+                            <g id="OBJECTS">
+                                <path class="cls-shape" d="M261.95,86.82a83.45,83.45,0,0,0-8.57-10.71l0,0s-50.84-57.89-137-73.9l0,0A92.94,92.94,0,0,0,5,77.21c-17.58,85.56,16.63,154.31,16.83,154.72a83.17,83.17,0,0,0,6.67,11.93c21.11,31.38,60.18,43.83,96.07,33.7,0,0,58.12-14.28,123.33-79h0C278.76,169,285.58,121.95,261.95,86.82Z" />
+                            </g>
+                        </g>
+                    </svg>
+                    <i class="pe pe-7s-wallet pe-3x color-1 icon center-xy"></i>
+                </div>
+                <h5 class="bold text-capitalize">Automated Giving Statements</h5>
+                <p class="">Specify a date and Praise will generate and email them to any donor that gave the previous year.</p>
+            </div>
+        </div>
+    </div>
+</section>
+@*<section class="section">
+    <div class="shape-wrapper">
+        <div class="shape shape-background shape-right"></div>
+        <div class="shape shape-background top shape-left bg-4 op-1"></div>
+    </div>
+    <div class="section-heading text-center" style="margin-bottom:0;">
+        <p class="bold text-uppercase mb-0 badge badge-4">Have Five Minutes?</p>
+        <h2>How Do I Get Started?</h2>
+    </div>
+    <div class="container pb-9" style="padding-top:0;">
+        <div class="row gap-y align-items-center py-5">
+            <div class="col-md-6">
+                <figure data-aos="fade-right">
+                    <img src="~/Content/img/shps/payments/register.svg" class="img-responsive w-50" alt="">
+                    <img src="~/Content/img/shps/payments/register-click.svg" class="img-responsive absolute w-50" alt="" style="bottom: 10%; left: 125px;" data-aos="fade-up">
+                </figure>
+            </div>
+            <div class="col-md-6">
+                <div class="icon-xxl mb-4">
+                    <div class="icon-shape">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 219.98 213.35" class="shape shape-xxl drop-shadow">
+                            <defs>
+                                <style>
+                                    .cls-shape {
+                                        fill: #1fa2ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>shape-4</title>
+                            <g id="layer_1" data-name="layer_1">
+                                <g id="OBJECTS">
+                                    <path class="cls-shape" d="M92.2.36c58.51-4,85.65,25.71,100.68,65.52s37.29,53.51,21.92,99.33-70.9,51.88-92.59,46.52S78,192.49,51,182.07C10.79,166.56.86,146.16.06,126.06-1.07,97.63,13.92,94.45,18.73,63.28,24.51,25.93,46.43,3.47,92.2.36Z" />
+                                </g>
+                            </g>
+                        </svg>
+                        <i class="icon fas fa-2x fa-user center-xy color-1"></i>
+                    </div>
+                </div>
+                <h2 class="bold text-capitalize">Register Free</h2>
+                <p class="regular">Answer a few basic questions about your church. Have multiple campuses?  We've got that covered too.</p>
+                <a href="@($"{ConfigurationManager.AppSettings["DashboardUrl"]}Account/Register")" class="btn gradient gradient-43 color-1 btn-rounded btn-outline-1 bw-2 bold mt-4">Start Free Trial</a>
+            </div>
+        </div>
+        <div class="row gap-y align-items-center py-5">
+            <div class="col-md-6 order-md-2">
+                <figure data-aos="fade-left">
+                    <img src="~/Content/img/shps/payments/configure.svg" class="img-responsive" alt="">
+                </figure>
+            </div>
+            <div class="col-md-6">
+                <div class="icon-xxl mb-4">
+                    <div class="icon-shape">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 219.98 213.35" class="shape shape-xxl drop-shadow">
+                            <defs>
+                                <style>
+                                    .cls-shape {
+                                        fill: #1fa2ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>shape-4</title>
+                            <g id="layer_1" data-name="layer_1">
+                                <g id="OBJECTS">
+                                    <path class="cls-shape" d="M92.2.36c58.51-4,85.65,25.71,100.68,65.52s37.29,53.51,21.92,99.33-70.9,51.88-92.59,46.52S78,192.49,51,182.07C10.79,166.56.86,146.16.06,126.06-1.07,97.63,13.92,94.45,18.73,63.28,24.51,25.93,46.43,3.47,92.2.36Z" />
+                                </g>
+                            </g>
+                        </svg>
+                        <i class="icon fas fa-2x fa-users-cog center-xy color-1"></i>
+                    </div>
+                </div>
+                <h2 class="bold text-capitalize">Configure Giving Options</h2>
+                <p class="regular">Create giving funds and enter your banking details. It's that simple to get set up for digital payments.</p>
+            </div>
+        </div>
+        <div class="row gap-y align-items-center py-5">
+            <div class="col-md-6">
+                <figure data-aos="fade-right">
+                    <img src="~/Content/img/shps/payments/receive.svg" class="img-responsive" alt="">
+                </figure>
+            </div>
+            <div class="col-md-6">
+                <div class="icon-xxl mb-4">
+                    <div class="icon-shape">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 219.98 213.35" class="shape shape-xxl drop-shadow">
+                            <defs>
+                                <style>
+                                    .cls-shape {
+                                        fill: #1fa2ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>shape-4</title>
+                            <g id="layer_1" data-name="layer_1">
+                                <g id="OBJECTS">
+                                    <path class="cls-shape" d="M92.2.36c58.51-4,85.65,25.71,100.68,65.52s37.29,53.51,21.92,99.33-70.9,51.88-92.59,46.52S78,192.49,51,182.07C10.79,166.56.86,146.16.06,126.06-1.07,97.63,13.92,94.45,18.73,63.28,24.51,25.93,46.43,3.47,92.2.36Z" />
+                                </g>
+                            </g>
+                        </svg>
+                        <i class="icon fas fa-2x fa-chart-line center-xy color-1"></i>
+                    </div>
+                </div>
+                <h2 class="bold text-capitalize">Track and manage payments.</h2>
+                <p class="regular">View detailed giving reports. Compare giving by fund or campus, and by week, month, and year.</p>
+            </div>
+        </div>
+    </div>
+</section>*@
+@*<section class="section bg-6">
+    <div class="container bring-to-front">
+        <div class="row gap-y align-items-center">
+            <div class="col-md-6">
+                <div class="rounded bg-3-gradient shadow">
+                    <div class="d-flex flex-column align-items-center py-3">
+                        <img src="~/Content/img/bg/asset-1.svg" class="img-responsive w-50" alt="">
+                    </div>
+                </div>
+                <div class="rounded shadow-box bg-1 mt-3">
+                    <div class="media align-items-center px-3">
+                        <i class="fa fa-toggle-on fa-2x accent mr-3"></i>
+                        <div class="media-body my-3 pl-3 b-l">
+                            <p class="bold my-0">Custom platform settings</p>
+                            <p class="my-0 color-2">Personalize Praise CMS's settings to fit your needs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded shadow-box bg-1 mt-3">
+                    <div class="media align-items-center px-3">
+                        <i class="fa fa-chart-line fa-2x accent mr-3"></i>
+                        <div class="media-body my-3 pl-3 b-l">
+                            <p class="bold my-0">Real-time data analytics</p>
+                            <p class="my-0 color-2">View data when and where you need it</p>
+                            <hr class="my-3">
+                            <nav id="sw-nav-1" class="nav nav-tabs tabs-clean border-bottom-0">
+                                <a href="javascript:;" class="nav-item nav-link pl-md-0 py-0 d-flex flex-column align-items-center border-bottom-0 active" data-step="1">
+                                    <i class="icon fas fa-envelope-open fa-2x"></i>
+                                    <span class="d-none small">Inbox</span>
+                                </a>
+                                <a href="javascript:;" class="nav-item nav-link pl-md-0 py-0 d-flex flex-column align-items-center border-bottom-0" data-step="2">
+                                    <i class="icon fa fa-calendar-alt fa-2x"></i>
+                                    <span class="d-none small">Calendar</span>
+                                </a>
+                                <a href="javascript:;" class="nav-item nav-link pl-md-0 py-0 d-flex flex-column align-items-center border-bottom-0" data-step="3">
+                                    <i class="icon fa fa-file-invoice-dollar fa-2x"></i>
+                                    <span class="d-none small">Invoice</span>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 ml-md-auto text-center text-md-left">
+                <p class="badge badge-info text-uppercase">Simple and Sophisticated</p>
+                <h2>Payments brought to life</h2>
+                <p class="color-2">Praise CMS includes an easy to use admin dashboard for your staff to manage and track payments received.  You can see who is paying, where payments are coming from, and how often payments are made.</p>
+                <hr>
+                <div class="swiper-container" data-sw-navigation="#sw-nav-1" data-sw-navigation-active="active">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <figure class="shadow-box">
+                                <img src="~/Content/img/screens/dash/inbox.png" alt="" class="img-responsive rounded">
+                            </figure>
+                            <p class="small text-center text-danger">Clean inbox UI design</p>
+                        </div>
+                        <div class="swiper-slide">
+                            <figure class="shadow-box">
+                                <img src="~/Content/img/screens/dash/calendar.png" alt="" class="img-responsive rounded">
+                            </figure>
+                            <p class="small text-center text-danger">Outstanding calendar UI design</p>
+                        </div>
+                        <div class="swiper-slide">
+                            <figure class="shadow-box">
+                                <img src="~/Content/img/screens/dash/invoice.png" alt="" class="img-responsive rounded">
+                            </figure>
+                            <p class="small text-center text-danger">Draft purchases with the invoice feature</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section bg-6">
+    <div class="container bring-to-front pb-0">
+        <div class="section-heading text-center w-75 mx-auto">
+            <h2>Why Praise CMS?</h2>
+            <p class="lead color-2">When you're looking to grow your church, reach more people, and make a difference in your community, you need the funds to do so.  We make that easy by providing you with a platform designed to give you the features you need while making it easy for your members to send payments.</p>
+        </div>
+        <div class="shadow bg-1 p-5 rounded">
+            <nav class="nav nav-tabs tabs-clean slide d-inline-flex mb-4">
+                <a class="nav-item nav-link text-uppercase bold active" data-toggle="tab" href="#designers">Powerful Data</a>
+                <a class="nav-item nav-link text-uppercase bold" data-toggle="tab" href="#developers">Social Media Integration</a>
+            </nav>
+            <div class="tab-content">
+                <div class="tab-pane active" id="designers">
+                    <div class="row gap-y">
+                        <div class="col-lg-6">
+                            <h2 class="bold mb-4">Intelligent reporting and donor analytics</h2>
+                            <p class="lead color-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa cumque deleniti facere ipsa laborum saepe, tenetur ullam? Consequatur, deserunt eaque facilis hic, illo laboriosam minima quae quia temporibus totam vel.</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <figure class="px-2">
+                                <img src="~/Content/img/screens/developer.png" class="img-responsive shadow rounded" alt="...">
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="developers">
+                    <div class="row gap-y">
+                        <div class="col-lg-6">
+                            <h2 class="bold mb-4">Engage members via Instagram, Facebook, and Twitter</h2>
+                            <p class="lead color-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa cumque deleniti facere ipsa laborum saepe, tenetur ullam? Consequatur, deserunt eaque facilis hic, illo laboriosam minima quae quia temporibus totam vel.</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <figure class="px-2">
+                                <img src="~/Content/img/screens/designer.png" class="img-responsive shadow rounded" alt="...">
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section bg-5 edge top-left">
+    <div class="container pt-8">
+        <div class="section-heading text-center w-75 mx-auto">
+            <h2 class="color-1 bold">How to videos</h2>
+            <p class="lead color-1 alpha-6">Instructional videos designed to make it easy for staff and members alike to use the Praise CMS system.</p>
+        </div>
+        <div class="row gap-y">
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="card shadow-box shadow-hover border-0">
+                    <a href="https://www.youtube.com/watch?v=EykWcFEtFqo" class="modal-popup mfp-iframe overlay gradient gradient-34 alpha-3 p-6 image-background cover" style="background-image: url(https://picsum.photos/350/200/?random&gravity=south)" data-effect="mfp-fade" data-type="iframe">
+                        <div class="content text-center">
+                            <i class="pe pe-7s-play pe-4x color-1"></i>
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title regular">Managing Your Account</h4>
+                        <p class="card-text color-2">Discover how to get started with DashCore now.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="card shadow-box shadow-hover border-0">
+                    <a href="https://www.youtube.com/watch?v=MXghcI8hcWU" class="modal-popup mfp-iframe overlay gradient gradient-34 alpha-3 p-6 image-background cover" style="background-image: url(https://picsum.photos/350/200/?random&gravity=east)" data-effect="mfp-fade" data-type="iframe">
+                        <div class="content text-center">
+                            <i class="pe pe-7s-play pe-4x color-1"></i>
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title regular">Reporting & Analytics</h4>
+                        <p class="card-text color-2">Learn how to fit the theme to your own needs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="card shadow-box shadow-hover border-0">
+                    <a href="https://www.youtube.com/watch?v=HLG_s9b2Uuw" class="modal-popup mfp-iframe overlay gradient gradient-34 alpha-3 p-6 image-background cover" style="background-image: url(https://picsum.photos/350/200/?random&gravity=north)" data-effect="mfp-fade" data-type="iframe">
+                        <div class="content text-center">
+                            <i class="pe pe-7s-play pe-4x color-1"></i>
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title regular">Making Payments</h4>
+                        <p class="card-text color-2">Integrating the API with your new template.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>*@

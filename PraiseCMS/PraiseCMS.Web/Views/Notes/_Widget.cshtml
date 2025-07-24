@@ -1,0 +1,388 @@
+﻿@model NotesViewModel
+@using PraiseCMS.Shared.Methods
+
+@{
+    var work = new PraiseCMS.BusinessLayer.Work();
+    var db = new ApplicationDbContext();
+    var view = Model.Notes != null ? Model : work.Note.GetNotesViewModel(Model.Type, Model.TypeId);
+}
+
+
+@using (Ajax.BeginForm("_AddNoteToWidget", "Notes", null, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "note-widget-" + view.TypeId }, new { id = "note-widget-form-" + view.TypeId, @class = "" }))
+{
+    @Html.Hidden("type", view.Type)
+    @Html.Hidden("typeId", view.TypeId)
+
+    <h3 class="font-size-h6 mb-5">Notes:</h3>
+    if (SessionVariables.CurrentChurch.NoteCategories.SplitToList().Any())
+    {
+        <div class="form-group">
+            <label>Select a Category:</label>
+            @Html.DropDownList("category", SessionVariables.CurrentChurch.NoteCategories.SplitToList().OrderBy(x => x).ToSelectList("Select a category...", x => x, x => x, x => x.Contains("General")), new { @class = "form-control select2", style = "width:100%;text-transform:capitalize;" })
+        </div>
+    }
+    <div class="form-group">
+        <label>Add a note:</label>
+        @Html.TextArea("note", new { @class = "form-control form-control-lg", placeholder = "Add your note here..." })
+    </div>
+    <div class="row">
+        <div class="col">
+            <button type="submit" class="btn btn-light-primary font-weight-bold">Save Note</button>
+        </div>
+    </div>
+}
+<div class="separator separator-dashed my-10"></div>
+<!--begin::Timeline-->
+@if (view.Notes.Any())
+{
+    foreach (var group in view.Notes.OrderBy(x => x.Category).GroupBy(x => x.Category))
+    {
+        var category = group.First().Category;
+
+        <h3 class="font-size-h6 mb-5">@category:</h3>
+        <div class="timeline timeline-3">
+            <div class="timeline-items">
+                @foreach (var note in group.OrderByDescending(x => x.CreatedDate))
+                {
+                    var user = view.Users.FirstOrDefault(x => x.Id.Equals(note.CreatedBy));
+                    var userSettings = db.UserSettings.FirstOrDefault(x => x.UserId.Equals(note.CreatedBy));
+                    var currentClass = user != null && user.Id.Equals(SessionVariables.CurrentUser.User.Id) ? "current" : "";
+                    var noteContent = !string.IsNullOrEmpty(note.Description) ? note.Description.Replace("\n", "<br />") : "";
+
+
+                    if (note.Deleted)
+                    {
+                        currentClass += " deleted";
+                    }
+
+                    @*<tr class="note-@note.Id">
+                            <td class="note-user">
+                                @if (userSettings != null && !string.IsNullOrEmpty(userSettings.ProfileImage))
+                                {
+                                    <img src="@Html.AmazonLink(user.Image, ApplicationCache.Instance.AmazonConfiguration.IconDirectory)" alt="No Image" class="img-circle" />
+                                    <img src="@Url.Content("~/Uploads/profile/"+ userSettings.ProfileImage)" alt="" class="img-circle" />
+                                }
+                                else
+                                {
+                                    <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" alt="No Image" class="img-circle" />
+                                }
+                            </td>
+                            <td>
+                                <div class="note-content note-content-@note.Id @currentClass">
+                                    @Html.Raw(noteContent)
+                                </div>
+                                <div class="note-meta note-meta-@note.Id">
+                                    @if (user != null)
+                                    {
+                                        <span class="formal">@user.FullName</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Deleted User</span>
+                                    }
+                                    <span> | @note.CreatedDate.ToString() | @note.CreatedDate.RelativeToNow()</span>
+                                    @if (!string.IsNullOrEmpty(note.Category))
+                                    {
+                                        <span>| @note.Category</span>
+                                    }
+                                    @if ((user != null && user.Id.Equals(SessionVariables.CurrentUser.User.Id)) || SessionVariables.CurrentUser.IsAdmin)
+                                    {
+                                        if (!note.Deleted)
+                                        {
+                                            <span class="note-action-@note.Id">| @Html.AjaxModalLink("Edit", "/notes/_edit/" + note.Id, "Edit Note", "Save", "edit-note-" + note.Id, "font-size: 10px;") | <a data-ajax="true" data-ajax-method="get" href="/notes/_clear/@note.Id" style="color:red;font-size:10px;" class="delete-note-@note.Id">Clear</a></span>
+                                        }
+                                    }
+                                    @if (!string.IsNullOrEmpty(note.DeletedBy))
+                                    {
+                                        //var deleteUser = Model.Users.FirstOrDefault(x => x.Id.Equals(note.DeletedBy)) ?? new UserProvider().Get(note.DeletedBy);
+                                        var deleteUser = Model.Users.FirstOrDefault(x => x.Id.Equals(note.DeletedBy)) ?? null;
+                                        var deleteUserName = deleteUser != null ? deleteUser.FullName : "Deleted User";
+
+                                        <span>| Cleared by @deleteUserName on @note.DeletedDate.ToShortDateString()</span>
+                                        <span>| Cleared by @deleteUserName on @note.DeletedDate</span>
+                                    }
+                                    @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                    {
+                                        <span>|</span>
+                                        <a data-ajax="true" data-ajax-method="get" href="/notes/_delete/@note.Id" style="color:red;font-size:10px;" class="delete-note-@note.Id">Delete</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>*@
+                    <div class="timeline-item">
+                        <div class="timeline-media">
+                            @if (user != null && userSettings != null && !string.IsNullOrEmpty(userSettings.ProfileImage))
+                            {
+                                <img alt="User Profile Image" src="@Url.Content("~/Uploads/profile/" + userSettings.ProfileImage)" data-toggle="tooltip" title="@user.FullName" data-placement="left" />
+                            }
+                            else
+                            {
+                                <img alt="No Profile Image" src="~/Content/assets/media/users/300_25.jpg" />
+                            }
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="mr-2">
+                                    <span class="text-dark-75 font-weight-bold">@(!string.IsNullOrEmpty(category) ? category : "Uncategorized")</span>
+                                    <span class="text-muted ml-2" data-toggle="tooltip" title="@note.CreatedDate" data-placement="bottom">@note.CreatedDate.RelativeToNow()</span>
+                                    @if (!string.IsNullOrEmpty(category))
+                                    {
+                                        <span class="label label-light-danger font-weight-bolder label-inline ml-2">@category</span>
+                                    }
+                                </div>
+                                <div class="dropdown ml-2" data-toggle="tooltip" title="Actions" data-placement="left">
+                                    <a href="#" class="btn btn-hover-light-primary btn-sm btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="ki ki-more-hor font-size-lg text-primary"></i>
+                                    </a>
+                                    <div class="dropdown-menu p-0 m-0 dropdown-menu-md dropdown-menu-right">
+                                        <!--begin::Navigation-->
+                                        <ul class="navi navi-hover">
+                                            <li class="navi-header font-weight-bold py-4">
+                                                <span class="font-size-lg">Actions:</span>
+                                                <i class="flaticon2-information icon-md text-muted" data-toggle="tooltip" data-placement="right" title="Click to learn more..."></i>
+                                            </li>
+                                            <li class="navi-separator mb-3 opacity-70"></li>
+                                            @if (SessionVariables.CurrentUser.IsAdmin && !note.Deleted)
+                                            {
+                                                <li class="navi-item">
+                                                    @Html.AjaxModalLink("<span class='navi-text'><span class='label label-xl label-inline label-light-primary'>Edit</span></span>", "/notes/_edit/" + note.Id, "Edit Note", "Save", "navi-link edit-note-" + note.Id, "")
+                                                </li>
+                                                <li class="navi-item">
+                                                    <a data-ajax="true" data-ajax-method="get" href="/notes/_clear/@note.Id" class="navi-link delete-note-@note.Id">
+                                                        <span class="navi-text">
+                                                            <span class="label label-xl label-inline label-light-warning">Clear</span>
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (SessionVariables.CurrentUser.IsAdmin)
+                                            {
+                                                <li class="navi-item">
+                                                    <a data-ajax="true" data-ajax-method="get" href="/notes/_delete/@note.Id" class="navi-link delete-note-@note.Id">
+                                                        <span class="navi-text">
+                                                            <span class="label label-xl label-inline label-light-danger">Delete</span>
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                        <!--end::Navigation-->
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="p-0">@Html.Raw(noteContent)</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="separator separator-dashed my-10"></div>
+    }
+}
+<!--end::Timeline-->
+
+<script type='text/javascript'>
+    $(function () {
+        $(".note-widget-count-@view.TypeId").text("@view.Notes.Count");
+        $("#note-widget-@view.TypeId #note").keypress(function (e) {
+            if (e.which == 13) {
+                $(".note-widget-loading-@view.TypeId").show();
+                $("#note-widget-form-@view.TypeId").submit();
+            }
+        });
+    });
+</script>
+
+@*
+    <style>
+        .note-user {
+            width: 40px;
+            height: 40px;
+        }
+
+            .note-user img {
+                width: 40px;
+                height: 40px;
+            }
+
+        .note-content {
+            padding: 10px;
+            font-size: 12px;
+            color: #333;
+            background: #F3F3F3;
+            border-radius: 3px;
+            margin-bottom: 4px;
+            display: inline-block;
+            white-space: normal;
+        }
+
+            .note-content.current {
+                background: #3e5871;
+                color: #FFF !important;
+            }
+
+            .note-content.deleted {
+                text-decoration: line-through !important;
+            }
+
+        .note-meta {
+            font-size: 10px;
+            color: #CCC;
+        }
+    </style>
+
+    @using (Ajax.BeginForm("_AddNoteToWidget", "Notes", null, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "note-widget-" + view.TypeId }, new { @id = "note-widget-form-" + view.TypeId, @class = "" }))
+    {
+        @Html.Hidden("type", view.Type)
+        @Html.Hidden("typeId", view.TypeId)
+        <table class="table" style="border: 1px solid #DDD;margin: 0;">
+            <thead>
+                <tr>
+                    <th colspan="2">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="note-user">
+                        @if (!string.IsNullOrEmpty(SessionVariables.CurrentUser.Settings.ProfileImage))
+                        {
+                            <!--<img src="@Html.AmazonLink(SessionVariables.CurrentUser.User.Image, ApplicationCache.Instance.AmazonConfiguration.IconDirectory)" alt="No Image" class="img-circle" />-->
+                            <img src="@Url.Content("~/Uploads/profile/"+ SessionVariables.CurrentUser.Settings.ProfileImage)" alt="No Image" class="img-circle" />
+                        }
+                        else
+                        {
+                            <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" alt="No Image" class="img-circle" />
+                        }
+                    </td>
+                    <td>
+
+                        @if (SessionVariables.CurrentChurch.NoteCategories.SplitToList().Any())
+                        {
+                            @Html.DropDownList("category", SessionVariables.CurrentChurch.NoteCategories.SplitToList().OrderBy(x => x).ToSelectList("Select a category...", x => x), new { @class = "form-control select2", style = "width:100%;text-transform:capitalize;" })
+                        }
+
+                        @Html.TextArea("note", new { @class = "form-control", @style = "height: 60px; margin-top:10px;", @placeholder = "Add your note here and press enter..." })
+                    </td>
+                </tr>
+                <tr class="note-widget-loading-@view.TypeId" style="display:none;">
+                    <td class="note-user">
+                        @if (!string.IsNullOrEmpty(SessionVariables.CurrentUser.Settings.ProfileImage))
+                        {
+                            <!--img src="@Html.AmazonLink(SessionVariables.CurrentUser.User.Image, ApplicationCache.Instance.AmazonConfiguration.IconDirectory)" alt="No Image" class="img-circle" />-->
+                            <img src="@Url.Content("~/Uploads/profile/"+ SessionVariables.CurrentUser.Settings.ProfileImage)" alt="No Image" class="img-circle" />
+                        }
+                        else
+                        {
+                            <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" alt="No Image" class="img-circle" />
+                        }
+                    </td>
+                    <td>
+                        <i class="ti-reload rotate-refresh"></i>
+                    </td>
+                </tr>
+                @if (view.Notes.Any())
+                {
+                    foreach (var group in view.Notes.OrderBy(x => x.Category).GroupBy(x => x.Category))
+                    {
+                        var category = group.First().Category;
+                        if (!string.IsNullOrEmpty(category))
+                        {
+                            <tr>
+                                <th colspan="2">
+                                    <strong>@category Notes (@group.Count())</strong>
+                                </th>
+                            </tr>
+                        }
+
+                        foreach (var note in group.OrderByDescending(x => x.CreatedDate))
+                        {
+                            var user = view.Users.FirstOrDefault(x => x.Id.Equals(note.CreatedBy));
+                            var userSettings = db.UserSettings.FirstOrDefault(x => x.UserId.Equals(note.CreatedBy));
+                            var currentClass = user != null && user.Id.Equals(SessionVariables.CurrentUser.User.Id) ? "current" : "";
+                            var noteContent = !string.IsNullOrEmpty(note.Description) ? note.Description.Replace("\n", "<br />") : "";
+
+                            if (note.Deleted)
+                            {
+                                currentClass += " deleted";
+                            }
+
+                            <tr class="note-@note.Id">
+                                <td class="note-user">
+                                    @if (userSettings != null && !string.IsNullOrEmpty(userSettings.ProfileImage))
+                                    {
+                                        <!--<img src="@Html.AmazonLink(user.Image, ApplicationCache.Instance.AmazonConfiguration.IconDirectory)" alt="No Image" class="img-circle" />-->
+                                        <img src="@Url.Content("~/Uploads/profile/"+ userSettings.ProfileImage)" alt="" class="img-circle" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" alt="No Image" class="img-circle" />
+                                    }
+                                </td>
+                                <td>
+                                    <div class="note-content note-content-@note.Id @currentClass">
+                                        @Html.Raw(noteContent)
+                                    </div>
+                                    <div class="note-meta note-meta-@note.Id">
+                                        @if (user != null)
+                                        {
+                                            <span class="formal">@user.FullName</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Deleted User</span>
+                                        }
+                                        <span> | @note.CreatedDate.ToString() | @note.CreatedDate.RelativeToNow()</span>
+                                        @if (!string.IsNullOrEmpty(note.Category))
+                                        {
+                                            <span>| @note.Category</span>
+                                        }
+                                        @if ((user != null && user.Id.Equals(SessionVariables.CurrentUser.User.Id)) || SessionVariables.CurrentUser.IsAdmin)
+                                        {
+                                            if (!note.Deleted)
+                                            {
+                                                <span class="note-action-@note.Id">| @Html.AjaxModalLink("Edit", "/notes/_edit/" + note.Id, "Edit Note", "Save", "edit-note-" + note.Id, "font-size: 10px;") | <a data-ajax="true" data-ajax-method="get" href="/notes/_clear/@note.Id" style="color:red;font-size:10px;" class="delete-note-@note.Id">Clear</a></span>
+                                            }
+                                        }
+                                        @if (!string.IsNullOrEmpty(note.DeletedBy))
+                                        {
+                                            //var deleteUser = Model.Users.FirstOrDefault(x => x.Id.Equals(note.DeletedBy)) ?? new UserProvider().Get(note.DeletedBy);
+                                            var deleteUser = Model.Users.FirstOrDefault(x => x.Id.Equals(note.DeletedBy)) ?? null;
+                                            var deleteUserName = deleteUser != null ? deleteUser.FullName : "Deleted User";
+
+                                            <!--<span>| Cleared by @deleteUserName on @note.DeletedDate.ToShortDateString()</span>-->
+                                            <span>| Cleared by @deleteUserName on @note.DeletedDate</span>
+                                        }
+                                        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                        {
+                                            <span>|</span>
+                                            <a data-ajax="true" data-ajax-method="get" href="/notes/_delete/@note.Id" style="color:red;font-size:10px;" class="delete-note-@note.Id">Delete</a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">
+                            No notes have been added yet, be the first by adding one above
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+<script type='text/javascript'>
+    $(function () {
+        $(".note-widget-count-@view.TypeId").text("@view.Notes.Count");
+        $("#note-widget-@view.TypeId #note").keypress(function (e) {
+            if (e.which == 13) {
+                $(".note-widget-loading-@view.TypeId").show();
+                $("#note-widget-form-@view.TypeId").submit();
+            }
+        });
+    });
+</script>*@

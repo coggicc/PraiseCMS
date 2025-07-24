@@ -1,0 +1,23 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+@{
+    decimal totalGiving = 0;
+
+    if (Model.Payments.IsNotNull() && Model.Payments.Count > 0)
+    {
+        totalGiving = Model.Payments.Sum(x => x.Amount);
+    }
+
+    if (Model.OfflineGiving.IsNotNull() && Model.OfflineGiving.Count > 0)
+    {
+        totalGiving += Model.OfflineGiving.Sum(x => x.Amount);
+    }
+}
+
+<a href="reports/givingsummary" class="card card-custom bg-success bg-hover-state-success gutter-b" data-toggle="tooltip" data-placement="top" title="View Giving Summary">
+    <div class="card-body">
+        <i class="fa fa-dollar-sign fa-2x text-white"></i>
+        <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@totalGiving.ToCurrencyString()</span>
+        <span class="font-weight-bold text-white">Giving - YTD</span>
+    </div>
+</a>

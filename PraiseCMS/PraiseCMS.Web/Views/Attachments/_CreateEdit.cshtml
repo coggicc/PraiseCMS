@@ -1,0 +1,177 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SingleAttachmentViewModel
+@using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary()
+    @Html.HiddenFor(x => x.Attachment.Id)
+    @Html.HiddenFor(x => x.Attachment.CreatedDate)
+    @Html.HiddenFor(x => x.Attachment.ChurchId)
+    @Html.HiddenFor(x => x.Attachment.CreatedBy)
+    @Html.HiddenFor(x => x.Attachment.Type)
+    @Html.HiddenFor(x => x.Attachment.TypeId)
+    @Html.HiddenFor(x => x.Attachment.FileName)
+    @Html.HiddenFor(x => x.Attachment.SortOrder)
+
+    <div class="col">
+        <div class="form-group row">
+            <label class="col-lg-3 col-form-label">File</label>
+            <div class="col">
+                <div class="form-control">
+                    <input type="file" class="col-lg-9" name="File">
+                    <a href="javascript:;" class="addMore pull-right">Add More</a>
+                </div>
+            </div>
+        </div>
+        <div class="addMoreContainer form-group row" style="display:none;">
+            <label class="col-lg-3 col-form-label">More Files</label>
+            <div class="col">
+                <input type="file" class="col" name="File1">
+                <input type="file" class="col" name="File2">
+                <input type="file" class="col" name="File3">
+                <input type="file" class="col" name="File4">
+                <input type="file" class="col" name="File5">
+                <input type="file" class="col" name="File6">
+                <input type="file" class="col" name="File7">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-3 col-form-label">Category</label>
+            <div class="col">
+                @Html.DropDownListFor(x => x.Attachment.Category, Constants.Categories(), "Select a category...", new { @class = "form-control full-width select2" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-3 col-form-label">Name</label>
+            <div class="col">
+                @Html.TextBoxFor(x => x.Attachment.Name, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-lg-3 col-form-label">Notes</label>
+            <div class="col">
+                @Html.TextAreaFor(x => x.Attachment.Notes, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+}
+
+@*<div id="single-attachment-div">
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary()
+
+        @Html.HiddenFor(x => x.ReturnUrl)
+
+        @Html.HiddenFor(x => x.Attachment.Id)
+        @Html.HiddenFor(x => x.Attachment.CreatedDate)
+        @Html.HiddenFor(x => x.Attachment.CreatedBy)
+        @Html.HiddenFor(x => x.Attachment.Type)
+        @Html.HiddenFor(x => x.Attachment.TypeId)
+        @Html.HiddenFor(x => x.Attachment.FileName)
+        @Html.HiddenFor(x => x.Attachment.SortOrder)
+
+    <table class="table table-bordered" style="margin: 0;">
+        <tr>
+            <td>File</td>
+            <td style="max-width: 300px;">
+                @if (RouteHelpers.Creating)
+                {
+                    <a href="#" class="toggle-selector" data-selector=".more-files" style="float:right;margin-top: 5px;">Add More</a>
+                }
+                @if (!string.IsNullOrEmpty(Model.Attachment.FileName))
+                {
+                    <a href="@Html.AmazonLink(Model.Attachment.FileName)" target="_blank">View File</a>
+                }
+                <input type="file" id="File" name="File" />
+            </td>
+        </tr>
+        @if (RouteHelpers.Creating)
+        {
+            <tr class="more-files" style="display:none;">
+                <td>More Files</td>
+                <td>
+                    <ul>
+                        <li style="margin-bottom: 7px; color: #AAA;font-weight:bold; font-size:  12px;">
+                            Add up to 7 more images  below:
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <input type="file" id="File1" name="File1" />
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <input type="file" id="File2" name="File2" />
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <input type="file" id="File3" name="File3" />
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <input type="file" id="File3" name="File3" />
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <input type="file" id="File4" name="File4" />
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <input type="file" id="File5" name="File5" />
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <input type="file" id="File6" name="File6" />
+                        </li>
+                        <li>
+                            <input type="file" id="File7" name="File7" />
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        }
+        @if (SessionVariables.CurrentCompany.AttachmentCategories.SplitToList().Any())
+            @if (Model.Category.Any())
+            {
+                <tr>
+                    <td>Category</td>
+                    <td>
+                        @Html.DropDownListFor(x => x.Attachment.Category, new SelectListItem(Model.Category, "", ""), "Select a category...", new { @class = "form-control select2" })
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>
+                    @if (Model.Attachment.Type.ContainsValue("Photo"))
+                    {
+                        <span>Caption</span>
+                    }
+                    else
+                    {
+                        <span>Name</span>
+                    }
+                </td>
+                <td>
+                    @Html.TextBoxFor(x => x.Attachment.Name, new { @class = "form-control full-width" })
+                </td>
+            </tr>
+            <tr>
+                <td>Notes</td>
+                <td>
+                    @Html.TextAreaFor(x => x.Attachment.Notes, new { @class = "form-control full-width", @placeholder = "Enter additional notes here..." })
+                </td>
+            </tr>
+            @if (!RouteHelpers.Creating)
+            {
+                var createdBy = !string.IsNullOrEmpty(Model.Attachment.CreatedBy) ? PraiseCMS.DataAccess.Shared.Utilities.UserProvider(Model.Attachment.CreatedBy) : null;
+
+                <tr>
+                    <td class="page-meta" colspan="2" style="background:#FDEFDE; text-align:center;">
+                        Uploaded
+                        @if (createdBy != null)
+                        {
+                            <span>by @createdBy.FullName</span>
+                        }
+                        at @Model.Attachment.CreatedDate
+                        @if (!string.IsNullOrEmpty(Model.Attachment.Type) && Model.Attachment.Type.EqualsIgnoreCase("Unit Phase"))
+                        {
+                            <br />
+                            @Html.AjaxModalLink("Change Disposition", "/units/_dispositionphoto/" + Model.Attachment.Id + "?returnUrl=" + Url.Encode(Model.ReturnUrl), "Disposition Photo", "Save", "save-progress", "", "", "", true)
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+</div>*@

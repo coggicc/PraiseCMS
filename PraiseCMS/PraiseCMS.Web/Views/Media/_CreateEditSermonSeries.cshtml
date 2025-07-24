@@ -1,0 +1,66 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SermonSeriesViewModel
+
+<div id="sermonseries-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "sermonseries-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="kt-section kt-section--first">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.Series.Id)
+            @Html.HiddenFor(x => x.Series.ChurchId)
+            @Html.HiddenFor(x => x.Series.CreatedBy)
+            @Html.HiddenFor(x => x.Series.CreatedDate)
+            @Html.HiddenFor(x => x.Series.Image)
+
+            <div class="kt-section__body">
+                <div class="form-group row">
+                    @Html.LabelFor(x => x.Series.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(x => x.Series.Title, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Series.Title, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2">Topic</label>
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(x => x.Series.TopicId, Model.TopicsList.ToSelectList("Select a topic...", x => x.Title, x => x.Id), new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(x => x.Series.TopicId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(x => x.Series.MessagesInSeries, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(x => x.Series.MessagesInSeries, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Series.MessagesInSeries, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(x => x.Series.MessagesInSeriesRemaining, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(x => x.Series.MessagesInSeriesRemaining, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Series.MessagesInSeriesRemaining, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Is Current?</label>
+                    <div class="col-lg-9">
+                        <span class="switch switch-icon">
+                            <label>
+                                @Html.CheckBoxFor(x => x.Series.IsCurrent, new { name = "Active" })
+                                @Html.ValidationMessageFor(x => x.Series.IsCurrent, "", new { @class = "text-danger" })
+                            </label>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section belowscripts{
+    <script src="~/Content/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+    <script src="~/Content/assets/js/pages/crud/forms/editors/ckeditor-classic.js"></script>
+}

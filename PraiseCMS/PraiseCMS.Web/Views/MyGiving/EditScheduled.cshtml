@@ -1,0 +1,109 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.ScheduledPayment>
+
+@{
+    ViewBag.Title = "Edit Scheduled";
+
+    var db = new ApplicationDbContext();
+}
+
+@if (!SessionVariables.CurrentUser.IsDonorOnly)
+{
+    @section leftsubheader{
+        @Html.Partial("_MyGivingSubheader")
+    }
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                Scheduled Giving
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Fund</th>
+                            <th>Campus</th>
+                            <th>Frequency</th>
+                            <th>Payment Method</th>
+                            <th>Starting</th>
+                            <th>Ending</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var fundIds = Model.Select(q => q.FundId).ToList();
+                            var funds = db.Funds.Where(x => fundIds.Contains(x.Id)).ToList();
+                        }
+                        @foreach (var item in Model)
+                        {
+                            var campus = SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(item.CampusId));
+                            <tr>
+                                <td>
+                                    @Convert.ToDecimal(item.Amount).ToCurrencyString()
+                                </td>
+                                <td>
+                                    @if (funds.Any(q => q.Id.Equals(item.FundId)))
+                                    {
+                                        <span>@funds.FirstOrDefault(q => q.Id.Equals(item.FundId)).Display</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (campus != null)
+                                    {
+                                        <span>@campus.Display</span>
+                                    }
+                                </td>
+                                <td>
+                                    @item.Frequency
+                                </td>
+                                <td>
+                                    @item.PaymentMethod
+                                </td>
+                                <td>
+                                    @Convert.ToDateTime(item.RecurringStartDate).ToShortDateString()
+                                </td>
+                                <td>
+                                    @if (item.GiftEndingReason.Equals(GiftEndingReasons.OnASpecificDate))
+                                    {
+                                        <span>@Convert.ToDateTime(item.RecurringEndDate).ToShortDateString()</span>
+                                    }
+                                    else if (item.GiftEndingReason.Equals(GiftEndingReasons.AfterMaxNumberofGifts))
+                                    {
+                                        <span>@GiftEndingReasons.AfterMaxNumberofGifts: @item.MaxGifts (@(item.MaxGifts-(item.PaymentsMade ?? 0)+" remaining"))</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@GiftEndingReasons.WhenICancelIt</span>
+                                    }
+                                </td>
+                                <td>
+                                    @item.CreatedDate.ToShortDateString()
+                                </td>
+                                <td>
+                                    <a class="delete_prompt btn btn-light-danger btn-sm mr-2" href="/mygiving/DeleteScheduleGift?id=@item.Id">Delete</a>
+                                    <a class="btn btn-sm btn-light-primary" href="/mygiving/ScheduleGift?id=@item.Id">Edit</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>
+                You don't have any schedules gifts. <a href="/mygiving/schedulegift">Want to create one?</a>
+            </p>
+        }
+    </div>
+</div>

@@ -1,0 +1,75 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.ViewModels.BlogPostViewModel>
+
+@{
+    ViewBag.Title = "Blog Posts";
+}
+
+@section leftsubheader{
+    @Html.Partial("~/Views/Blog/_BlogSubheader.cshtml")
+}
+
+@section subheader{
+    @Html.ActionLink("Create Post", "CreateEditPost",null, new { @class="btn btn-light-primary btn-sm font-weight-bold mr-2"})
+    @Html.AjaxModalLink("Create Category", "/blog/CreateCategory", "Create Category", "Save", "btn btn-light-primary btn-sm font-weight-bold mr-2", "")
+    @Html.AjaxModalLink("Create Tag", "/blog/CreateTag", "Create Tag", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @*@Html.AjaxModalLink("Create", "/leads/Create", "Create Lead", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")*@
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="">Title</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Last Updated</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(x=>x.PublishedDate))
+                        {
+                            <tr>
+                                <td class="">
+                                    @item.Title
+                                    @*@Html.AjaxModalLink($"{item.Title}", $"/blog/EditPost/{item.PostId}", "Update Post", "Update", "", "", $"/blog/DeletePost/{item.PostId}", null, false, ModalSizes.XL)*@
+                                </td>
+                                <td class="text-center">
+                                    @(((BlogStatuses)item.Status).GetDescription())
+                                </td>
+                                <td class="text-center">
+                                    @(item.PublishedDate)
+                                </td>
+                                <td class="text-center">
+                                    <a href="/blog/createeditpost/@item.PostId">Edit</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col">
+                    <p style="font-size:18px;">No posts have been created.</p>
+                    @Html.AjaxModalLink("Create", "/blog/CreatePost", "Create Post", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+                </div>
+            </div>
+        }
+    </div>
+</div>

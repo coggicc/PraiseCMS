@@ -1,0 +1,28 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<div class="row m-b-20">
+    <div class="col-md-12">
+        <h3 class="text-left txt-primary">Whoops</h3>
+        <p class="text-inverse text-left m-b-0">We see you found something different...our minions are looking into this now.</p>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <p class="text-inverse text-left m-b-0">Is this supposed to happen?</p>
+        <p class="text-inverse text-left"><b><a href="/page/contact-us">Contact Us</a></b></p>
+    </div>
+</div>
+@if (Model != null && Model.Exception != null && !string.IsNullOrEmpty(Model.Exception.Message))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-inverse text-left m-b-0">Exception Details</p>
+            <p class="text-inverse text-left">@Html.Raw(Model.Exception.Message.Replace("\n", "<br />"))</p>
+        </div>
+    </div>
+}

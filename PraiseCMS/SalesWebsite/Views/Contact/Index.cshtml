@@ -1,0 +1,112 @@
+﻿
+@{
+    ViewBag.Title = "Contact Praise";
+}
+
+<header class="page header color-1 overlay alpha-8 image-background cover gradient gradient-43" style="background-image: url('../../Content/img/bg/waves.jpg')">
+    <div class="divider-shape">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none" class="shape-waves" style="left: 0; transform: rotate3d(0,1,0,180deg);">
+            <path class="shape-fill shape-fill-1" d="M790.5,93.1c-59.3-5.3-116.8-18-192.6-50c-29.6-12.7-76.9-31-100.5-35.9c-23.6-4.9-52.6-7.8-75.5-5.3c-10.2,1.1-22.6,1.4-50.1,7.4c-27.2,6.3-58.2,16.6-79.4,24.7c-41.3,15.9-94.9,21.9-134,22.6C72,58.2,0,25.8,0,25.8V100h1000V65.3c0,0-51.5,19.4-106.2,25.7C839.5,97,814.1,95.2,790.5,93.1z" />
+        </svg>
+    </div>
+    <div class="container pb-9" style="">
+        <div class="row">
+            <div class="col-md-6">
+                <h1 class="regular display-4 color-1 mb-4">Contact us</h1>
+                <p class="lead color-1">Let us know how we can help. Fill out the form and we'll be in touch as soon as possible.</p>
+            </div>
+        </div>
+    </div>
+</header>
+<section class="section mt-7n">
+    <div class="container bring-to-front pt-0">
+        <div class="row align-items-center gap-y">
+            <div class="col-md-6">
+                <div class="shadow bg-1 p-4 rounded">
+                    <form method="post" data-custome-submit="true" action="/Contact/index" id="form-contact" class="form form-contact" name="form-contact" data-response-message-animation="slide-in-up">
+                        <small id="emailHelp" class="form-text color-2 mt-0 mb-2 italic">We'll never share your information with anyone else.</small>
+                        <input type="hidden" name="ContactFormTimestamp" id="ContactFormTimestamp" value="@ViewBag.ContactFormTimestamp" />
+                        <div class="form-group">
+                            <label for="first_name" class="bold mb-0">First Name</label>
+                            <input type="text" name="FirstName" id="first_name" class="form-control bg-1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name" class="bold mb-0">Last Name</label>
+                            <input type="text" name="LastName" id="last_name" class="form-control bg-1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_email" class="bold mb-0">Email Address</label>
+                            <input type="email" name="Email" id="contact_email" class="form-control bg-1" placeholder="name@domain.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_phoneNumber" class="bold mb-0">Phone Number</label>
+                            <input type="text" name="PhoneNumber" id="contact_phoneNumber" class="form-control bg-1 phone" placeholder="(555) 555-5555" required>
+                            <label id="contact_phoneNumber-error" class="error" for="contact_phoneNumber" style="display:none"></label>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_message" class="bold">Message</label>
+                            <textarea name="message" id="contact_message" class="form-control bg-1" placeholder="What can we help with?" rows="8" required></textarea>
+                        </div>
+                        <div class="form-group" style="display:none;">
+                            <label for="contact_phone" class="bold mb-0">Do NOT add a phone number here</label>
+                            <input type="text" name="Phone" id="contact_phone" class="form-control bg-1" placeholder="(555) 555-5555">
+                        </div>
+                        <div class="form-group">
+                            <button id="contact-submit" type="submit" name="submit" class="btn btn-accent btn-rounded">Send Message</button>
+                        </div>
+                    </form>
+                    <div class="success-message" style="display:none">
+                        <div class="section-heading text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                                <i class="far fa-thumbs-up fa-inverse fa-stack-1x" style="font-size:64px;"></i>
+                            </span>
+                            <h4 class="mt-4">Thank you for reaching out!</h4>
+                            <p class="response">One of our dedicated team members will be in touch with you soon. We look forward to helping you.</p>
+                        </div>
+                    </div>
+                    <div class="error-message" style="display:none">
+                        <div class="section-heading text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x text-danger"></i>
+                                <i class="fas fa-exclamation fa-inverse fa-stack-1x" style="font-size:64px;"></i>
+                            </span>
+                            <h4 class="mt-4">Uh-oh! We encountered a problem.</h4>
+                            <p class="response">It looks like something prevented your message from being sent. Please try again or contact us directly at <a href="mailto:info@praisecms.com?subject=Contact Submission Error">info@praisecms.com</a> or <a href="tel:1-205-915-7429">(205) 915-7429</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 ml-md-auto">
+                <div class="section-heading">
+                    <p class="small bold badge badge-primary">Let's work together</p>
+                    <h2>How can we help?</h2>
+                </div>
+                <div class="media my-4">
+                    <i class="fas fa-phone font-l color-4 mr-3"></i>
+                    <div class="media-body">
+                        <span class="d-block">
+                            <a href="tel:1-205-915-7429">(205) 915-7429</a>
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <nav class="nav justify-content-center justify-content-md-start">
+                    <a href="https://www.facebook.com/praisecms" target="_blank" class="mr-3">
+                        <i class="fab fa-2x fa-facebook"></i>
+                    </a>
+                    <a href="https://www.instagram.com/praisecms/" target="_blank">
+                        <i class="fab fa-2x fa-instagram"></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="~/Scripts/jquery.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/ContactForm.js"></script>
+<script src="~/Scripts/jquery-mask.js"></script>
+<script type="text/javascript">
+    $('.phone').usPhoneFormat({ format: '(xxx) xxx-xxxx' });
+</script>

@@ -1,0 +1,28 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+@{
+    ViewBag.Title = "My Dashboard";
+    string dateRange = ViewBag.startDate + "-" + ViewBag.endDate;
+}
+@section subheader{
+    <div class="d-flex align-items-center">
+        @Html.AjaxModalLink("Customize", "/dashboardtemplates/customizedashboard", "Customize Dashboard", "Save", "btn btn-light-primary btn-sm font-weight-bold", "", "")
+    </div>
+}
+@if (SessionVariables.CurrentUser.IsAdmin && !SessionVariables.CurrentChurch.HasMerchantAccount)
+{
+    <div class="alert alert-custom alert-notice alert-light-primary fade show mb-5" role="alert">
+        <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+        <div class="alert-text">Ready to accept tithes and donations? It only takes a few minutes to get set up. <a href="/onboarding/CreateMerchantAccount/@SessionVariables.CurrentChurch.Id" class="font-weight-bold">Get started</a>.</div>
+        <div class="alert-close">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true"><i class="ki ki-close"></i></span>
+            </button>
+        </div>
+    </div>
+}
+@Html.Partial("_WidgetTiles", Model)
+@Html.Partial("_Widgets", Model)
+@section belowScripts
+{
+    <script src="~/Scripts/custom-widgets.js"></script>
+}

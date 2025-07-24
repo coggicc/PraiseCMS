@@ -1,0 +1,110 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.EmailVM
+
+@{
+    var email = Model.Emails.FirstOrDefault();
+    var from = Model.Users.FirstOrDefault(x => x.Id == email?.CreatedBy);
+    var to = Model.Users.FirstOrDefault(x => x.Email == email?.To);
+
+    if (email.IsNull())
+    {
+        email = new Email();
+    }
+
+    if (from.IsNull())
+    {
+        from = new ApplicationUser();
+    }
+
+    if (to.IsNull())
+    {
+        to = new ApplicationUser();
+    }
+}
+
+<style type="text/css">
+    .email-lable {
+        line-height: 37px;
+        float: left;
+        margin-right: 10px;
+        font-weight: bold;
+        width: 40px;
+    }
+
+    .email-head-subject {
+        padding-top: 0 !important;
+        padding-left: 0 !important;
+    }
+</style>
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 email-content">
+                    <div class="email-head">
+                        <div class="email-head-subject">
+                            <div class="title d-flex align-items-center justify-content-between">
+                                <div class="sender d-flex align-items-center">
+                                    <span class="font-weight-bolder mr-2">Subject:</span> <lable>@email.Subject</lable>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="email-head-sender d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" alt="Avatar" class="rounded-circle user-avatar-md">
+                                    @*@if (!string.IsNullOrEmpty(Model.Settings.ProfileImage))
+                                        {
+                                            <div class="image-input-wrapper" style="background-image: url(@Html.AmazonLink(Model.Settings.ProfileImage,"Uploads/ProfileImages"))"></div>
+                                            <img src="@Html.AmazonLink(Model.Settings.ProfileImage,"Uploads/ProfileImages")" alt="Avatar" class="rounded-circle user-avatar-md">
+                                        }
+                                        else
+                                        {
+                                            <div class="image-input-wrapper" style="background-image: url('@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)')"></div>
+                                            <img src="@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)" alt="Avatar" class="rounded-circle user-avatar-md">
+                                        }*@
+                                </div>
+                                <div class="sender align-items-center float-left col-10 font-size-sm">
+                                    <span class="mr-2" style="float:left; width:100%;">
+                                        <lable class="email-lable">From:</lable>
+                                        <label>
+                                            <span class="text-dark-75 font-weight-bolder mb-1">@from.Display</span>
+                                            <span style="float:left; width:100%;">@from.Email</span>
+                                        </label>
+                                    </span>
+                                    <span class="mr-2" style="float:left; width:100%;">
+                                        <label class="email-lable">To:</label>
+                                        @if (to != null)
+                                        {
+                                            <label>
+                                                <span class="text-dark-75 font-weight-bolder mb-1">@to.Display</span>
+                                                <span style="float:left; width:100%;">@to.Email</span>
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <label>
+                                                <span class="text-dark-75 font-weight-bolder mb-1">No recipient defined</span>
+                                            </label>
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="date font-weight-bolder">Sent: @email.CreatedDate</div>
+                        </div>
+                    </div>
+                    <div class="email-body">
+                        @Html.Raw(email.Message)
+                    </div>
+                    @*<div class="email-attachments">
+                            <div class="title">Attachments <span>(3 files, 12,44 KB)</span></div>
+                            <ul>
+                                <li><a href="javascript:;"><svg  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> Reference.zip <span class="text-muted tx-11">(5.10 MB)</span></a></li>
+                                <li><a href="javascript:;"><svg  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> Instructions.zip <span class="text-muted tx-11">(3.15 MB)</span></a></li>
+                                <li><a href="javascript:;"><svg  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> Team-list.pdf <span class="text-muted tx-11">(4.5 MB)</span></a></li>
+                            </ul>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,255 @@
+﻿@model PraiseCMS.DataAccess.Models.ScheduledGiftViewModel
+@{
+    ViewBag.Title = "Schedule Gift";
+
+    if (Model.ScheduledPayment.Amount > 0)
+    {
+        Model.Amount = Model.ScheduledPayment.Amount.ToString();
+    }
+}
+
+@if (!SessionVariables.CurrentUser.IsDonorOnly)
+{
+    @section leftsubheader{
+        @Html.Partial("_MyGivingSubheader")
+    }
+}
+
+<style>
+    .datepicker table tr td.disabled, .datepicker table tr td.disabled:hover {
+        cursor: not-allowed !important;
+    }
+
+    .active-day {
+        background: #DCDCDC !important;
+        color: #000000 !important;
+    }
+
+    .datepicker tbody tr > td.day.active {
+        background: #3699FF !important;
+        color: #ffffff !important;
+    }
+
+    .endingReasonDate, .endingReasonMaxGifts {
+        display: none;
+    }
+</style>
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">Schedule Gift</h3>
+        </div>
+    </div>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", id = "kt_form", role = "form", name = "kt_form" }))
+    {
+        <div class="card-body">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.ChurchId)
+            @Html.HiddenFor(x => x.ScheduledPayment.Id)
+            @Html.HiddenFor(x => x.ScheduledPayment.Frequency)
+            @Html.HiddenFor(x => x.ScheduledPayment.Merchant)
+            @Html.HiddenFor(x => x.ScheduledPayment.MerchantId)
+            @Html.HiddenFor(x => x.ScheduledPayment.ChurchId)
+            @Html.HiddenFor(x => x.ScheduledPayment.UserId)
+            @Html.HiddenFor(x => x.ScheduledPayment.TransactionType)
+            @Html.HiddenFor(x => x.ScheduledPayment.CreatedBy)
+            @Html.HiddenFor(x => x.ScheduledPayment.CreatedDate)
+            @Html.HiddenFor(x => x.ScheduledPayment.Amount)
+            @Html.HiddenFor(x => x.ScheduledPayment.IsActive)
+            @Html.HiddenFor(x => x.DonorGUID)
+
+            <div class="form-group">
+                <label>Amount of Gift</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa fa-dollar-sign"></i></span>
+                    </div>
+                    @Html.TextBoxFor(x => x.Amount, new { @class = "form-control amount", placeholder = "0.00", name = "PaymentAmount" })
+                </div>
+                @Html.ValidationMessageFor(x => x.Amount, "", new { @class = "text-danger" })
+            </div>
+            @if (Model.Funds.Any())
+            {
+                <div class="form-group">
+                    <label>Fund</label>
+                    @Html.DropDownListFor(x => x.ScheduledPayment.FundId, Model.Funds, "Select a fund...", new { @class = "form-control select2", name = "Fund", style = "width:100%;" })
+                    @Html.ValidationMessageFor(x => x.ScheduledPayment.FundId, "", new { @class = "text-danger" })
+                </div>
+            }
+            <div class="form-group">
+                <label>Campus</label>
+                @Html.DropDownListFor(x => x.ScheduledPayment.CampusId, Model.Campuses, "Select a campus...", new { @class = "form-control select2", name = "Campus", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.ScheduledPayment.CampusId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label>Giving Method</label>
+                <select class="form-control select2" id="paymentMethod" name="ScheduledPayment.PaymentMethod" style="width:100%;" onchange="checkCardExpiry(this.value,this)">
+                    <option value="">Select a giving method...</option>
+                    @foreach (var item in Model.Accounts.Where(q => !q.Disabled).OrderBy(x => x.Text))
+                    {
+                        <option @(item.Selected ? Html.Raw("selected='selected'") : Html.Raw("")) @(item.IsPrimary ? Html.Raw("data-content='<span class=\"primary-card ml-2\">(Primary)</span>'") : Html.Raw("")) @(item.Disabled ? "disabled='disabled' data-content='<i class=\"fas fa-exclamation-circle text-danger\"></i>'>" : "") value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Frequency</label>
+                @Html.DropDownListFor(x => x.ScheduledPayment.RecurringFrequency, PaymentFrequency.Items.ToSelectList("Select a frequency...", x => x), new { @class = "form-control select2", name = "Frequency", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.ScheduledPayment.RecurringFrequency, "", new { @class = "text-danger" })
+                <span class="form-text text-muted">How often will this gift repeat?</span>
+            </div>
+            <div class="form-group">
+                <label>Starting Date</label>
+                <div class="input-group">
+                    @Html.TextBoxFor(x => x.ScheduledPayment.RecurringStartDate, "{0:MM/dd/yyyy}", new { onchange = "startDateSelect(this);", @class = "form-control datepicker", autocomplete = "off", placeholder = "MM/DD/YYYY" })
+                    <div class="input-group-append"><span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span></div>
+                </div>
+                @Html.ValidationMessageFor(x => x.ScheduledPayment.RecurringStartDate, "", new { @class = "text-danger" })
+                <span class="form-text text-muted">Note: Recurring payments will start on this date.</span>
+            </div>
+            <div class="form-group">
+                <label>Ending</label>
+                @Html.DropDownListFor(x => x.ScheduledPayment.GiftEndingReason, GiftEndingReasons.Items.ToSelectList("Select an ending reason...", x => x, null, x => x.Contains(GiftEndingReasons.WhenICancelIt)), new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.ScheduledPayment.GiftEndingReason, "", new { @class = "text-danger" })
+                <span class="form-text text-muted">When should the recurring gift end?</span>
+            </div>
+            <div class="form-group endingReasonDate">
+                <label>Ending Date <small id="end-date-note"></small></label>
+                <div class="input-group">
+                    @Html.TextBoxFor(x => x.ScheduledPayment.RecurringEndDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepickerEnd", autocomplete = "off", placeholder = "MM/DD/YYYY" })
+                    <div class="input-group-append"><span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span></div>
+                </div>
+                @Html.ValidationMessageFor(x => x.ScheduledPayment.RecurringEndDate, "", new { @class = "text-danger" })
+                <span class="form-text text-muted">Note: Recurring gifts will be paid up to and including this date.</span>
+            </div>
+            <div class="form-group endingReasonMaxGifts">
+                <label># of Gifts</label>
+                @Html.TextBoxFor(x => x.ScheduledPayment.MaxGifts, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.ScheduledPayment.MaxGifts, "", new { @class = "text-danger" })
+                <span class="form-text text-muted">How many recurring gifts do you want to make?</span>
+            </div>
+            <input type="hidden" id="allow_Processing_fee" value="@(Model.AllowDonorCoverProcessingFee?"true":"")" />
+            @if (Model.AllowDonorCoverProcessingFee)
+            {
+                <div id="processingFee-div" class="form-check mt-5">
+                    @Html.CheckBoxFor(x => x.ScheduledPayment.IncludeProcessingFee, new { id = "IncludeProcessingFee", @class = "cursor-pointer form-check-input h-20px w-20px" })
+                    <label class="cursor-pointer form-check-label ml-5 mt-1" for="IncludeProcessingFee"> Do you want to contribute an additional <span id="processingFeeAmount">$0.00</span> to help us cover our merchant processing fees?</label>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.ScheduledPayment.Id))
+            {
+                <p>Want to conclude your scheduled gift ahead of time? No problem! <a href="@Url.Action("DeleteScheduleGift", "MyGiving", new { id = Model.ScheduledPayment.Id })" class="delete_prompt text-danger">Click here</a> to cancel it.</p>
+            }
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col">
+                    <input type="submit" value="Submit" class="btn btn-light-primary font-weight-bold" />
+                    <a href="/mygiving" class="btn btn-light-dark font-weight-bold">Cancel</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script src="~/Scripts/ScheduleGift.js"></script>
+<script type="text/javascript">
+    $(function () {
+        frequencyDate_initialize();
+
+        $(".select2").select2({
+            templateResult: formatState,
+            templateSelection: formatState
+        });
+
+        function formatState(opt) {
+            if (!opt.id) {
+                return opt.text;
+            }
+
+            var optContent = $(opt.element).attr('data-content');
+            if (!optContent) {
+                const $opt = $(
+                    '<span>' + opt.text + '</span>'
+                );
+                return $opt;
+            } else {
+                const $opt = $(
+                    '<span>' + opt.text + ' ' + optContent + '</span>'
+                );
+                return $opt;
+            }
+        };
+
+        $("#ScheduledPayment_GiftEndingReason").change(function () {
+            var val = $(this).val();
+            if (val === "@GiftEndingReasons.OnASpecificDate") {
+                $(".endingReasonMaxGifts").hide();
+                $(".endingReasonDate").show();
+                $("#ScheduledPayment_MaxGifts").val("");
+            }
+            else if (val === "@GiftEndingReasons.AfterMaxNumberofGifts") {
+                $(".endingReasonDate").hide();
+                $(".endingReasonMaxGifts").show();
+                $("#ScheduledPayment_RecurringEndDate").val("");
+            }
+            else {
+                $(".endingReasonDate").hide();
+                $(".endingReasonMaxGifts").hide();
+            }
+        });
+
+        $("#ScheduledPayment_GiftEndingReason").change();
+    });
+
+    $(document).on('blur', '#Amount', function () {
+        if ($(this).val()) {
+            calculateProcessingFee($('#ChurchId').val(), $('#Amount').val(), $('#paymentMethod').val());
+        } else {
+            $('#processingFee-div').hide();
+            $('#processingFeeAmount').text("$0.00");
+        }
+    });
+
+    $(document).on('change', '#paymentMethod', function () {
+        if ($(this).val()) {
+            calculateProcessingFee($('#ChurchId').val(), $('#Amount').val(), $('#paymentMethod').val());
+        } else {
+            $('#processingFee-div').hide();
+            $('#processingFeeAmount').text("$0.00");
+        }
+    });
+
+    function checkCardExpiry(id, cell) {
+        if (!id) {
+            return false;
+        }
+        $.ajax({
+            url: '/mygiving/CheckCardExpiration',
+            type: 'GET',
+            dataType: 'json',
+            data: { accountGUID: id },
+            success: function (result) {
+                if (result.IsExpiring) {
+                    swal.fire({
+                        icon: "warning",
+                        title: 'Warning!',
+                        text: result.Message,
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No, keep it'
+                    }).then(function (confirm) {
+                        if (confirm.isConfirmed) {
+                            $(cell).val(null).trigger('change');
+                            $(cell).select2("open");
+                        }
+                    });
+                }
+            },
+            error: function (result) {
+                //console.log(result);
+            }
+        });
+    }
+</script>

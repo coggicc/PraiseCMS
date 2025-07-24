@@ -1,0 +1,875 @@
+﻿@model SettingsViewModel
+@using PraiseCMS.Shared.Methods
+@{
+    ViewBag.Title = "Church Information";
+
+    var denomination = "";
+
+    if (Model.Denominations.Any() && !string.IsNullOrEmpty(Model.Church.Denomination))
+    {
+        denomination = Model.Denominations.FirstOrDefault(x => x.Id.Equals(Model.Church.Denomination))?.Display;
+    }
+
+    var user = "";
+
+    if (Model.Administrators.Any() && !string.IsNullOrEmpty(Model.Church.PrimaryUserId))
+    {
+        var primaryUser = Model.Administrators.FirstOrDefault(x => x.Id == Model.Church.PrimaryUserId);
+
+        if (primaryUser != null)
+        {
+            user = primaryUser.Display;
+        }
+    }
+
+    var missingFieldsList = new List<string>();
+
+    if (string.IsNullOrEmpty(Model.Church.Phone))
+    {
+        missingFieldsList.Add("Phone");
+    }
+
+    if (string.IsNullOrEmpty(Model.Church.Email))
+    {
+        missingFieldsList.Add("Email");
+    }
+}
+@section leftsubheader{
+    @Html.Partial("_SettingsSubHeader")
+}
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+<style>
+    .select2-container--disabled {
+        background-color: #F3F6F9;
+        border-color: #E5EAEE;
+        border-radius: 0.42rem;
+    }
+
+    .form-control:disabled, .form-control[readonly]:not(.embed) {
+        cursor: not-allowed;
+    }
+</style>
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model.Church)
+    <div class="flex-row-fluid ml-lg-8">
+        @if (missingFieldsList.Any())
+        {
+            <div class="alert alert-custom alert-notice alert-light-danger fade show mb-5" role="alert">
+                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="alert-text"><strong>Note:</strong> Please add the following fields for your church: @missingFieldsList.CombineListToString(",")</div>
+                <div class="alert-close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                    </button>
+                </div>
+            </div>
+        }
+        <div class="card card-custom card-stretch">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">Church Information</h3>
+                </div>
+                <div class="card-toolbar">
+                    <button class="btn btn-light-primary mr-2 edit">Edit</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="view-details">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Basic Info:</h3>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Logo:</label>
+                        <div class="col-8">
+                            <div class="symbol symbol-60 symbol-xxl-100 mr-5 align-self-start align-self-xxl-center">
+                                @if (!string.IsNullOrEmpty(Model.Church.Logo))
+                                {
+                                    <div class="symbol-label" style="background-image:url(@Html.AmazonLink(Model.Church.Logo,"Uploads/Logos"));background-size:contain;"></div>
+                                }
+                                else
+                                {
+                                    <div class="symbol-label" style="background-image: url('../../Content/assets/media/logos/default_logo.png');background-size: contain;"></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Church Name:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.Name</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Legal Church Name:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.LegalName</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Tax ID #:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.TaxIdNumber</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Phone:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.Phone</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Email:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.Email</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Website:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.Website</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Denomination:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@denomination</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Timezone:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.TimeZone</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Work Week:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.WorkWeek</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Primary User:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@user</p>
+                        </div>
+                    </div>
+                    <div class="separator separator-dashed my-15"></div>
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Address Info:</h3>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Multiple Campuses/Locations:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@(Model.Church.IsMultiSite ? "Yes" : "No")</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Physical Address:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.PhysicalAddress</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Billing Address:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.BillingAddress</p>
+                        </div>
+                    </div>
+                    <div class="separator separator-dashed my-15"></div>
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Prayer Request Settings:</h3>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Prayer Request Email:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.PrayerRequestEmail</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Auto-Notify Prayer Team:<i class="far fa-question-circle ml-2" data-html="true" data-toggle="tooltip" title="When a prayer request is created, an email will be sent to the prayer team."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@(Model.Church.AutoNotifyPrayerTeam ? "Yes" : "No")</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Send Prayed Over Message:<i class="far fa-question-circle ml-2" data-html="true" data-toggle="tooltip" title="Notify prayer request sendees that their request has been prayed over.<br/>  <b>Note:</b> Only those with a provided email or phone number will be notified."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@(Model.Church.CompletedPrayerRequestAlert ? "Yes" : "No")</p>
+                        </div>
+                    </div>
+                    @if (Model.Church.CompletedPrayerRequestAlert)
+                    {
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Prayed Over Email Message:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a message to reassure the sender that their prayer request has been prayed over."></i></label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.Church.CompletedPrayerRequestEmailMessage)</p>
+                            </div>
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Prayed Over Text Message:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a message to reassure the sender that their prayer request has been prayed over."></i></label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.Church.CompletedPrayerRequestTextMessage)</p>
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Prayer Request Received Text:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom message that displays whenever someone submits a prayer request through the Prayer Reqest Form. Note: This applies whenever a request is sent via the Prayer Request Form's embed code found on the Implementations tab."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.Church.PrayerRequestReceivedText)</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Prayer Request Received Follow-Up Text:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom message that displays whenever someone submits a prayer request through the Prayer Reqest Form and would like to be contacted. Note: This applies whenever a request is sent via the Prayer Request Form's embed code found on the Implementations tab."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.Church.PrayerRequestReceivedFollowUpText)</p>
+                        </div>
+                    </div>
+                    <div class="separator separator-dashed my-15"></div>
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Annual Giving Statements and Receipts:</h3>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Thank You Note Text:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom thank you note that displays whenever someone gives digitally. Note: This applies whenever a fund does not have a dedicated thank you message."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.Church.GivingThankYouText)</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Annual Giving Statement Disclaimer:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom disclaimer that will be displayed at the bottom of the annual giving statement."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.Church.AnnualStatementDisclaimer.IsNotNullOrEmpty() ? Model.Church.AnnualStatementDisclaimer : "")</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Annual Giving Statement Email Message:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Share your appreciation for the donor's gifts throughout the year. It will be included in the giving statement email."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Html.Raw(Model.Church.AnnualStatementEmailBody)</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Email Giving Statements:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Automatically generate and email annual giving statements to donors for the previous tax year."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@(Model.Church.IsAutoEmail ? "Yes" : "No")</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Annual Giving Statement Generated Date:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Specify the month and day to generate your congregation's giving statements each year."></i></label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@(Model.Church.StatementGeneratedDate.IsNotNullOrEmpty() ? Convert.ToDateTime(Model.Church.StatementGeneratedDate).ToString("MMMM dd") : "Not Specified")</p>
+                        </div>
+                    </div>
+                    <div class="separator separator-dashed my-15"></div>
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Social Media:</h3>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Facebook Profile:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.FacebookProfile</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Instagram Profile:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.InstagramProfile</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Twitter Profile:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.TwitterProfile</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">YouTube Profile:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.YouTubeProfile</p>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">LinkedIn Profile:</label>
+                        <div class="col-8">
+                            <p class="form-control-static" style="margin-top:10px;">@Model.Church.LinkedInProfile</p>
+                        </div>
+                    </div>
+                    @*<div class="separator separator-dashed my-15"></div>
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Other Settings:</h3>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Service Area Requirements:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@Model.Church.ServiceAreaRequirements</p>
+                            </div>
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Note Categories:</label>
+                            <div class="col-8">
+                                <p class="form-control-static" style="margin-top:10px;">@Model.Church.NoteCategories</p>
+                            </div>
+                        </div>*@
+                </div>
+                <div class="edit-details" style="display:none;">
+                    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data", id = "accountInfoForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(x => x.Church.Id)
+                        @Html.HiddenFor(x => x.Church.Logo)
+                        @Html.HiddenFor(x => x.Church.IsActive)
+                        @Html.HiddenFor(x => x.Church.CreatedBy)
+                        @Html.HiddenFor(x => x.Church.CreatedDate)
+                        @Html.HiddenFor(x => x.Church.Number)
+                        @Html.HiddenFor(x => x.Church.HasMerchantAccount)
+                        @Html.HiddenFor(x => x.Church.RegistrationCompleted)
+                        @Html.HiddenFor(x => x.Church.GivingAccountSetupCompleted)
+                        @Html.HiddenFor(x => x.Church.IPAddress)
+                        @Html.HiddenFor(x => x.Church.Latitude)
+                        @Html.HiddenFor(x => x.Church.Longitude)
+                        @Html.HiddenFor(x => x.Church.ServiceAreaRequirements)
+                        @Html.HiddenFor(x => x.Church.NoteCategories)
+
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Basic Info:</h3>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label style="display:block;">Logo:</label>
+                                <div class="image-input" id="kt_profile_avatar" style="background-image: url('../../Content/assets/media/logos/default_logo.png')">
+                                    @if (!string.IsNullOrEmpty(Model.Church.Logo))
+                                    {
+                                        <div class="image-input-wrapper" style="background-image: url(@Html.AmazonLink(Model.Church.Logo,"Uploads/Logos"))"></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="image-input-wrapper" style="background-image: url('../../Content/assets/media/logos/default_logo.png')"></div>
+                                    }
+                                    <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="change" data-toggle="tooltip" title="" data-original-title="Change logo">
+                                        <i class="fa fa-pen icon-sm text-muted"></i>
+                                        <input type="file" name="ImageFile" accept=".png, .jpg, .jpeg" />
+                                        <input type="hidden" name="profile_avatar_remove" />
+                                    </label>
+                                    @if (!string.IsNullOrEmpty(Model.Church.Logo))
+                                    {
+                                        <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="remove" data-toggle="tooltip" title="Remove logo">
+                                            <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                        </span>
+                                    }
+                                    <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="cancel" data-toggle="tooltip" title="Cancel logo change">
+                                        <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                    </span>
+                                </div>
+                                <span class="form-text text-muted">Allowed file types: png, jpg, jpeg.</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Church Name:</label>
+                                @Html.EditorFor(x => x.Church.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(x => x.Church.Name)
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Legal Church Name:</label>
+                                @Html.EditorFor(x => x.Church.LegalName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(x => x.Church.LegalName)
+                                @if (string.IsNullOrEmpty(Model.Church.LegalName))
+                                {
+                                    <span class="form-text text-muted">You must add your legal entity name before you can enable giving.</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Tax ID #:</label>
+                                @Html.EditorFor(x => x.Church.TaxIdNumber, new { htmlAttributes = new { @class = "form-control taxid" } })
+                                @Html.ValidationMessageFor(x => x.Church.TaxIdNumber, "", new { @class = "text-danger" })
+                                <div class="invalid-feedback">Please enter a valid nine digit Tax Id #.</div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Phone:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    </div>
+                                    @Html.TextBoxFor(x => x.Church.Phone, new { id = "txtPhone", @class = "form-control phone" })
+                                </div>
+                                <span style="display:none" id="phnError" class="form-text text-danger">Please provide a phone number for the church.</span>
+                                @Html.ValidationMessageFor(x => x.Church.Phone, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Email:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.Email, new { htmlAttributes = new { id = "txtEmail", @class = "form-control" } })
+                                </div>
+                                <span style="display:none" id="emailError" class="form-text text-danger">Please provide an email address for the church.</span>
+                                @Html.ValidationMessageFor(x => x.Church.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Website:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-link"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.Website, new { htmlAttributes = new { @class = "form-control websiteUrl", placeholder = "www.church.com" } })
+                                    <span class="invalid-url text-danger webiste-url-error" style="width: 100%;float: left;margin: 10px 0; display:none">Please enter a valid URL</span>
+                                </div>
+                                @Html.ValidationMessageFor(x => x.Church.Website, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Denomination:</label>
+                                @Html.DropDownListFor(x => x.Church.Denomination, Model.Denominations.ToSelectList(x => x.Display, x => x.Id), "Select a denomination...", new { @class = "form-control select2", style = "width:100%;" })
+                                @Html.ValidationMessageFor(x => x.Church.Denomination, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Timezone:</label>
+                                @Html.DropDownListFor(x => x.Church.TimeZone, Constants.GetTimeZonesAsDropdown(), "Select a timezone...", new { @class = "form-control formal select2", style = "width:100%;text-transform:capitalize;" })
+                                @Html.ValidationMessageFor(x => x.Church.TimeZone, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Work Week:</label>
+                                @Html.DropDownListFor(x => x.Church.WorkWeek, WorkWeeks.Items.ToSelectList(x => x, x => x), "Select a work week...", new { @class = "form-control formal select2", style = "width:100%;text-transform:capitalize;" })
+                                @Html.ValidationMessageFor(x => x.Church.WorkWeek, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Primary User: <i class="far fa-question-circle ml-2" data-html="true" data-toggle="tooltip" title="" data-original-title="User must have the Admin role"></i></label>
+                                @Html.DropDownListFor(x => x.Church.PrimaryUserId, Model.Administrators.ToSelectList(x => x.Display, x => x.Id), "Select a primary user...", new { @class = "form-control select2", style = "width:100%;text-transform:capitalize;" })
+                                @Html.ValidationMessageFor(x => x.Church.PrimaryUserId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-15"></div>
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Address Info:</h3>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Do you have multiple campuses/locations?</label>
+                                <div class="radio-inline">
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.IsMultiSite, false)
+                                        <span></span>
+                                        No
+                                    </label>
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.IsMultiSite, true)
+                                        <span></span>
+                                        Yes
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row multi-campus-details" style="display:none;">
+                            <div class="col">
+                                <p>Add your main campus' address details below. You can add additional campuses on the <a href="/campuses">campuses</a> page.</p>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label><strong>Physical Address</strong></label>
+                            </div>
+                            <div class="col-lg-6">
+                                <label><strong>Billing Address</strong></label>
+                                <div class="checkbox-list" style="float:right;">
+                                    <span class="switch switch-sm switch-icon">
+                                        <label>
+                                            @Html.CheckBoxFor(x => x.Church.BillingSameAsPhysical) Same As Physical
+                                            <span></span>
+                                        </label>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Address:</label>
+                                @Html.EditorFor(x => x.Church.PhysicalAddress1, new { htmlAttributes = new { @class = "form-control formal" } })
+                                @Html.ValidationMessageFor(x => x.Church.PhysicalAddress1, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6 d-none d-md-block">
+                                <label>Address:</label>
+                                @Html.EditorFor(x => x.Church.BillingAddress1, new { htmlAttributes = new { @class = "form-control billing-address-field formal" } })
+                                @Html.ValidationMessageFor(x => x.Church.BillingAddress1, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Apt/Unit/Suite #:</label>
+                                @Html.EditorFor(x => x.Church.PhysicalAddress2, new { htmlAttributes = new { @class = "form-control formal" } })
+                                @Html.ValidationMessageFor(x => x.Church.PhysicalAddress2, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6 d-none d-md-block">
+                                <label>Apt/Unit/Suite #:</label>
+                                @Html.EditorFor(x => x.Church.BillingAddress2, new { htmlAttributes = new { @class = "form-control billing-address-field formal" } })
+                                @Html.ValidationMessageFor(x => x.Church.BillingAddress2, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>City:</label>
+                                @Html.EditorFor(x => x.Church.PhysicalCity, new { htmlAttributes = new { @class = "form-control formal" } })
+                                @Html.ValidationMessageFor(x => x.Church.PhysicalCity, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6 d-none d-md-block">
+                                <label>City:</label>
+                                @Html.EditorFor(x => x.Church.BillingCity, new { htmlAttributes = new { @class = "form-control billing-address-field formal" } })
+                                @Html.ValidationMessageFor(x => x.Church.BillingCity, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>State:</label>
+                                @Html.DropDownListFor(x => x.Church.PhysicalState, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { @class = "form-control select2", style = "width:100%;" })
+                                @Html.ValidationMessageFor(x => x.Church.PhysicalState, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6 d-none d-md-block">
+                                <label>State:</label>
+                                @Html.DropDownListFor(x => x.Church.BillingState, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { @class = "form-control billing-address-field select2", style = "width:100%;" })
+                                @Html.ValidationMessageFor(x => x.Church.BillingState, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Zip:</label>
+                                @Html.EditorFor(x => x.Church.PhysicalZip, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(x => x.Church.PhysicalZip, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6 d-none d-md-block">
+                                <label>Zip:</label>
+                                @Html.EditorFor(x => x.Church.BillingZip, new { htmlAttributes = new { @class = "form-control billing-address-field" } })
+                                @Html.ValidationMessageFor(x => x.Church.BillingZip, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-15"></div>
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Prayer Requests:</h3>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Prayer Request Email:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.PrayerRequestEmail, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                                <span class="form-text text-muted">If one is not provided, then prayer requests will be sent to the main church email.</span>
+                                @Html.ValidationMessageFor(x => x.Church.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Auto-Notify Prayer Team:<i class="far fa-question-circle ml-2" data-html="true" data-toggle="tooltip" title="When a prayer request is created, an email will be sent to the prayer team."></i></label>
+                                <div class="radio-inline">
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.AutoNotifyPrayerTeam, true)
+                                        <span></span>
+                                        Yes
+                                    </label>
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.AutoNotifyPrayerTeam, false)
+                                        <span></span>
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Send Prayed Over Message:<i class="far fa-question-circle ml-2" data-html="true" data-toggle="tooltip" title="Notify prayer request sendees that their request has been prayed over.<br/><b>Note:</b> Only those with a provided email or phone number will be notified."></i></label>
+                                <div class="radio-inline">
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.CompletedPrayerRequestAlert, true)
+                                        <span></span>
+                                        Yes
+                                    </label>
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.CompletedPrayerRequestAlert, false)
+                                        <span></span>
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="prayedOverMsg-div" @Html.Raw(!Model.Church.CompletedPrayerRequestAlert ? "style='display:none'" : "")>
+                            <div class="col-lg-6">
+                                <label>Prayed Over Email Message:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a message to reassure the sender that their prayer request has been prayed over."></i></label>
+                                @Html.TextAreaFor(x => x.Church.CompletedPrayerRequestEmailMessage, new { @class = "form-control", rows = "5", maxlength = "250" })
+                                @Html.ValidationMessageFor(x => x.Church.CompletedPrayerRequestEmailMessage, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Prayed Over Text Message:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a message to reassure the sender that their prayer request has been prayed over."></i></label>
+                                @Html.TextAreaFor(x => x.Church.CompletedPrayerRequestTextMessage, new { @class = "form-control", rows = "5", maxlength = "250" })
+                                @Html.ValidationMessageFor(x => x.Church.CompletedPrayerRequestTextMessage, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-12">
+                                <label>Prayer Request Received Text:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom message that displays whenever someone submits a prayer request through the Prayer Reqest Form. Note: This applies whenever a request is sent via the Prayer Request Form's embed code found on the Implementations tab."></i></label>
+                                @Html.TextAreaFor(x => x.Church.PrayerRequestReceivedText, new { @class = "form-control", rows = "3", maxlength = "150" })
+                                @Html.ValidationMessageFor(x => x.Church.PrayerRequestReceivedText, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row mb-4">
+                            <div class="col-lg-12">
+                                <label>Prayer Request Received Follow-Up Text:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom message that displays whenever someone submits a prayer request through the Prayer Reqest Form and would like to be contacted. Note: This applies whenever a request is sent via the Prayer Request Form's embed code found on the Implementations tab."></i></label>
+                                @Html.TextAreaFor(x => x.Church.PrayerRequestReceivedFollowUpText, new { @class = "form-control", rows = "3", maxlength = "150" })
+                                @Html.ValidationMessageFor(x => x.Church.PrayerRequestReceivedFollowUpText, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-15"></div>
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Annual Giving Statements and Receipts:</h3>
+                        <div class="form-group row">
+                            <div class="col-lg-12">
+                                <label>Thank You Note Text:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom thank you note that displays whenever someone gives digitally. Note: This applies whenever a fund does not have a dedicated thank you message."></i></label>
+                                @Html.TextAreaFor(x => x.Church.GivingThankYouText, new { @class = "form-control", id = "ckeditor_message", rows = "10" })
+                                @Html.ValidationMessageFor(x => x.Church.GivingThankYouText, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-12">
+                                <label>Annual Giving Statement Disclaimer:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Add a custom disclaimer that will be displayed at the bottom of the annual giving statement."></i></label>
+                                @Html.TextAreaFor(x => x.Church.AnnualStatementDisclaimer, new { @class = "form-control", id = "ckeditor_Disclaimer", rows = "10" })
+                                @Html.ValidationMessageFor(x => x.Church.AnnualStatementDisclaimer, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-12">
+                                <label>Annual Giving Statement Email Message:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Share your appreciation for the donor's gifts throughout the year. It will be included in the giving statement email."></i></label>
+                                @Html.TextAreaFor(x => x.Church.AnnualStatementEmailBody, new { @class = "form-control", id = "ckeditor_emailbody", rows = "3" })
+                                @Html.ValidationMessageFor(x => x.Church.AnnualStatementEmailBody, "", new { @class = "text-danger" })
+                                <span class="mt-3 text-muted">Use the short code {current-year} to display the current year in your email message.</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Email Giving Statements:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Automatically generate and email annual giving statements to donors for the previous tax year."></i></label>
+                                <div class="radio-inline">
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.IsAutoEmail, true)
+                                        <span></span>
+                                        Yes
+                                    </label>
+                                    <label class="radio radio-outline radio-outline-2x radio-primary">
+                                        @Html.RadioButtonFor(x => x.Church.IsAutoEmail, false)
+                                        <span></span>
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Annual Giving Statement Generated Date:<i class="far fa-question-circle ml-2" data-toggle="tooltip" title="Specify the month and day to generate your congregation's giving statements each year."></i></label>
+                                @Html.TextBoxFor(x => x.Church.StatementGeneratedDate, new { Value = !string.IsNullOrEmpty(Convert.ToString(Model.Church.StatementGeneratedDate)) ? Convert.ToDateTime(Model.Church.StatementGeneratedDate).ToString("MM'/'dd") : "", @class = "form-control datepicker statement numeric", placeholder = "mm/dd", autocomplete = "off" })
+                                <span id="dateError" class="error-message"></span>
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-15"></div>
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Social Media:</h3>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Facebook Profile:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fab fa-facebook"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.FacebookProfile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Church.FacebookProfile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Instagram Profile:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.InstagramProfile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Church.InstagramProfile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>Twitter Profile:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.TwitterProfile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Church.TwitterProfile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>YouTube Profile:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fab fa-youtube"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.YouTubeProfile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Church.YouTubeProfile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>LinkedIn Profile:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fab fa-linkedin"></i></span>
+                                    </div>
+                                    @Html.EditorFor(x => x.Church.LinkedInProfile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Church.LinkedInProfile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="separator separator-dashed my-15"></div>
+                            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Other Settings:</h3>
+                            <div class="form-group row">
+                                <div class="col-lg-12">
+                                    <label>Service Area Requirements:</label>
+                                    @Html.EditorFor(x => x.Church.ServiceAreaRequirements, new { htmlAttributes = new { @class = "form-control tagify" } })
+                                    @Html.ValidationMessageFor(x => x.Church.ServiceAreaRequirements, "", new { @class = "text-danger" })
+                                    <span class="mt-3 text-muted">Specify requirements a person must complete in order to serve in a particular area. <a href="/serviceareas">View Service Areas.</a></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-12">
+                                    <label>Note Categories:</label>
+                                    @Html.EditorFor(x => x.Church.NoteCategories, new { htmlAttributes = new { @class = "form-control tagify" } })
+                                    @Html.ValidationMessageFor(x => x.Church.NoteCategories, "", new { @class = "text-danger" })
+                                    <span class="mt-3 text-muted">Specify categories to group notes by.</span>
+                                </div>
+                            </div>*@
+                        <div class="card-footer">
+                            <button type="button" onclick="submitForm()" class="btn btn-light-primary font-weight-bold mr-2">Save Changes</button>
+                            <a href="/settings" class="btn btn-light-dark font-weight-bold">Cancel</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        function submitForm() {
+            if ($('#Church_Website').hasClass('is-invalid')) {
+                $('#Church_Website').focus();
+                return false;
+            }
+            if (!$('#txtPhone').val() && !$('#txtEmail').val()) {
+                $('#phnError').show();
+                $('#emailError').show();
+                $('#txtPhone').focus();
+                return false;
+            } else if (!$('#txtPhone').val()) {
+                $('#phnError').show();
+                $('#txtPhone').focus();
+                return false;
+            } else if (!$('#txtEmail').val()) {
+                $('#emailError').show();
+                $('#txtEmail').focus();
+                return false;
+            }
+            else {
+                StartLoading();
+                var Imagefile = $('#ImageFile').val();
+                $('#accountInfoForm').submit();
+            }
+        }
+
+        $(document).on('change', '#Church_CompletedPrayerRequestAlert', function () {
+            if ($(this).is(":checked")) {
+                $('#prayedOverMsg-div').show();
+
+                if (!$('#Church_CompletedPrayerRequestEmailMessage').val()) {
+                    $('#Church_CompletedPrayerRequestEmailMessage').val('Your request has been carefully prayed over.');
+                }
+
+                if (!$('#Church_CompletedPrayerRequestTextMessage').val()) {
+                    $('#Church_CompletedPrayerRequestTextMessage').val('Your request has been carefully prayed over.');
+                }
+            } else {
+                $('#prayedOverMsg-div').hide();
+            }
+        });
+
+        $(document).on("keyup", "#txtPhone", function (e) {
+            $('#phnError').hide();
+        });
+
+        $(document).on("keyup", "#txtEmail", function (e) {
+            $('#emailError').hide();
+        });
+
+        $(document).on("keyup", ".statement", function (e) {
+            if ($(this).val() && $(this).val().length === 5) {
+                if (!Date.parse($(this).val())) {
+                    $(this).val('');
+                    $("#dateError").text("Uh-oh! Please enter a valid date.");
+                    $("#dateError").fadeIn().delay(3000).fadeOut();
+                    $("#expiry").focus();
+                }
+            }
+            $('#emailError').hide();
+        });
+
+        $(function () {
+            $('.statement').mask("00/00", { placeholder: "mm/dd" });
+            $(".edit").click(function () {
+                $(".view-details").toggle();
+                $(".edit-details").toggle();
+            });
+
+            $("#Church_BillingSameAsPhysical").change(function () {
+                if ($(this).is(':checked')) {
+                    $(".billing-address-field").each(function () {
+                        var correspondingPhysicalFieldId = this.id.replace("Billing", "Physical");
+                        if ($(this).is('select')) {
+                            $(this).val($("#" + correspondingPhysicalFieldId).val()).trigger("change").attr("disabled", "disabled");
+                        } else {
+                            $(this).val($("#" + correspondingPhysicalFieldId).val()).attr("disabled", "disabled");
+                        }
+                    });
+                } else {
+                    $(".billing-address-field").each(function () {
+                        if ($(this).is('select')) {
+                            $(this).val("").trigger("change").removeAttr("disabled");
+                        } else {
+                            $(this).val("").removeAttr("disabled");
+                        }
+                    });
+                }
+            });
+
+            $("#Church_BillingSameAsPhysical").change();
+
+            $("#switch").click(function () {
+                $("#account-field").toggle("slow", function () { });
+            });
+
+            ClassicEditor
+                .create(document.querySelector('#ckeditor_message'))
+                .catch(error => {
+                    console.error(error);
+                });
+
+            ClassicEditor
+                .create(document.querySelector('#ckeditor_Disclaimer'))
+                .catch(error => {
+                    console.error(error);
+                });
+
+            ClassicEditor
+                .create(document.querySelector('#ckeditor_emailbody'))
+                .catch(error => {
+                    console.error(error);
+                });
+
+            $("input:radio[name='Church.IsMultiSite']").change(function (e) {
+                $(".multi-campus-details").hide();
+                if ($('input[name="Church.IsMultiSite"]:checked').val() == "True") {
+                    $(".multi-campus-details").show();
+                }
+            });
+
+            $("#Church_IsMultiSite").change();
+        });
+    </script>
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

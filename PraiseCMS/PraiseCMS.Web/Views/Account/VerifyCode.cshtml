@@ -1,0 +1,71 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.VerifyCodeViewModel
+
+@{
+    Layout = "~/Views/Shared/_AuthenticationLayout.cshtml";
+    ViewBag.Title = "Verification Code";
+}
+<style>
+    a.anchor {
+        color: #3699FF !important;
+        text-decoration: none !important;
+        background-color: transparent !important;
+        cursor: pointer !important;
+    }
+
+    .resend-code-msg-div {
+        height: 25px !important;
+        font-size: 15px;
+        color: #6eb16e;
+    }
+</style>
+<div class="login-signin">
+    <div class="alert alert-custom alert-notice @AlertMessageTypes.Primary fade show mb-5" role="alert">
+        <div class="alert-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div class="alert-text">A verification code has been sent to your @(Model.Provider == "Phone" ? "phone" : "email"). Please enter it below to confirm your identity.</div>
+    </div>
+    <div class="mt-10 mb-2">
+        <div class="text-muted">Didn't get a code? <a class="anchor" onclick="ResendTwoFactorCode('@Model.Email')">Request a new code.</a></div>
+    </div>
+    <div class="resend-code-msg-div"><span class="resend-code-msg"></span> </div>
+    @using (Html.BeginForm("VerifyCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("provider", Model.Provider)
+        @Html.Hidden("rememberMe", Model.RememberMe)
+        @Html.Hidden("Token", Model.Token)
+        @Html.HiddenFor(q => q.Email)
+        <div class="form-group d-flex flex-wrap justify-content-between align-items-center">
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.Code, new { @class = "form-control", name = "Code", placeholder = "Enter the verification code" })
+            </div>
+        </div>
+        <input type="submit" class="btn btn-primary font-weight-bold px-9 py-4 my-3 mx-4" value="Sign In" />
+    }
+</div>
+<script>
+    function ResendTwoFactorCode(email) {
+        $.ajax({
+            url: '/Account/ResendCodeTwoFactor',
+            type: 'Get',
+            dataType: 'json',
+            data: { email: email },
+            success: function (result) {
+                if (result) {
+                    $(".resend-code-msg").text('A new code has been sent. Please enter it below.');
+                } else {
+                    $(".resend-code-msg").text('Uh-oh! Something went wrong while sending the new code. Please try again.');
+                }
+                $(".resend-code-msg").fadeIn(1000);
+                setTimeout(function () {
+                    $(".resend-code-msg").fadeOut(3000);
+                    setTimeout(function () {
+                        $(".resend-code-msg").text('');
+                    }, 3000);
+                }, 2500);
+            },
+            error: function (result) {
+                //console.log(result);
+            }
+        });
+    }
+</script>

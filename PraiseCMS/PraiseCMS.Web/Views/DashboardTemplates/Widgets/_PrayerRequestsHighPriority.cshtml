@@ -1,0 +1,46 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardViewModel
+
+@{
+    var highPriorityPrayerRequests = Model.PrayerRequests.Where(x => x.HighPriority && !x.PrayedOver).OrderByDescending(x => x.CreatedDate).ToList();
+}
+
+<div class="card card-custom gutter-b" data-card="true">
+    <div class="card-header border-0">
+        <h3 class="card-title font-weight-bolder text-dark w-75">
+            <i class="fa fa-exclamation-circle text-danger mr-5" data-toggle="tooltip" data-placement="top" title="High Priority"></i>Prayer Requests (@highPriorityPrayerRequests.Count())
+        </h3>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0">
+        @if (highPriorityPrayerRequests.Any())
+        {
+            foreach (var item in highPriorityPrayerRequests.Take(3))
+            {
+                <div class="d-flex align-items-center bg-light-danger rounded p-5 mb-9">
+                    <i class="fa fa-exclamation-circle text-danger mr-5"></i>
+                    <div class="d-flex flex-column flex-grow-1 mr-2">
+                        @Html.AjaxModalLink(item.Message.EllipsisAt(30), $"/PrayerRequests/DashboardPrayerRequestDetails?id={item.Id}", "Prayer Request Details", "", "font-weight-bold text-dark-75 text-hover-primary font-size-lg mb-1", "", "", "", false, ModalSizes.Large)
+                        <span class="text-muted font-weight-bold" data-toggle="tooltip" data-placement="top" title="Created">@item.CreatedDate.ToShortDateString()</span>
+                    </div>
+                </div>
+            }
+            <div class="text-center">
+                <a href="/PrayerRequests/Index?request=highpriority" class="btn btn-light-primary btn-sm font-weight-bold">View More</a>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex align-items-center bg-light-success rounded p-5 mb-0">
+                <i class="fa fa-check-circle text-success mr-5"></i>
+                <div class="d-flex flex-column flex-grow-1 mr-2">
+                    <span class="font-weight-bold text-dark-75 font-size-lg mb-1">Great news! You're all caught up.</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,50 @@
+﻿@model PraiseCMS.DataAccess.Models.Tag
+
+<div id="alert-container"></div>
+@using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "tag-form" }))
+{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.ChurchId)
+    @Html.HiddenFor(x => x.CreatedBy)
+    @Html.HiddenFor(x => x.CreatedDate)
+    @Html.HiddenFor(x => x.FolderId)
+
+    <div class="form-group">
+        <label>Tag:</label>
+        @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+    </div>
+}
+@section belowScripts
+{
+    <script type="text/javascript">
+        var isDetailPage = @Html.Raw(Json.Encode(ViewBag.IsDetailPage));
+
+        $("#tag-form").submit(function (e) {
+            e.preventDefault(e);
+            $.ajax({
+                type: "POST",
+                url: $(this).attr('action'),
+                data: $('#tag-form').serialize(), // serializes the form's elements.
+                success: function (result) {
+                    if (result.Success) {
+                        $('#ajax-modal').modal('toggle');
+                        Notify("success", "SUCCESS", result.Message);
+                        if (isDetailPage) {
+                            $('#tag-name-detail').text($('#Name').val());
+                        } else {
+                            refreshFoldersAndTags();
+                        }
+                    } else {
+                        ShowErrorAlert(result.Message);
+                    }
+                },
+                error: function (result) {
+                    ShowErrorAlert(result.Message);
+                }
+            });
+        });
+    </script>
+}

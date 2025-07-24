@@ -1,0 +1,27 @@
+﻿@model PraiseCMS.DataAccess.Models.BlogTag
+
+<div id="blogTag-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "blogTag-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+
+        <div class="form-group">
+            <label>Title:</label>
+            @Html.TextBoxFor(x => x.Title, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Title, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Status:</label>
+            @Html.DropDownListFor(x => x.Status, EnumExtensionMethods.GetEnumValues<BlogStatuses>().OrderBy(x => x.Value), new { @class = "form-control formal select2", style = "width:100%;text-transform:capitalize;" })
+            @Html.ValidationMessageFor(x => x.Status, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    var validation = [];
+</script>

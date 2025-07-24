@@ -1,0 +1,170 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.DashboardTemplateCreateEditModel
+@{
+    ViewBag.Title = string.IsNullOrEmpty(Model.DashboardTemplate.Id) ? "Create Dashboard" : "Edit Dashboard";
+}
+<style type="text/css">
+    .checkbox-inline {
+        flex-wrap: wrap;
+        line-height: 2;
+    }
+
+    .checkbox > span {
+        top: 3px !important;
+    }
+
+    .checkbox-inline .checkbox {
+        margin-left: 15px;
+        margin-bottom: 10px;
+        margin-right: 0 !important;
+    }
+</style>
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.DashboardTemplate.Id)
+            <div class="form-group row">
+                <div class="col-lg-12">
+                    @Html.ValidationMessageFor(x => x.SelectedWidgets, null, new { style = "margin:0;" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Name</label>
+                <div class="col-lg-9">
+                    @Html.EditorFor(x => x.DashboardTemplate.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.DashboardTemplate.Name)
+                </div>
+            </div>
+            if (SessionVariables.CurrentUser.IsSuperAdmin)
+            {
+                @*For now, only super admins should be able to assign a dashboard to certain roles.*@
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Roles</label>
+                    <div class="col-lg-9">
+                        <div class="checkbox-inline row">
+                            @foreach (var role in Model.Roles.Where(x => !x.Name.Equals("Donor")))
+                            {
+                                string isChecked = null;
+                                if (Model.DashboardTemplatePermissions.IsNotNull() && Model.DashboardTemplatePermissions.Count > 0 || Model.SelectedRoles.Count > 0)
+                                {
+                                    if (Model.DashboardTemplatePermissions.Any(x => x.RoleId == role.Id) || Model.SelectedRoles.Contains(role.Id))
+                                    {
+                                        isChecked = "checked";
+                                    }
+                                }
+                                <label class="checkbox">
+                                    <input type="checkbox" name="SelectedRoles" value="@role.Id" @isChecked />
+                                    <span></span>
+                                    @role.Name
+                                </label>
+                            }
+                        </div>
+                        @Html.ValidationMessageFor(x => x.SelectedRoles)
+                    </div>
+                </div>
+            }
+            <div class="form-group row">
+                <p class="my-4">Select dashboard widgets below.</p>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Name</th>
+                                <th></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        @if (Model.WidgetVM.Widgets.Any())
+                        {
+                            foreach (var category in Model.WidgetVM.WidgetCategoryTypes.OrderBy(x => x.Name))
+                            {
+                                <tbody>
+                                    <tr class="font-weight-bolder bg-light">
+                                        <td>
+                                            <a href="javascript:;" class="report__toggle" toggle-state="open"><i class="fa fa-minus-square"></i></a>
+                                            @category.Name
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                                <tbody class="report_body_toggle">
+                                    @{
+                                        var widgetIds = Model.WidgetVM.WidgetCategories.Where(x => x.CategoryTypeId == category.Id).Select(x => x.WidgetId).ToList();
+                                        if (widgetIds.Count > 0 && widgetIds.IsNotNull())
+                                        {
+                                            var widgets = Model.WidgetVM.Widgets.Where(x => widgetIds.Contains(x.Id)).OrderBy(x => x.Name).ToList();
+                                            foreach (var widget in widgets)
+                                            {
+                                                string isChecked = null;
+                                                <tr>
+                                                    <td>
+                                                        @if (Model.DashboardWidgets.IsNotNull() && Model.DashboardWidgets.Count > 0 || Model.SelectedWidgets.Count > 0)
+                                                        {
+                                                            if (Model.DashboardWidgets.Any(x => x.WidgetId == widget.Id) || Model.SelectedWidgets.Contains(widget.Id))
+                                                            {
+                                                                isChecked = "checked";
+                                                            }
+                                                        }
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="SelectedWidgets" value="@widget.Id" @isChecked />
+                                                            <span></span>
+                                                            @widget.Name
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        @widget.Location
+                                                    </td>
+                                                    <td>
+                                                        @widget.Description
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="3">You don't have any widgets for this category.</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            }
+                        }
+                    </table>
+                </div>
+            </div>
+            <div class="inner-card-footer">
+                <button type="submit" class="btn btn-light-primary mr-2">Save Changes</button>
+                <a href="/dashboardtemplates" class="btn btn-light-dark font-weight-bold">Cancel</a>
+            </div>
+        }
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("click", ".report__toggle", function () {
+                var $el = $(this);
+                if ($el.attr("toggle-state") == "open") {
+                    $el.find("i").removeClass("fa-minus-square").addClass("fa-plus-square");
+                    $el.attr("toggle-state", "close");
+                }
+                else {
+                    $el.find("i").removeClass("fa-plus-square").addClass("fa-minus-square");
+                    $el.attr("toggle-state", "open");
+                }
+                $el.closest("tbody").next(".report_body_toggle").toggle(250);
+            });
+        });
+    </script>
+}

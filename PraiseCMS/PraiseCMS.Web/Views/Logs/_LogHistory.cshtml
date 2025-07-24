@@ -1,0 +1,162 @@
+﻿@model PraiseCMS.DataAccess.Models.LogListViewModel
+
+<div class="d-flex flex-column flex-grow-1">
+    <div class="row">
+        <div id="log-container" class="col-lg-12">
+            <div class="card card-custom card-stretch" id="kt_page_stretched_card">
+                <div class="card-header row row-marginless align-items-center flex-wrap py-5 h-auto">
+                    <div class="col-12 col-sm-4 col-xxl-2 order-2 order-xxl-1 d-flex align-items-center">
+                        <div class="d-flex align-items-center mr-1 my-2">
+                            <label data-inbox="group-select" class="checkbox checkbox-single checkbox-primary mr-3">
+                                <input id="checkAll" type="checkbox" />
+                                <span class="symbol-label"></span>
+                            </label>
+                            <a class="pointer" onclick="location.reload();">
+                                <span class="btn btn-clean btn-icon btn-sm mr-2" data-toggle="tooltip" title="Reload list">
+                                    <i class="ki ki-refresh icon-1x"></i>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="d-flex align-items-center mr-1 my-2">
+                            <span id="readIcon" class="btn btn-default btn-icon btn-sm mr-2 button-actions" style="display:none;" data-toggle="tooltip">
+                                <span class="svg-icon svg-icon-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <rect x="0" y="0" width="24" height="24"></rect>
+                                            <path d="M6,2 L18,2 C18.5522847,2 19,2.44771525 19,3 L19,12 C19,12.5522847 18.5522847,13 18,13 L6,13 C5.44771525,13 5,12.5522847 5,12 L5,3 C5,2.44771525 5.44771525,2 6,2 Z M7.5,5 C7.22385763,5 7,5.22385763 7,5.5 C7,5.77614237 7.22385763,6 7.5,6 L13.5,6 C13.7761424,6 14,5.77614237 14,5.5 C14,5.22385763 13.7761424,5 13.5,5 L7.5,5 Z M7.5,7 C7.22385763,7 7,7.22385763 7,7.5 C7,7.77614237 7.22385763,8 7.5,8 L10.5,8 C10.7761424,8 11,7.77614237 11,7.5 C11,7.22385763 10.7761424,7 10.5,7 L7.5,7 Z" fill="#000000" opacity="0.3"></path>
+                                            <path d="M3.79274528,6.57253826 L12,12.5 L20.2072547,6.57253826 C20.4311176,6.4108595 20.7436609,6.46126971 20.9053396,6.68513259 C20.9668779,6.77033951 21,6.87277228 21,6.97787787 L21,17 C21,18.1045695 20.1045695,19 19,19 L5,19 C3.8954305,19 3,18.1045695 3,17 L3,6.97787787 C3,6.70173549 3.22385763,6.47787787 3.5,6.47787787 C3.60510559,6.47787787 3.70753836,6.51099993 3.79274528,6.57253826 Z" fill="#000000"></path>
+                                        </g>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center mr-1 my-2">
+                            <span class="btn btn-default btn-icon btn-sm mr-2 button-actions" style="display:none;" data-toggle="tooltip">
+                                <span class="svg-icon svg-icon-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <polygon points="0 0 24 0 24 24 0 24" />
+                                            <path d="M16.5,4.5 C14.8905,4.5 13.00825,6.32463215 12,7.5 C10.99175,6.32463215 9.1095,4.5 7.5,4.5 C4.651,4.5 3,6.72217984 3,9.55040872 C3,12.6834696 6,16 12,19.5 C18,16 21,12.75 21,9.75 C21,6.92177112 19.349,4.5 16.5,4.5 Z" fill="#000000" fill-rule="nonzero" />
+                                        </g>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 d-flex order-1 order-xxl-1 align-items-center justify-content-center">
+                        <div class="row">
+                            <div class="col-12 col-lg-4 pb-xs-2">
+                                @Html.DropDownListFor(x => x.Church, Model.ChurchList, "Select a church...", new { @class = "form-control select2" })
+                            </div>
+                            <div class="col-12 col-lg-4 pb-xs-2">
+                                @Html.DropDownListFor(x => x.Controller, Model.ControllerList, "Select a controller...", new { @class = "form-control select2" })
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                @Html.DropDownListFor(x => x.Type, Model.TypeList, "Select a type...", new { @class = "form-control select2" })
+                            </div>                                                                                    
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-4 col-xxl-4 order-xxl-3 d-flex align-items-center justify-content-sm-end text-right my-2">
+                        <div class="d-flex align-items-center mr-2" data-toggle="tooltip" title="" data-original-title="Records per page">
+                            <span class="text-muted font-weight-bold mr-2" data-toggle="dropdown">@Model.From - @Model.To of @Model.TotalLogs</span>
+                        </div>
+                        <a onclick="paging(this,@Model.Page)" class="previous btn btn-default btn-icon btn-sm mr-2 @(Model.Page == 1 ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Previous page">
+                            <i class="ki ki-bold-arrow-back icon-sm"></i>
+                        </a>
+                        <a onclick="paging(this,@Model.Page)" class="next btn btn-default btn-icon btn-sm mr-2  @(Model.Page ==  Model.TotalPage ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Next page">
+                            <i class="ki ki-bold-arrow-next icon-sm"></i>
+                        </a>
+                        <div class="dropdown mr-2" data-toggle="tooltip" title="" data-original-title="Sort">
+                            <span class="btn btn-default btn-icon btn-sm" data-toggle="dropdown">
+                                <i class="flaticon2-console icon-1x"></i>
+                            </span>
+                            <div class="dropdown-menu dropdown-menu-right p-0 m-0 dropdown-menu-sm">
+                                <ul class="navi py-3">
+                                    <li class="navi-item">
+                                        <a onclick="sorting('desc')" class="pointer navi-link @Model.Newest">
+                                            <span class="navi-text">Newest</span>
+                                        </a>
+                                    </li>
+                                    <li class="navi-item">
+                                        <a onclick="sorting('asc')" class="pointer navi-link @Model.Oldest">
+                                            <span class="navi-text">Oldest</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        @*<div class="btn btn-default btn-icon btn-sm" data-toggle="tooltip" data-html="true" title="Inbox Settings">
+                                @Html.AjaxModalLink(" <i class='fas fa-cogs'></i>", "/PrayerRequests/UserInboxSetting", "Inbox Settings", "Save", "btn btn-default btn-icon btn-sm", "", "", "", false, "", false)
+                            </div>*@
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Logs.Any())
+                    {
+                        <div class="card-scroll" style="min-height:600px;">
+                            <div class="table-responsive">
+                                <div class="list list-hover min-w-500px" data-inbox="list">
+                                    @foreach (var item in Model.Logs)
+                                    {
+                                        <div id="prayer-request-@item.Id">
+                                            <div class="d-flex align-items-start list-item card-spacer-x py-4 log-@item.Id" data-inbox="message">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="d-flex align-items-center mr-3" data-inbox="actions">
+                                                        <label class="checkbox checkbox-single checkbox-primary flex-shrink-0 mr-3">
+                                                            <input type="checkbox" class="item-checkbox" id="@item.Id" />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 mt-1 mr-2" data-toggle="view">
+                                                    <span class="mr-2"><a href="/logs/logdetails/@item.Id" class="jq_load_log_details kt-todo__subject">@item.Parameter.EllipsisAt(100)</a></span>
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-end flex-wrap" data-toggle="view">
+                                                    <div class="" data-toggle="tooltip" title="Created">@item.CreatedDate.TimeAgoUtil()</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center my-2 my-6 card-spacer-x justify-content-end">
+                            <div class="d-flex align-items-center mr-2" data-toggle="tooltip" title="" data-original-title="Records per page">
+                                <span class="text-muted font-weight-bold mr-2">@Model.From - @Model.To of @Model.TotalLogs</span>
+                            </div>
+                            <a onclick="paging(this,@Model.Page)" class="previous btn btn-default btn-icon btn-sm mr-2 @(Model.Page == 1 ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Previous page">
+                                <i class="ki ki-bold-arrow-back icon-sm"></i>
+                            </a>
+                            <a onclick="paging(this,@Model.Page)" class="next btn btn-default btn-icon btn-sm mr-2  @(Model.Page ==  Model.TotalPage ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Next page">
+                                <i class="ki ki-bold-arrow-next icon-sm"></i>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card-header py-6 border-0 h-auto">
+                            <div class="card-title">
+                                <p style="font-size:1rem;">
+                                    You don't have any logs matching your search criteria.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="log-details" class="col-lg-12">
+            <div id="log_details"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $(".select2").select2().on('change', function (e) {
+            var value = $("#" + e.currentTarget.id).val();            
+            $("#" + e.target.id).val(value);
+            getLogsByKeyword(value, e.target.id);
+        });
+    });
+</script>

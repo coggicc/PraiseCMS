@@ -1,0 +1,462 @@
+﻿@model PraiseCMS.DataAccess.Models.ReportListView
+@using PraiseCMS.Shared.Methods
+@{
+    ViewBag.Title = "Reports";
+
+    var tabs = new Dictionary<string, string> { { "favorites", "" }, { "frequent", "" }, { "groups", "" }, { "all", "active" } };
+
+    if (!string.IsNullOrEmpty(Model.Tab) && tabs.ContainsKey(Model.Tab))
+    {
+        for (var i = 0; i < tabs.Count; i++)
+        {
+            var tabz = tabs.ElementAt(i);
+            tabs[tabz.Key] = "";
+        }
+
+        tabs[Model.Tab] = "active";
+    }
+}
+<style type="text/css">
+    .report__toggle {
+        padding: 1px 10px 0 0 !important;
+        float: left;
+    }
+</style>
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+@section subheader{
+    <div class="d-flex align-items-center">
+        <a href="/reports/settings" class="btn btn-light-primary btn-sm mr-2">Settings</a>
+
+        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+        {
+            <a href="/reports/createreport" class="btn btn-light-primary btn-sm mr-2">Create Report</a>
+            <a href="/reports/groups" class="btn btn-light-primary btn-sm">Manage Groups</a>
+        }
+    </div>
+}
+<div class="card card-custom">
+    <div class="card-header card-header-tabs-line">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card card-custom bg-primary card-stretch gutter-b">
+                    <div class="card-body">
+                        <i class="fa fa-cross fa-2x text-white"></i>
+                        <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.SalvationsTotal</span>
+                        <span class="font-weight-bold text-white">Salvations - YTD</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card card-custom bg-info card-stretch gutter-b">
+                    <div class="card-body">
+                        <i class="fa fa-dollar-sign fa-2x text-white"></i>
+                        <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.GivingTotal</span>
+                        <span class="font-weight-bold text-white">Giving - YTD</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card card-custom bg-warning card-stretch gutter-b">
+                    <div class="card-body">
+                        <i class="fa fa-praying-hands fa-2x text-white"></i>
+                        <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.PrayerRequestsTotal</span>
+                        <span class="font-weight-bold text-white">Prayer Requests - YTD</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="row mt-6">
+                <div class="col-lg-4">
+                    @using (Html.BeginForm("ReportSearch", "Reports", FormMethod.Post, new { @class = "form", enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="input-group">
+                            @Html.DropDownListFor(x => x.ReportSearch, Model.Reports.ToSelectList(x => x.Display, x => x.Id), "Search for a report...", new { @class = "form-control select2", name = "ReportSearch" })
+                            <div class="input-group-append">
+                                <button class="btn btn-light-dark font-weight-bold" type="submit">Go!</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>*@
+        <div class="row mt-6">
+            <div class="col-12">
+                <ul class="nav nav-tabs nav-bold nav-tabs-line nav-tabs-line-3x">
+                    @*<li class="nav-item mr-3 d-none d-lg-block">
+                            <a class="nav-link report-tabs @tabs["favorites"]" data-toggle="tab" href="#favorites" role="tab">
+                                <span class="nav-text font-size-lg">Favorites</span>
+                            </a>
+                        </li>*@
+                    @*<li class="nav-item mr-3 d-none d-lg-block">
+                            <a class="nav-link report-tabs @tabs["groups"]" data-toggle="tab" href="#groups" role="tab">
+                                <span class="nav-text font-size-lg">Groups</span>
+                            </a>
+                        </li>*@
+                    @*<li class="nav-item mr-3 d-none d-lg-block">
+                            <a class="nav-link report-tabs @tabs["all"]" data-toggle="tab" href="#all" role="tab">
+                                <span class="nav-text font-size-lg">All Reports</span>
+                            </a>
+                        </li>*@
+                    @*<li class="nav-item dropdown d-lg-none">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-edit"></i>
+                                Actions
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item report-tabs module-" href="#favorites" data-toggle="tab">Favorites</a>
+                                <a class="dropdown-item report-tabs module-" href="#groups" data-toggle="tab">Groups</a>
+                                <a class="dropdown-item report-tabs module-" href="#all" data-toggle="tab">All Reports</a>
+                            </div>
+                        </li>*@
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane report-tabs @tabs["favorites"]" id="favorites" role="tabpanel">
+                        <h3 class="font-size-lg text-dark font-weight-bold my-6">Favorites:</h3>
+                        <div class="card card-custom gutter-b">
+                            <div class="card-body">
+                                @*<div class="row">
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.LYBUNT });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.SYBUNT });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.DonorType });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.DigitalPaymentMethodType });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.PaymentType });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.DigitalPaymentType });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.ManualPaymentType });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.WeekDay });
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            @{
+                                                Html.RenderAction("WidgetReport", "Reports", new { reportType = GivingReportType.TimeADay });
+                                            }
+                                        </div>
+                                    </div>*@
+                                @if (Model.FavoriteReports.Count > 0)
+                                {
+                                    var favoriteIds = Model.FavoriteReports.Select(x => x.ReportId).ToList();
+                                    var reports = Model.Reports.Where(x => favoriteIds.Contains(x.Id)).OrderBy(x => x.Name).ToList();
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    @*<th>Email</th>*@
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in reports)
+                                                {
+                                                    var category = Model.ReportCategories.Where(x => x.Id == item.ReportCategoryId).Select(x => x.Name).FirstOrDefault();
+                                                    <tr class="@item.Class">
+                                                        <td>
+                                                            @if (item.ReportUrl.IsNotNullOrEmpty())
+                                                            {
+                                                                <a href="@item.ReportUrl">@item.Name</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="/reports/viewreport?Id=@item.Id&type=@category">@item.Name</a>
+                                                            }
+                                                        </td>
+                                                        @*<td>
+                                                                Unscheduled
+                                                            </td>*@
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-7">
+                                        <h5 class="mt-md-10 mt-lg-14" style="font-size:30px;">Add a Favorite Report</h5>
+                                        <p style="font-size:18px;">See all of your favorite reports every time you come to the reporting dashboard.</p>
+                                        <p class="mb-0" style="font-size:18px;">To add a report to your favorites, go to the All Reports tab and click on the green star next to the applicable report.</p>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <img src="~/Content/assets/image/chart_example.png" class="img-fluid" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="tab-pane report-tabs @tabs["groups"]" id="groups" role="tabpanel">
+                            <h3 class="font-size-lg text-dark font-weight-bold my-6">Groups:</h3>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    @if (Model.ReportGroup.Any())
+                                    {
+                                        foreach (var group in Model.ReportGroup)
+                                        {
+                                            <tbody>
+                                                <tr class="font-weight-bolder bg-light">
+                                                    <td>
+                                                        <a href="javascript:;" class="report__toggle" toggle-state="open"><i class="fa fa-minus-square"></i></a>
+                                                        @group.Name
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="report_body_toggle">
+                                                @{
+                                                    var reportIds = Model.UserReportGroups.Where(x => x.GroupId == group.Id).Select(x => x.ReportId).ToList();
+                                                    if (reportIds.IsNotNull() && reportIds.Count > 0)
+                                                    {
+                                                        var reports = Model.Reports.Where(x => reportIds.Contains(x.Id)).ToList();
+                                                        if (reports.Any())
+                                                        {
+                                                            foreach (var item in reports)
+                                                            {
+                                                                var category = Model.ReportCategories.FirstOrDefault(x => x.Id == item.ReportCategoryId);
+                                                                <tr>
+                                                                    <td style="padding-left:30px;">
+                                                                        <a href="/reports/viewreport?Id=@item.Id&type=@category.Name">@item.Name</a>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td>You don't have any reports in the groups.</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+                                            </tbody>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>*@
+                    <div class="tab-pane report-tabs @tabs["all"]" id="all" role="tabpanel">
+                        @*<h3 class="font-size-lg text-dark font-weight-bold my-6">All Reports:</h3>*@
+                        <div class="card card-custom gutter-b">
+                            <div class="card-body pl-0 pr-0 pl-md-4 pr-md-4">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th class="text-center">Actions</th>
+                                                @*@if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                                    {
+                                                        <th align="center" style="text-align: center;">Add to Groups</th>
+                                                    }*@
+                                            </tr>
+                                        </thead>
+                                        @foreach (var category in Model.ReportCategories)
+                                        {
+                                            //Skip custom reports for now
+                                            if (category.Name.Equals("Custom"))
+                                            {
+                                                continue;
+                                            }
+                                            <tbody>
+                                                <tr class="font-weight-bolder bg-light">
+                                                    <td colspan="2">
+                                                        <a href="javascript:;" class="report__toggle" toggle-state="open"><i class="fa fa-minus-square" data-toggle="tooltip" data-placement="top" title="Toggle Visibility"></i></a>
+                                                        @category.Display
+                                                    </td>
+                                                    @*@if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                                        {
+                                                            <td></td>
+                                                        }*@
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="report_body_toggle">
+                                                @{
+                                                    var reports = Model.Reports.Where(x => x.ReportCategoryId == category.Id).ToList();
+                                                    if (reports.Any())
+                                                    {
+                                                        foreach (var item in reports)
+                                                        {
+                                                            var isFavorite = Model.FavoriteReports.Any() && Model.FavoriteReports.FirstOrDefault(x => x.ReportId == item.Id) != null;
+                                                            var favoriteClass = isFavorite ? "primary" : "success";
+                                                            <tr class="@item.Class">
+                                                                @if (item.ReportType.IsNotNullOrEmpty() && item.ReportType.Equals(ReportTypes.Fixed) && item.ReportUrl.IsNotNullOrEmpty())
+                                                                {
+                                                                    @*<td style="padding-left:30px;">*@
+                                                                    <td class="pl-3">
+                                                                        @*<a href="@item.ReportUrl/@item.Id">@item.Name</a>*@
+                                                                        <a href="@item.ReportUrl">@item.Name</a>
+                                                                        @if (!string.IsNullOrEmpty(item.Description))
+                                                                        {
+                                                                            <i class="far fa-question-circle ml-2" data-html="true" data-toggle="tooltip" title="@item.Description"></i>
+                                                                        }
+                                                                    </td>
+                                                                    <td style="text-align:center;">
+                                                                        @if (SessionVariables.CurrentUser.IsNotNull() && SessionVariables.CurrentUser.IsSuperAdmin)
+                                                                        {
+                                                                            <a href="/reports/editreport?id=@item.Id&type=@item.ReportType" class="text-hover-primary" data-toggle="tooltip" data-original-title="Edit report"><i class="fas fa-pencil-alt mr-2"></i></a>
+                                                                        }
+                                                                        <a href="/reports/_favorite?id=@Url.Encode(item.Id)" data-toggle="tooltip" data-favorite="@isFavorite" class="setFavorite btn btn-xs btn-icon btn-light-@favoriteClass favorite-@item.Id.HtmlFriendly()" title="@Html.Raw(isFavorite?"Unfavorite this report":"Favorite this report")">
+                                                                            <i class="fa fa-star"></i>
+                                                                            @if (isFavorite)
+                                                                            {
+                                                                                <span class="text-primary"></span>
+                                                                            }
+                                                                        </a>
+                                                                    </td>
+                                                                    @*@if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                                                        {
+                                                                            <td width="200" align="center">
+                                                                                @Html.AjaxModalLink("<i class='fa fa-list-alt'></i>", $"/reports/GetGroupsPartial/{item.Id}", $"Report Groups - {item.Name}", null, null, null, null, null, false, ModalSizes.Default)
+                                                                            </td>
+                                                                        }*@
+                                                                }
+                                                                @*else
+                                                                    {
+                                                                        if (!string.IsNullOrEmpty(item.Query))
+                                                                        {
+                                                                            <td style="padding-left:30px;">
+                                                                                <a href="/reports/viewreport?Id=@item.Id&type=@category.Name">@item.Name</a>
+                                                                            </td>
+                                                                            <td style="text-align:center;">
+                                                                                @if (SessionVariables.CurrentUser.IsNotNull() && SessionVariables.CurrentUser.IsSuperAdmin)
+                                                                                {
+                                                                                    <a href="/reports/editreport/@item.Id" class="text-hover-primary" data-toggle="tooltip" data-original-title="Edit report"><i class="fas fa-pencil-alt mr-2"></i></a>
+                                                                                }
+                                                                                <a data-ajax="true" data-ajax-method="get" onclick="NotifyMessage()" href="/reports/_favorite?id=@Url.Encode(item.Id)" data-toggle="tooltip" class="btn btn-xs btn-icon btn-light-@favoriteClass favorite-@item.Id.HtmlFriendly()" title="@Html.Raw(isFavorite?"Unfavorite this report":"Favorite this report")">
+                                                                                    <i class="fa fa-star"></i>
+                                                                                    @if (isFavorite)
+                                                                                    {
+                                                                                        <span class="text-primary"></span>
+                                                                                    }
+                                                                                </a>
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (SessionVariables.CurrentUser.IsNotNull() && SessionVariables.CurrentUser.IsSuperAdmin || SessionVariables.CurrentUser.User.Email.Contains("novadevelopment.net"))
+                                                                            {
+                                                                                <td style="padding-left:30px;">
+                                                                                    <span>@item.Name - [No query provided]</span>
+                                                                                </td>
+                                                                                <td style="text-align:center;">
+                                                                                    @if (SessionVariables.CurrentUser.IsNotNull() && SessionVariables.CurrentUser.IsSuperAdmin)
+                                                                                    {
+                                                                                        <a href="/reports/editreport/@item.Id" class="text-hover-primary" data-toggle="tooltip" data-original-title="Edit report"><i class="fas fa-pencil-alt mr-2"></i></a>
+                                                                                    }
+                                                                                    <a data-ajax="true" data-ajax-method="get" onclick="NotifyMessage()" href="/reports/_favorite?id=@Url.Encode(item.Id)" data-toggle="tooltip" class="btn btn-xs btn-icon btn-light-@favoriteClass favorite-@item.Id.HtmlFriendly()" title="@Html.Raw(isFavorite?"Unfavorite this report":"Favorite this report")">
+                                                                                        <i class="fa fa-star"></i>
+                                                                                        @if (isFavorite)
+                                                                                        {
+                                                                                            <span class="text-primary"></span>
+                                                                                        }
+                                                                                    </a>
+                                                                                </td>
+                                                                            }
+                                                                        }
+                                                                    }*@
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td colspan="2">You don't have any reports for this category.</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script src="~/Scripts/chart-2.7.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("click", ".report__toggle", function () {
+                var $el = $(this);
+                if ($el.attr("toggle-state") == "open") {
+                    $el.find("i").removeClass("fa-minus-square").addClass("fa-plus-square");
+                    $el.attr("toggle-state", "close");
+                }
+                else {
+                    $el.find("i").removeClass("fa-plus-square").addClass("fa-minus-square");
+                    $el.attr("toggle-state", "open");
+                }
+                $el.closest("tbody").next(".report_body_toggle").toggle(250);
+            });
+
+            $(document).on("click", ".addtogroup", function () {
+                var $this = $(this);
+                if ($this.hasClass("list-group-item-success")) {
+                    $this.removeClass("list-group-item-success").addClass("list-group-item-light");
+                }
+                else {
+                    $this.removeClass("list-group-item-light").addClass("list-group-item-success");
+                }
+            });
+        });
+
+        $(document).on("click", ".setFavorite", function (event) {
+            var cell = $(this);
+            event.preventDefault();
+            $.get($(this).attr("href"), function (result) {
+                if (result.Success) {
+                    if ($(cell).data("favorite") === "True") {
+                        $(cell).removeAttr("data-original-title").attr('data-original-title', "Favorite this report");
+                        $(cell).data("favorite", "False");
+                        $(cell).removeClass("btn-light-primary").addClass("btn-light-success");
+                        $(cell).html('<i class="fa fa-star"></i>');
+                    } else {
+                        $(cell).removeAttr("data-original-title").attr('data-original-title', "Unfavorite this report");
+                        $(cell).data("favorite", "True");
+                        $(cell).addClass("btn-light-primary").removeClass("btn-light-success");
+                        $(cell).html('<i class="fa fa-star"></i><span class="text-primary"></span>');
+                    }
+                } else {
+                    ShowErrorAlert(result.Message);
+                }
+            });
+        });
+    </script>
+}

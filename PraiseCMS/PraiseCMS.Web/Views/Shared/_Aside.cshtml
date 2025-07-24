@@ -1,0 +1,475 @@
+﻿@using PraiseCMS.Shared.Methods
+@{
+    var themeColor = "praise_logo_white.png";
+
+    if (SessionVariables.CurrentUser.IsNotNull())
+    {
+        themeColor = !SessionVariables.CurrentUser.Settings.DarkModeEnabled ? themeColor : "praise_logo_white.png";
+    }
+}
+<div class="aside aside-left aside-fixed d-flex flex-column flex-row-auto" id="kt_aside">
+    <div class="brand flex-column-auto" id="kt_brand">
+        <a href="@Url.Action("Index", "Home")" class="brand-logo">
+            <img alt="Logo" src="~/Content/assets/media/logos/@themeColor" />
+        </a>
+        <a href="/users/_togglesidebar" data-ajax="true" data-ajax-method="get" class="brand-toggle btn btn-sm" id="kt_aside_toggle">
+            <span class="svg-icon svg-icon svg-icon-xl svg-icon-white">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <polygon points="0 0 24 0 24 24 0 24" />
+                        <path d="M5.29288961,6.70710318 C4.90236532,6.31657888 4.90236532,5.68341391 5.29288961,5.29288961 C5.68341391,4.90236532 6.31657888,4.90236532 6.70710318,5.29288961 L12.7071032,11.2928896 C13.0856821,11.6714686 13.0989277,12.281055 12.7371505,12.675721 L7.23715054,18.675721 C6.86395813,19.08284 6.23139076,19.1103429 5.82427177,18.7371505 C5.41715278,18.3639581 5.38964985,17.7313908 5.76284226,17.3242718 L10.6158586,12.0300721 L5.29288961,6.70710318 Z" fill="#000000" fill-rule="nonzero" transform="translate(8.999997, 11.999999) scale(-1, 1) translate(-8.999997, -11.999999)" />
+                        <path d="M10.7071009,15.7071068 C10.3165766,16.0976311 9.68341162,16.0976311 9.29288733,15.7071068 C8.90236304,15.3165825 8.90236304,14.6834175 9.29288733,14.2928932 L15.2928873,8.29289322 C15.6714663,7.91431428 16.2810527,7.90106866 16.6757187,8.26284586 L22.6757187,13.7628459 C23.0828377,14.1360383 23.1103407,14.7686056 22.7371482,15.1757246 C22.3639558,15.5828436 21.7313885,15.6103465 21.3242695,15.2371541 L16.0300699,10.3841378 L10.7071009,15.7071068 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" transform="translate(15.999997, 11.999999) scale(-1, 1) rotate(-270.000000) translate(-15.999997, -11.999999)" />
+                    </g>
+                </svg>
+            </span>
+        </a>
+    </div>
+    <div class="aside-menu-wrapper flex-column-fluid" id="kt_aside_menu_wrapper">
+        <div id="kt_aside_menu" class="aside-menu my-4" data-menu-vertical="1" data-menu-scroll="1" data-menu-dropdown-timeout="500">
+            <div class="text-center font-weight-bolder font-size-h6">@SessionVariables.CurrentChurch.Display</div>
+            <ul class="menu-nav">
+                @if (SessionVariables.CurrentUser.IsNotNull() && !SessionVariables.CurrentUser.IsDonorOnly)
+                {
+                    <li class="menu-item module-375268982402dc576fb64e4d0ea28b @Html.IsActive("Home", "Index")" aria-haspopup="true">
+                        <a href="@Url.Action("Index", "Home")" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fa fa-tachometer-alt"></i>
+                            </span>
+                            <span class="menu-text">My Dashboard</span>
+                        </a>
+                    </li>
+                }
+                @if (SessionVariables.CurrentUser.IsNotNull() && SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <li class="menu-item module-05624166437282ed2b47014f98908e @Html.IsActive("emails", "index")" aria-haspopup="true">
+                        <a href="/emails" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <span class="menu-text">My Emails</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-9246791019b87d5c6afa054420a092 @Html.IsActive("calendar", "Index")" aria-haspopup="true">
+                        <a href="/calendar" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="far fa-calendar-plus"></i>
+                            </span>
+                            <span class="menu-text">My Calendar</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module- @Html.IsActive("events", "Index")" aria-haspopup="true">
+                        <a href="/events" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="far fa-calendar-plus"></i>
+                            </span>
+                            <span class="menu-text">Events</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module- @Html.IsActive("media", "Index")" aria-haspopup="true">
+                        <a href="/media" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="far fa-calendar-plus"></i>
+                            </span>
+                            <span class="menu-text">Media</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module- @Html.IsActive("media", "SeriesList")" aria-haspopup="true">
+                        <a href="/media/SeriesList" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="far fa-calendar-plus"></i>
+                            </span>
+                            <span class="menu-text">Sermon List</span>
+                        </a>
+                    </li>
+                }
+                @if (SessionVariables.CurrentUser.IsNotNull() && !SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <li class="menu-item module-05624166437282ed2b47014f98908e @Html.IsActive("emails", "index")" aria-haspopup="true">
+                        <a href="/emails" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <span class="menu-text">My Emails</span>
+                        </a>
+                    </li>
+                    @*<li class="menu-item module-9246791019b87d5c6afa054420a092 @Html.IsActive("calendar", "Index")" aria-haspopup="true">
+                <a href="/calendar" class="menu-link">
+                    <span class="svg-icon menu-icon">
+                        <i class="far fa-calendar-plus"></i>
+                    </span>
+                    <span class="menu-text">My Calendar</span>
+                </a>
+            </li>*@
+                    if (SessionVariables.CurrentMerchant != null)
+                    {
+                        <li class="menu-item module-039942579226fbdffc28c8429886fd @Html.IsActive("mygiving", "Index")" aria-haspopup="true">
+                            <a href="/mygiving" class="menu-link">
+                                <span class="svg-icon menu-icon">
+                                    <i class="fa fa-dollar-sign"></i>
+                                </span>
+                                <span class="menu-text">My Giving</span>
+                            </a>
+                        </li>
+                    }
+                    <li class="menu-section module-15038873157778262426fa45428c85">
+                        <h4 class="menu-text">CHURCH MANAGEMENT</h4>
+                        <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
+                    </li>
+                    <li class="menu-item needs-write module-9320982602755ea0f9a4ba47d7a34e @Html.IsActive("campuses", "Index")" aria-haspopup="true">
+                        <a href="/campuses" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                            <span class="menu-text">@(SessionVariables.Campuses.Count() > 1 ? "Campuses" : "Campus")</span>
+                        </a>
+                    </li>
+                    <li class="menu-item needs-write module-87345006275f4bcae00d144f98a62a @Html.IsActive("people", "Index")" aria-haspopup="true">
+                        <a href="/people" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            <span class="menu-text">People</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-8731643575db043bd252a54284bee1 @Html.IsActive("attendance", "Index")" aria-haspopup="true">
+                        <a href="/attendance" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-user-check"></i>
+                            </span>
+                            <span class="menu-text">Attendance</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-8827179569f43ed891928d4c54a94b @Html.IsActive("salvations", "Index")" aria-haspopup="true">
+                        <a href="/salvations" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-cross"></i>
+                            </span>
+                            <span class="menu-text">Salvations</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-1537168360aba20b87b11d491c8694 @Html.IsActive("baptisms", "Index")" aria-haspopup="true">
+                        <a href="/baptisms" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-water"></i>
+                            </span>
+                            <span class="menu-text">Baptisms</span>
+                        </a>
+                    </li>
+                    <li class="menu-item needs-write module-0865576942209a2d6deb0147c0bcad @Html.IsActive("funds", "Index")" aria-haspopup="true">
+                        <a href="/funds" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fa fa-piggy-bank"></i>
+                            </span>
+                            <span class="menu-text">Funds</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-71154639657f9bcf4b52b14992b89a @Html.IsActive("messagerequests", "Index")" aria-haspopup="true">
+                        <a href="/messagerequests" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-bible"></i>
+                            </span>
+                            <span class="menu-text">Message Requests</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-95936354299c1669b236e5435cb4a9 @Html.IsActive("prayerrequests", "Index")" aria-haspopup="true">
+                        <a href="/prayerrequests" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-praying-hands"></i>
+                            </span>
+                            <span class="menu-text">Prayer Requests</span>
+                        </a>
+                    </li>
+                    @*<li class="menu-item module-07737697423e093561d03a485a9e64 @Html.IsActive("serviceareas", "Index")" aria-haspopup="true">
+                <a href="/serviceareas" class="menu-link">
+                    <span class="svg-icon menu-icon">
+                        <i class="fa fa-list-alt"></i>
+                    </span>
+                    <span class="menu-text">Service Areas</span>
+                </a>
+            </li>*@
+                    <li class="menu-section module-8118140406b469357eb9ff41028ecd">
+                        <h4 class="menu-text">SYSTEM</h4>
+                        <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
+                    </li>
+                    <li class="menu-item menu-item-submenu module-1080633919ada9e25feeb84455a998 @Html.HasActiveChild("reports", "index,givingsummary,settings,manage,prayerrequestsummary,prayerrequestsenders,baptismreport,deceasedreport,upcomingbirthdays,topdonationspastfiveyears,topdonorspastfiveyears,topdonors,offlinegivingsummary,digitalgivingsummary")" aria-haspopup="true" data-menu-toggle="hover">
+                        <a href="javascript:;" class="menu-link menu-toggle">
+                            <span class="svg-icon menu-icon">
+                                <i class="fa fa-chart-line"></i>
+                            </span>
+                            <span class="menu-text">Reports</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="menu-submenu">
+                            <i class="menu-arrow"></i>
+                            <ul class="menu-subnav">
+                                <li class="menu-item menu-item-parent" aria-haspopup="true">
+                                    <span class="menu-link">
+                                        <span class="menu-text">Reports</span>
+                                    </span>
+                                </li>
+                                <li class="menu-item module-1080633919ada9e25feeb84455a998 @Html.IsActiveSubChild("reports", "Index")" aria-haspopup="true">
+                                    <a href="/reports" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-7687864678d021d4159a6b4db0a399 @Html.IsActiveSubChild("reports", "manage")" aria-haspopup="true">
+                                    <a href="/reports/manage" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Manage</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-0006992687c594f4ad39c849c5aa85 @Html.IsActiveSubChild("reports", "givingsummary")" aria-haspopup="true">
+                                    <a href="/reports/givingsummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Giving Summary</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-4930816743bcc0c7b5f18e4e8a9053 @Html.IsActiveSubChild("reports", "digitalgivingsummary")" aria-haspopup="true">
+                                    <a href="/reports/digitalgivingsummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Digital Giving Summary</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-7622500380d791d1d3b8ef4d9eb56d @Html.IsActiveSubChild("reports", "offlinegivingsummary")" aria-haspopup="true">
+                                    <a href="/reports/offlinegivingsummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Offline Giving Summary</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-8567849171030d48c1f0c6423fbf95 @Html.IsActiveSubChild("reports", "topdonors")" aria-haspopup="true">
+                                    <a href="/reports/topdonors" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Top Donors</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-92332366516f6ef23bdb6a4b57852f @Html.IsActiveSubChild("reports", "topdonorspastfiveyears")" aria-haspopup="true">
+                                    <a href="/reports/topdonorspastfiveyears" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Top Donors - Past 5 Years</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-9495757836c9ad894ca6e149af8db2 @Html.IsActiveSubChild("reports", "topdonationspastfiveyears")" aria-haspopup="true">
+                                    <a href="/reports/topdonationspastfiveyears" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Top Donations - Past 5 Years</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-1753373774496296655da04636b86e @Html.IsActiveSubChild("reports", "upcomingbirthdays")" aria-haspopup="true">
+                                    <a href="/reports/upcomingbirthdays" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Upcoming Birthdays</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-19393488452497525f4dca43a2b9c4 @Html.IsActiveSubChild("reports", "deceasedreport")" aria-haspopup="true">
+                                    <a href="/reports/deceasedreport" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Deceased Report</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-1537168360aba20b87b11d491c8694 @Html.IsActiveSubChild("reports", "baptismreport")" aria-haspopup="true">
+                                    <a href="/reports/baptismreport" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Baptism Report</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-9686681144d175c5dc858f4b9db0d2 @Html.IsActiveSubChild("reports", "_fundReportFilter")" aria-haspopup="true">
+                                    @Html.AjaxModalLinkForSidebar("<i class='menu-bullet menu-bullet-dot'><span></span></i><span class='menu-text'>Fund Report</span>", "/reports/_fundreportfilter", "Fund Report Filter", "View Report", "menu-link", "")
+                                </li>
+                                <li class="menu-item module-135324978724bd32fa37d9492180a6 @Html.IsActiveSubChild("reports", "prayerrequestsummary")" aria-haspopup="true">
+                                    <a href="/reports/prayerrequestsummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Prayer Request Summary</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-199677549505460a24dd6a45b8b0d8 @Html.IsActiveSubChild("reports", "prayerrequestsenders")" aria-haspopup="true">
+                                    <a href="/reports/prayerrequestsenders" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Prayer Request Senders</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-24027794037419def324ec4c8a9b4b @Html.IsActiveSubChild("reports", "prayerrequestresponsesummary")" aria-haspopup="true">
+                                    <a href="/reports/prayerrequestresponsesummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Prayer Request Response Summary</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-2806835873416e969a7294417ea016 @Html.IsActiveSubChild("reports", "donorstatusreport")" aria-haspopup="true">
+                                    <a href="/reports/donorstatusreport" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Donor Status Report</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-3219453410e393b9f5c8eb4e3e8164 @Html.IsActiveSubChild("reports", "donordemographicsreport")" aria-haspopup="true">
+                                    <a href="/reports/donordemographicsreport" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Donor Demographics Report</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-1473588347af62779d2cdd48479ae8 @Html.IsActiveSubChild("reports", "attendancesummary")" aria-haspopup="true">
+                                    <a href="/reports/attendancesummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Attendance Summary Report</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-2232019043fb615ed5a1b24b038011 @Html.IsActiveSubChild("reports", "baptismsummary")" aria-haspopup="true">
+                                    <a href="/reports/baptismsummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Baptism Summary Report</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-09935651172d6211e1a03a41dd847f @Html.IsActiveSubChild("reports", "salvationsummary")" aria-haspopup="true">
+                                    <a href="/reports/salvationsummary" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Salvation Summary Report</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item module-14990257708c6034ad1d1d4e5d9af6 @Html.IsActiveSubChild("reports", "settings")" aria-haspopup="true">
+                                    <a href="/reports/settings" class="menu-link">
+                                        <i class="menu-bullet menu-bullet-dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="menu-text">Report Settings</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                }
+                <li class="menu-item needs-write module-28834340961e860481430b4d1fbad1 @Html.IsActive("permissions", "Index")" aria-haspopup="true">
+                    <a href="/permissions" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="fa fa-user-lock"></i>
+                        </span>
+                        <span class="menu-text">Permissions</span>
+                    </a>
+                </li>
+                <li class="menu-item needs-write module-5370493431d8f56e7660a7465b951f @Html.IsActive("permissions", "roles")" aria-haspopup="true">
+                    <a href="/permissions/roles" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="fa fa-users-cog"></i>
+                        </span>
+                        <span class="menu-text">Roles</span>
+                    </a>
+                </li>
+                <li class="menu-item needs-write module-5402709225bc6d04300fce4195a50b @Html.IsActive("settings", "index")" aria-haspopup="true">
+                    <a href="/settings" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="fa fa-cogs"></i>
+                        </span>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+                @if (SessionVariables.CurrentUser.IsNotNull() && SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <li class="menu-section module-3488182604ff68719f8136426ba947">
+                        <h4 class="menu-text">SUPER ADMIN</h4>
+                        <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
+                    </li>
+                    <li class="menu-item module-3937285510a9601de03c6440228bc1 @Html.IsActive("churches", "Index")" aria-haspopup="true">
+                        <a href="/churches" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fa fa-church"></i>
+                            </span>
+                            <span class="menu-text">Churches</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-0886839649fa1152c9abb149978848 @Html.IsActive("Leads", "Index")" aria-haspopup="true">
+                        <a href="/Leads" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fa fa-list-alt"></i>
+                            </span>
+                            <span class="menu-text">Leads</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-05624166437282ed2b47014f98908e @Html.IsActive("emails", "Index")" aria-haspopup="true">
+                        <a href="/emails" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <span class="menu-text">Emails</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-862887373010e02732b7574b0190f2 @Html.IsActive("logs", "loghistory")" aria-haspopup="true">
+                        <a href="/logs/loghistory?logstype=Inbox" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fa fa-history"></i>
+                            </span>
+                            <span class="menu-text">Logs</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-1504032084908c05a6ca41443dac95 @Html.IsActive("settings", "modules")" aria-haspopup="true">
+                        <a href="/settings/modules" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-cubes"></i>
+                            </span>
+                            <span class="menu-text">Modules</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-1504032084908c05a6ca41443dac95 @Html.IsActive("map", "index")" aria-haspopup="true">
+                        <a href="/map" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fa fa-map-marker"></i>
+                            </span>
+                            <span class="menu-text">Map</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module-507474028267cbbbccfaf9475d8159 @Html.IsActive("superadmin", "blog")" aria-haspopup="true">
+                        <a href="/blog" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </span>
+                            <span class="menu-text">Blog</span>
+                        </a>
+                    </li>
+                    <li class="menu-item module- @Html.IsActive("superadmin", "index")" aria-haspopup="true">
+                        <a href="/superadmin" class="menu-link">
+                            <span class="svg-icon menu-icon">
+                                <i class="fas fa-cog"></i>
+                            </span>
+                            <span class="menu-text">Admin Dashboard</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

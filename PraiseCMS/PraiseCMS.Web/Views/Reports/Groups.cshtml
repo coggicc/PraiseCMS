@@ -1,0 +1,57 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.ReportGroup>
+@{
+    ViewBag.Title = "Report Groups";
+}
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Create New Group", "/reports/_creategroup/", "Create New Group", "Save", "btn btn-light-primary font-weight-bold", "")
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.AjaxModalLink(item.Display, "/reports/_editgroup/" + item.Id, "Edit Report Group", "Save", "", "", "/reports/deletegroup/" + item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="row pb-lg-12">
+                <div class="col-xl-5">
+                    <h5 class="mt-md-10 mt-lg-14" style="font-size:30px;">Group Your Reports</h5>
+                    <p style="font-size:18px;">Add groups reports to quickly view and manage your reports.</p>
+                    @Html.AjaxModalLink("Create New Group", "/reports/_creategroup/", "Create New Group", "Save", "btn btn-light-primary font-weight-bold mb-4", "")
+                </div>
+                <div class="col-xl-7">
+                    <img src="~/Content/assets/image/report_groups_example.png" class="img-thumbnail img-fluid" />
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,424 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ReportDashboard
+@{
+    ViewBag.Title = "Report Dashboard";
+
+    var tabs = new Dictionary<string, string> { { "favorites", "active" }, { "attendance", "" }, { "custom", "" }, { "giving", "" }, { "salvations", "" }, { "prayerrequests", "" }, { "smallgroups", "" } };
+
+    if (!string.IsNullOrEmpty(Model.Tab) && tabs.ContainsKey(Model.Tab))
+    {
+        for (var i = 0; i < tabs.Count; i++)
+        {
+            var tabz = tabs.ElementAt(i);
+            tabs[tabz.Key] = "";
+        }
+
+        tabs[Model.Tab] = "active";
+    }
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+@section subheader{
+    <span class="mr-2">Campus:</span>
+    <div class="dropdown mr-4">
+        <div class="btn-group" data-toggle="tooltip" title="Select Campus" data-placement="top">
+            <button type="button" id="dropdownMenuButton" class="btn btn-light-dark font-weight-bold dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Auburn</button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item active" href="#">Auburn</a>
+                <a class="dropdown-item" href="#">Grants Mill</a>
+                <a class="dropdown-item" href="#">Riverchase</a>
+            </div>
+        </div>
+    </div>
+    <span class="mr-2">Report Date Range:</span>
+    <a href="#" class="btn btn-light btn-sm font-weight-bold mr-2" id="kt_dashboard_daterangepicker" data-toggle="tooltip" title="Select Date Range" data-placement="top">
+        <span class="text-muted font-weight-bold mr-2" id="kt_dashboard_daterangepicker_title">Today</span>
+        <span class="text-primary font-weight-bold" id="kt_dashboard_daterangepicker_date">Aug 16</span>
+        <span class="svg-icon svg-icon-sm svg-icon-primary ml-1">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <rect x="0" y="0" width="24" height="24" />
+                    <rect fill="#000000" x="2" y="4" width="19" height="4" rx="1" />
+                    <path d="M3,10 L6,10 C6.55228475,10 7,10.4477153 7,11 L7,19 C7,19.5522847 6.55228475,20 6,20 L3,20 C2.44771525,20 2,19.5522847 2,19 L2,11 C2,10.4477153 2.44771525,10 3,10 Z M10,10 L13,10 C13.5522847,10 14,10.4477153 14,11 L14,19 C14,19.5522847 13.5522847,20 13,20 L10,20 C9.44771525,20 9,19.5522847 9,19 L9,11 C9,10.4477153 9.44771525,10 10,10 Z M17,10 L20,10 C20.5522847,10 21,10.4477153 21,11 L21,19 C21,19.5522847 20.5522847,20 20,20 L17,20 C16.4477153,20 16,19.5522847 16,19 L16,11 C16,10.4477153 16.4477153,10 17,10 Z" fill="#000000" opacity="0.3" />
+                </g>
+            </svg>
+        </span>
+    </a>
+}
+<div class="card card-custom">
+    <div class="card-header card-header-tabs-line">
+        <div class="card-title">
+            <h3 class="card-label">@ViewBag.Title</h3>
+        </div>
+        <div class="card-toolbar">
+            <ul class="nav nav-tabs nav-bold nav-tabs-line nav-tabs-line-3x">
+                <li class="nav-item mr-3 d-none d-lg-block module-1080633919ada9e25feeb84455a998">
+                    <a class="nav-link report-tabs @tabs["favorites"]" data-toggle="tab" href="#favorites" role="tab">
+                        <span class="nav-icon">
+                            <i class="fa fa-star"></i>
+                        </span>
+                        <span class="nav-text font-size-lg">Favorites</span>
+                    </a>
+                </li>
+                <li class="nav-item mr-3 d-none d-lg-block module-38936837940c6f8192865e47dea2b2">
+                    <a class="nav-link report-tabs @tabs["attendance"]" data-toggle="tab" href="#attendance" role="tab">
+                        <span class="nav-icon">
+                            <i class="fa fa-users"></i>
+                        </span>
+                        <span class="nav-text font-size-lg">Attendance</span>
+                    </a>
+                </li>
+                <li class="nav-item mr-3 d-none d-lg-block module-3998741559c257bd8f07fd47d79cee">
+                    <a class="nav-link report-tabs @tabs["giving"]" data-toggle="tab" href="#giving" role="tab">
+                        <span class="nav-icon">
+                            <i class="fa fa-dollar-sign"></i>
+                        </span>
+                        <span class="nav-text font-size-lg">Giving</span>
+                    </a>
+                </li>
+                <li class="nav-item mr-3 d-none d-lg-block module-43438588073a14471add1549bfbd47">
+                    <a class="nav-link report-tabs @tabs["salvations"]" data-toggle="tab" href="#salvations" role="tab">
+                        <span class="nav-icon">
+                            <i class="fa fa-user-plus"></i>
+                        </span>
+                        <span class="nav-text font-size-lg">Salvations</span>
+                    </a>
+                </li>
+                <li class="nav-item mr-3 d-none d-lg-block module-410153260524c792966e0d41c2aa91">
+                    <a class="nav-link report-tabs @tabs["prayerrequests"]" data-toggle="tab" href="#prayerrequests" role="tab">
+                        <span class="nav-icon">
+                            <i class="fa fa-praying-hands"></i>
+                        </span>
+                        <span class="nav-text font-size-lg">Prayer Requests</span>
+                    </a>
+                </li>
+                <li class="nav-item mr-3 d-none d-lg-block module-44565252650362655312ee4e65ae81">
+                    <a class="nav-link report-tabs @tabs["smallgroups"]" data-toggle="tab" href="#smallgroups" role="tab">
+                        <span class="nav-icon">
+                            <i class="fa fa-users"></i>
+                        </span>
+                        <span class="nav-text font-size-lg">Small Groups</span>
+                    </a>
+                </li>
+                <li class="nav-item mr-3 d-none d-lg-block module-46177336393c766e07d6d4416bb383">
+                    <a class="nav-link report-tabs @tabs["custom"]" data-toggle="tab" href="#custom" role="tab">
+                        <span class="nav-icon">
+                            <i class="fa fa-cogs"></i>
+                        </span>
+                        <span class="nav-text font-size-lg">Custom</span>
+                    </a>
+                </li>
+                <li class="nav-item dropdown d-lg-none">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-edit"></i>
+                        Actions
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" style="">
+                        <a class="dropdown-item report-tabs module-1080633919ada9e25feeb84455a998" href="#favorites" data-toggle="tab">Favorites</a>
+                        <a class="dropdown-item report-tabs module-38936837940c6f8192865e47dea2b2" href="#attendance" data-toggle="tab">Attendance</a>
+                        <a class="dropdown-item report-tabs module-3998741559c257bd8f07fd47d79cee" href="#giving" data-toggle="tab">Giving</a>
+                        <a class="dropdown-item report-tabs module-43438588073a14471add1549bfbd47" href="#salvations" data-toggle="tab">Salvations</a>
+                        <a class="dropdown-item report-tabs module-410153260524c792966e0d41c2aa91" href="#prayerrequests" data-toggle="tab">Prayer Requests</a>
+                        <a class="dropdown-item report-tabs module-44565252650362655312ee4e65ae81" href="#smallgroups" data-toggle="tab">Small Groups</a>
+                        <a class="dropdown-item report-tabs module-46177336393c766e07d6d4416bb383" href="#custom" data-toggle="tab">Custom</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data" }))
+        {
+            @Html.HiddenFor(x => x.Tab, new { value = "favorites" })
+            @Html.HiddenFor(x => x.ReportId)
+            @Html.AntiForgeryToken()
+            <div class="mb-15">
+                <h3 class="font-size-lg text-dark font-weight-bold mb-6">Filter Results <small class="ml-3">Search by custom or preset date range</small></h3>
+                <div class="form-group row form-group-marginless">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="input-daterange input-group" id="kt_datep icker_5">
+                            @Html.TextBoxFor(x => x.StartDate, new { @class = "form-control datepicker", placeholder = "Start Date", name = "StartDate", autocomplete = "off" })
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="la la-ellipsis-h"></i></span>
+                            </div>
+                            @Html.TextBoxFor(x => x.EndDate, new { @class = "form-control datepicker", placeholder = "End Date", name = "EndDate", autocomplete = "off" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-2">
+                        @Html.DropDownListFor(x => x.PresetDateRange, PresetDateRange.Items.ToSelectList("Select date range...", x => x, null, null), new { @class = "form-control select2" })
+                    </div>
+                    <div class="col-sm-6 col-lg-2">
+                        @Html.DropDownListFor(x => x.Campus, SessionVariables.Campuses.ToSelectList("Select a campus...", x => x.Name, x => x.Id), null, new { @class = "form-control select2" })
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="submit" class="btn btn-light-primary font-weight-bold">Search</button>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="tab-content">
+            <div class="tab-pane report-tabs @tabs["favorites"]" id="favorites" role="tabpanel">
+                <div class="mb-15">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Favorites:</h3>
+                    @if (ViewBag.Favorites != null)
+                    {
+                        <div class="row">
+                            @foreach (var report in (List<ChartViewModel>)ViewBag.Favorites)
+                            {
+                                if (report.Chart.IsNotNullOrEmpty() && !report.Chart.Contains("table"))
+                                {
+                                    <div class="col-6">
+                                        <h5 class="full">@report.ReportCategoryName</h5>
+                                        @Html.Raw(report.Chart)
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="full">
+                            @foreach (var report in (List<ChartViewModel>)ViewBag.Favorites)
+                            {
+                                if (report.Chart.IsNotNullOrEmpty() && report.Chart.Contains("table"))
+                                {
+                                    <div class="full">
+                                        <h5 class="full">@report.ReportCategoryName</h5>
+                                        @Html.Raw(report.Chart)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane report-tabs @tabs["attendance"]" id="attendance" role="tabpanel">
+                <div class="mb-15">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Attendance:</h3>
+                    @if (ViewBag.Attendance != null)
+                    {
+                        <div class="row">
+                            @foreach (var report in (List<string>)ViewBag.Attendance)
+                            {
+                                if (report.Contains("table"))
+                                {
+                                    <div class="col-lg-12">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            @*<div class="tab-pane report-tabs @tabs["giving"]" id="giving" role="tabpanel">
+                    <div class="mb-15">
+                        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Giving:</h3>
+                        @if (ViewBag.Giving != null)
+                        {
+                            <div class="row">
+                                @foreach (var report in (List<string>)ViewBag.Giving)
+                                {
+                                    if (report.Contains("table"))
+                                    {
+                                        <div class="col-lg-12">
+                                            @Html.Raw(report)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-6">
+                                            @Html.Raw(report)
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>*@
+            <div class="tab-pane report-tabs @tabs["giving"]" id="giving" role="tabpanel">
+                <div class="mb-15">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Favorites:</h3>
+                    @if (ViewBag.Giving != null)
+                    {
+                        <div class="row">
+                            @foreach (var report in ViewBag.Giving)
+                            {
+                                if (report != null && !report.Contains("table"))
+                                {
+                                    <div class="col-6">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <div class="full">
+                            @foreach (var report in ViewBag.Giving)
+                            {
+                                if (report != null && report.Contains("table"))
+                                {
+                                    <div class="full">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane report-tabs @tabs["salvations"]" id="salvations" role="tabpanel">
+                <div class="mb-15">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Salvations:</h3>
+                    @if (ViewBag.Salvations != null)
+                    {
+                        <div class="row">
+                            @foreach (var report in (List<string>)ViewBag.Salvations)
+                            {
+                                if (report.Contains("table"))
+                                {
+                                    <div class="col-lg-12">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane report-tabs @tabs["prayerrequests"]" id="prayerrequests" role="tabpanel">
+                <div class="mb-15">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Prayer Requests:</h3>
+                    @if (ViewBag.PrayerRequests != null)
+                    {
+                        <div class="row">
+                            @foreach (var report in (List<string>)ViewBag.PrayerRequests)
+                            {
+                                if (report.Contains("table"))
+                                {
+                                    <div class="col-lg-12">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane report-tabs @tabs["smallgroups"]" id="smallgroups" role="tabpanel">
+                <div class="mb-15">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Small Groups:</h3>
+                    @if (ViewBag.SmallGroups != null)
+                    {
+                        <div class="row">
+                            @foreach (var report in (List<string>)ViewBag.SmallGroups)
+                            {
+                                if (report.Contains("table"))
+                                {
+                                    <div class="col-lg-12">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane report-tabs @tabs["custom"]" id="custom" role="tabpanel">
+                <div class="mb-15">
+                    <h3 class="font-size-lg text-dark font-weight-bold mb-6">Custom:</h3>
+                    @if (ViewBag.Custom != null)
+                    {
+                        <div class="row">
+                            @foreach (var report in (List<string>)ViewBag.Custom)
+                            {
+                                if (report.Contains("table"))
+                                {
+                                    <div class="col-lg-12">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6">
+                                        @Html.Raw(report)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script src="~/Scripts/chart-2.7.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("click", "i", function () {
+                $(this).closest("a").click();
+            });
+
+            $(document).on("change", function() {
+                $("#PresetDateRange").val(null).trigger('change');
+            });
+
+            $("#PresetDateRange").change(function () {
+                var current_date = new Date();
+                var presetValue = $("#PresetDateRange option:selected").val();
+
+                if (presetValue == "@PresetDateRange.Week") {
+                    var oneWeekAgo = new Date();
+                    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                    $("#StartDate").val(getFormattedDate(oneWeekAgo));
+                    $("#EndDate").val(getFormattedDate(current_date));
+                }
+                else if (presetValue == "@PresetDateRange.Month") {
+                    var oneMonthAgo = new Date();
+                    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                    $("#StartDate").val(getFormattedDate(oneMonthAgo));
+                    $("#EndDate").val(getFormattedDate(current_date));
+                }
+                else if (presetValue == "@PresetDateRange.Year") {
+                    var oneYearAgo = new Date();
+                    oneYearAgo.setMonth(oneYearAgo.getMonth() - 12);
+                    $("#StartDate").val(getFormattedDate(oneYearAgo));
+                    $("#EndDate").val(getFormattedDate(current_date));
+                }
+            });
+
+            function getFormattedDate(date) {
+                var year = date.getFullYear();
+                var month = (1 + date.getMonth()).toString();
+                month = month.length > 1 ? month : '0' + month;
+                var day = date.getDate().toString();
+                day = day.length > 1 ? day : '0' + day;
+                return month + '/' + day + '/' + year;
+            }
+        });
+    </script>
+}

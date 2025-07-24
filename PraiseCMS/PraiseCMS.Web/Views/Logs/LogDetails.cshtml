@@ -1,0 +1,74 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.LogViewModel
+
+@{
+    var temp = Model.Log;
+}
+
+<style>
+    .icon-click:hover {
+        cursor: pointer;
+    }
+
+    .close .fa-times-circle:hover {
+        color: #3699FF;
+    }
+
+    @@media print {
+        .tooltip {
+            visibility: hidden;
+        }
+    }
+</style>
+
+<div class="card card-custom card-stretch" id="kt_todo_view">
+    <div class="card-header align-items-center flex-wrap justify-content-between border-0 h-auto">
+        <div class="d-flex align-items-center my-2 d-print-none">
+            <div class="d-flex align-items-center">
+                <a class="btn btn-clean btn-icon btn-sm mr-6" data-toggle="tooltip" title="Back" data-inbox="back" onclick="clearIds()">
+                    <i class="flaticon2-left-arrow-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="mb-3">
+            <div class="toggle-on" data-inbox="message">
+                <div class="d-flex align-items-start card-spacer-x py-4">
+                    <div class="d-flex flex-column flex-grow-1 flex-wrap mr-2">
+                        <div class="d-flex">
+                            <span class="font-size-lg font-weight-bolder text-dark-75 mr-2">@(Model.Person.IsNotNullOrEmpty() ? Model.Person.Display : "[No Person Assigned]")</span>
+                            <div class="font-weight-bold text-muted">
+                                <span class="d-print-none" data-toggle="tooltip" data-original-title="Date Created">@Model.Log.CreatedDate.ToShortDateAndTimeString()</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-spacer-x pt-2 pb-5 toggle-off-item">
+                    <div class="mb-1">
+                        @if (Model.DataType.IsNullOrEmpty())
+                        {
+                            foreach (var field in Model.LogFields)
+                            {
+                                <p>
+                                    <span class="font-weight-bolder">@field.Key:</span>
+                                    <span>@field.Value</span>
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <span class="font-weight-bolder">@Model.Log.Parameter</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    window.scrollTo(0, 0);
+    selectedIds = [];
+    selectedIds.push('@Model.Log.Id');
+</script>

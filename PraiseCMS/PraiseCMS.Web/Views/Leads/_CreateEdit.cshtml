@@ -1,0 +1,89 @@
+﻿@model PraiseCMS.DataAccess.Models.Lead
+
+<style>
+    .datepicker table tr td.disabled, .datepicker table tr td.disabled:hover {
+        cursor: not-allowed;
+    }
+</style>
+
+<div id="lead-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "lead-div" }, new { @class = "form", id = "lead-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.CreatedBy)
+        @Html.HiddenFor(x => x.CreatedDate)
+        @Html.HiddenFor(x => x.Number)
+        @Html.HiddenFor(x => x.ModifiedBy)
+        @Html.HiddenFor(x => x.ModifiedDate)
+
+        <div class="form-group">
+            <label>Church:</label>
+            @Html.TextBoxFor(x => x.Church, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Church, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>First Name:</label>
+            @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Last Name:</label>
+            @Html.TextBoxFor(x => x.LastName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            @Html.TextBoxFor(x => x.Email, new { type = "email", @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Phone Number:</label>
+            @Html.TextBoxFor(x => x.PhoneNumber, new { type = "text", @class = "form-control phone" })
+            @Html.ValidationMessageFor(x => x.PhoneNumber, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Status:</label>
+            @Html.DropDownListFor(x => x.Status, EnumExtensionMethods.GetEnumValues<LeadStatuses>().OrderBy(x => x.Value), new { @class = "form-control formal select2", style = "width:100%;text-transform:capitalize;" })
+            @Html.ValidationMessageFor(x => x.Status, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Demo Date:</label>
+            <div class="input-group date">
+                @Html.EditorFor(x => x.DemoDate, new { htmlAttributes = new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" } })
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                    </span>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(x => x.DemoDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Address:</label>
+            @Html.TextBoxFor(x => x.Address1, new { type = "text", @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Address1, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Unit:</label>
+            @Html.TextBoxFor(x => x.Address2, new { type = "text", @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Address2, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>City:</label>
+            @Html.TextBoxFor(x => x.City, new { type = "text", @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.City, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>State:</label>
+            @Html.DropDownListFor(x => x.State, Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text), "Select a state...", new { @class = "form-control formal select2", style = "width:100%;text-transform:capitalize;" })
+            @Html.ValidationMessageFor(x => x.State, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Zip:</label>
+            @Html.TextBoxFor(x => x.Zip, new { maxlength = "5", @class = "form-control numeric" })
+            @Html.ValidationMessageFor(x => x.Zip, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>

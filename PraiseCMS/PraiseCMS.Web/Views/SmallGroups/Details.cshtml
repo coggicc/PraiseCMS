@@ -1,0 +1,162 @@
+﻿@model PraiseCMS.DataAccess.Models.SmallGroup
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>SmallGroup</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(x => x.ChurchId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.ChurchId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.LeaderOneName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.LeaderOneName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.LeaderOnePhone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.LeaderOnePhone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.LeaderOneEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.LeaderOneEmail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.LeaderTwoName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.LeaderTwoName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.LeaderTwoPhone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.LeaderTwoPhone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.LeaderTwoEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.LeaderTwoEmail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.AgeRange)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.AgeRange)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.ChildCareProvided)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.ChildCareProvided)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.HandicapAccessible)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.HandicapAccessible)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.Address1)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.Address1)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.Address2)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.Address2)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.City)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.City)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.State)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.State)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.Zip)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.Zip)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(x => x.IsActive)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(x => x.IsActive)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

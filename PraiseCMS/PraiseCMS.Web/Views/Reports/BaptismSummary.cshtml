@@ -1,0 +1,86 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.BaptismSummaryModel
+@{
+    ViewBag.Title = "Baptism Summary";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-primary card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-water fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.AllBaptisms.Select(x => x.Total).Sum().ToNumberString()</span>
+                <span class="font-weight-bold text-white font-size-sm">Baptisms - YTD</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Baptism Summary</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Data is determined by the Occurred On date when provided, or when it was added to the system.</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportBaptismSummaryToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th style="min-width: 250px" class="pl-7">Campus Name</th>
+                        <th style="min-width: 100px" class="text-center">Baptism Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var campus in SessionVariables.Campuses.OrderBy(x => x.Display))
+                    {
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">@campus.Display</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@Model.BaptismsByDate.Where(q => q.CampusId.IsNotNullOrEmpty() && q.CampusId.Equals(campus.Id)).Select(x => x.Total).Sum().ToNumberString()</span>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.BaptismsByDate.Where(q => q.CampusId.IsNullOrEmpty()).Select(x => x.Total).Sum() > 0)
+                    {
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">[No Campus Assigned]</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@Model.BaptismsByDate.Where(q => q.CampusId.IsNullOrEmpty()).Select(x => x.Total).Sum().ToNumberString()</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th style="min-width: 250px" class="pl-7">Total</th>
+                        <th style="min-width: 100px" class="text-center">@Model.BaptismsByDate.Select(x => x.Total).Sum().ToNumberString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+@section belowscripts{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+        });
+    </script>
+}

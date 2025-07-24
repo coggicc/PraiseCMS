@@ -1,0 +1,98 @@
+﻿@model PraiseCMS.DataAccess.Models.AssignToTagModel
+
+<div class="px-5">
+    <div id="alert-container"></div>
+    <p class="pl-1 mb-10 text-dark-50"><span class="font-weight-bolder">Note:</span> Select people and then choose the folders and tags you would like for them to be assigned to.</p>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "assign-to-tag-form" }))
+    {
+        <div class="form-group row">
+            <div class="col-sm-4">
+                <div class="checkbox-list">
+                    <h6 class="mb-5 text-center text-dark-50">People</h6>
+                    @foreach (var item in Model.People)
+                    {
+                        <label class="checkbox">
+                            <input class="cbx_people" type="checkbox" name="selectedPeople" checked value="@item.Id">
+                            <span></span> @item.Display
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="col-sm-1 border-right"></div>
+            <div class="col-sm-7">
+                <h6 class="mb-5 text-center text-dark-50">Folders &amp; Folders</h6>
+                <div id="kt_checkbox_tree" class="tree-demo overflow-auto">
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+    var treeData = @Html.Raw(Json.Encode(Model.FolderJson));
+    $(function() {
+        BindTree();
+    });
+
+    function BindTree() {
+        StartLoading();
+            var data = [];
+            data.push(treeData);
+            $("#kt_checkbox_tree").jstree({
+                "core": {
+                    "themes": {
+                        "responsive": false
+                    },
+                    "check_callback": true,
+                    "data": data
+                },
+                "types": {
+                    "default": {
+                        "icon": "fa fa-folder text-warning"
+                    },
+                    "file": {
+                        "icon": "fa fa-file  text-warning"
+                    }
+                },
+                "state": {
+                    "key": "demo2"
+                },
+                 "plugins": ["search", "wholerow", "checkbox", "types" ]
+             }).on('ready.jstree', function () {
+                 StopLoading();
+            });
+    }
+
+    $("#assign-to-tag-form").submit(function (e) {
+        e.preventDefault();
+        setTimeout(function () {
+            StopLoading();
+        });
+
+        var selectedTag = $('#kt_checkbox_tree').jstree("get_selected", true).filter(q => q.icon.includes('fa-tag')).map(x => x.id);
+        var selectedPeople= [];
+        $("input[name='selectedPeople']:checked").each(function (index, obj) {
+              selectedPeople.push(obj.value);
+        });
+        if (!selectedTag.length && !selectedPeople.length) {
+            wizardValidationMessage("Please select at least one person and one tag to save.","",false);
+            return false;
+        } else if (!selectedTag.length && selectedPeople.length) {
+            wizardValidationMessage("Please select at least one tag to save.", "", false);
+            return false;
+        } else if (selectedTag.length && !selectedPeople.length) {
+            wizardValidationMessage("Please select at least one person to save.", "", false);
+            return false;
+        }
+        $.post($('#assign-to-tag-form').attr('action'), ({ tags: selectedTag, people: selectedPeople }), function (result) {
+            if (result.Success) {
+                $('#ajax-modal').modal('toggle');
+                Notify("success", "SUCCESS", Constants.SavedMessage);
+            } else {
+                ShowErrorAlert(result.Message);
+            }
+        });
+     });
+    </script>
+}

@@ -1,0 +1,66 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.BlogTag>
+
+@{
+    ViewBag.Title = "Blog Tags";
+}
+
+@section leftsubheader{
+    @Html.Partial("~/Views/Blog/_BlogSubheader.cshtml")
+}
+
+@section subheader{
+    @Html.AjaxModalLink("Create Post", "/blog/CreatePost", "Create Post", "Save", "btn btn-light-primary btn-sm font-weight-bold mr-2", "", null, null, false, ModalSizes.XL)
+    @Html.AjaxModalLink("Create Category", "/blog/CreateCategory", "Create Category", "Save", "btn btn-light-primary btn-sm font-weight-bold mr-2", "")
+    @Html.AjaxModalLink("Create Tag", "/blog/CreateTag", "Create Tag", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @*@Html.AjaxModalLink("Create", "/leads/Create", "Create Lead", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")*@
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @Html.AjaxModalLink($"{item.Title}", $"/blog/EditTag/{item.Id}", "Update Tag", "Update", "", "", $"/blog/DeleteTag/{item.Id}")
+                                </td>
+                                <td class="text-center">
+                                    @(((BlogStatuses)item.Status).GetDescription())
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col">
+                    <p style="font-size:18px;">No tags have been created.</p>
+                    @Html.AjaxModalLink("Create", "/blog/CreateTag", "Create Tag", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Modules>
+
+@if (Model.Any())
+{
+    foreach (var parent in Model.Where(x => x.ParentId == null).ToList())
+    {
+        <tr><td colspan="2"><strong>@parent.Name</strong></td></tr>
+        <tr>
+            <td>
+                @Html.AjaxModalLink(parent.Name, "/permissions/editmodule/" + parent.Id, "Edit Module", "Save", "", "", "/permissions/deletemodule/" + parent.Id)
+            </td>
+            <td>@(!string.IsNullOrEmpty(parent.Id) ? parent.Id : "")</td>
+        </tr>
+
+        foreach (var module in Model.Where(x => x.ParentId == parent.Id).ToList())
+        {
+            <tr>
+                <td style="padding-left:20px;">
+                    @Html.AjaxModalLink(module.Name, "/permissions/editmodule/" + module.Id, "Edit Module", "Save", "", "", "/permissions/deletemodule/" + module.Id)
+                </td>
+                <td>@(!string.IsNullOrEmpty(module.Id) ? module.Id : "")</td>
+            </tr>
+
+            foreach (var child in Model.Where(x => x.ParentId == module.Id).ToList())
+            {
+                <tr>
+                    <td style="padding-left:40px;">
+                        @Html.AjaxModalLink(child.Name, "/permissions/editmodule/" + child.Id, "Edit Module", "Save", "", "", "/permissions/deletemodule/" + child.Id)
+                    </td>
+                    <td>@(!string.IsNullOrEmpty(child.Id) ? child.Id : "")</td>
+                </tr>
+            }
+        }
+    }
+}

@@ -1,0 +1,256 @@
+﻿@model PraiseCMS.DataAccess.Models.PrayerRequestsView
+
+@{
+    var paddingClass = string.Empty;
+    var showLabels = true;
+    switch (SessionVariables.CurrentUser.User.InboxDensity)
+    {
+        case InboxDensity.Default:
+            paddingClass = "py-4";
+            showLabels = true;
+            break;
+        case InboxDensity.Comfortable:
+            paddingClass = "py-2";
+            showLabels = false;
+            break;
+        case InboxDensity.Compact:
+            paddingClass = "py-1";
+            showLabels = false;
+            break;
+        default:
+            paddingClass = "py-4";
+            showLabels = true;
+            break;
+    }
+}
+
+<div class="d-flex flex-column flex-grow-1">
+    <div class="row">
+        <div id="prayer-request-container" class="col-lg-12">
+            <div class="card card-custom card-stretch" id="kt_page_stretched_card">
+                <div class="card-header row row-marginless align-items-center flex-wrap py-5 h-auto" id="prayer-request-header">
+                    <div class="col-12 col-sm-4 col-xxl-2 order-2 order-xxl-1 d-flex align-items-center">
+                        <div class="d-flex align-items-center mr-1 my-2">
+                            <label data-inbox="group-select" class="checkbox checkbox-single checkbox-primary mr-3">
+                                <input id="checkAll" type="checkbox" />
+                                <span class="symbol-label"></span>
+                            </label>
+                            <a class="pointer" onclick="location.reload();">
+                                <span class="btn btn-clean btn-icon btn-sm mr-2" data-toggle="tooltip" title="Reload list">
+                                    <i class="ki ki-refresh icon-1x"></i>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="d-flex align-items-center mr-1 my-2">
+                            <span id="readIcon" class="btn btn-default btn-icon btn-sm mr-2 button-actions" style="display:none;" data-toggle="tooltip" title="@(Model.ReadAction==PrayerRequestStatuses.Read ? "Mark as unread" : "Mark as read")" data-action="@(Model.ReadAction==PrayerRequestStatuses.Read ? PrayerRequestStatuses.Unread : PrayerRequestStatuses.Read)" onclick="markRead(this)">
+                                <span class="svg-icon svg-icon-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <rect x="0" y="0" width="24" height="24"></rect>
+                                            <path d="M6,2 L18,2 C18.5522847,2 19,2.44771525 19,3 L19,12 C19,12.5522847 18.5522847,13 18,13 L6,13 C5.44771525,13 5,12.5522847 5,12 L5,3 C5,2.44771525 5.44771525,2 6,2 Z M7.5,5 C7.22385763,5 7,5.22385763 7,5.5 C7,5.77614237 7.22385763,6 7.5,6 L13.5,6 C13.7761424,6 14,5.77614237 14,5.5 C14,5.22385763 13.7761424,5 13.5,5 L7.5,5 Z M7.5,7 C7.22385763,7 7,7.22385763 7,7.5 C7,7.77614237 7.22385763,8 7.5,8 L10.5,8 C10.7761424,8 11,7.77614237 11,7.5 C11,7.22385763 10.7761424,7 10.5,7 L7.5,7 Z" fill="#000000" opacity="0.3"></path>
+                                            <path d="M3.79274528,6.57253826 L12,12.5 L20.2072547,6.57253826 C20.4311176,6.4108595 20.7436609,6.46126971 20.9053396,6.68513259 C20.9668779,6.77033951 21,6.87277228 21,6.97787787 L21,17 C21,18.1045695 20.1045695,19 19,19 L5,19 C3.8954305,19 3,18.1045695 3,17 L3,6.97787787 C3,6.70173549 3.22385763,6.47787787 3.5,6.47787787 C3.60510559,6.47787787 3.70753836,6.51099993 3.79274528,6.57253826 Z" fill="#000000"></path>
+                                        </g>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center mr-1 my-2">
+                            <span class="btn btn-default btn-icon btn-sm mr-2 button-actions" style="display:none;" data-toggle="tooltip" title="@(Model.PrayedOverAction==PrayerRequestStatuses.PrayedOver ? "Mark as prayed over" : "Mark as not prayed over")" onclick="archiveData('@(Model.PrayedOverAction==PrayerRequestStatuses.PrayedOver ? PrayerRequestStatuses.PrayedOver : "Not PrayedOver")')">
+                                <span class="svg-icon svg-icon-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <polygon points="0 0 24 0 24 24 0 24" />
+                                            <path d="M16.5,4.5 C14.8905,4.5 13.00825,6.32463215 12,7.5 C10.99175,6.32463215 9.1095,4.5 7.5,4.5 C4.651,4.5 3,6.72217984 3,9.55040872 C3,12.6834696 6,16 12,19.5 C18,16 21,12.75 21,9.75 C21,6.92177112 19.349,4.5 16.5,4.5 Z" fill="#000000" fill-rule="nonzero" />
+                                        </g>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xxl-4 d-flex order-1 order-xxl-2 align-items-center justify-content-center">
+                        <div class="input-group input-group-lg input-group-solid my-2">
+                            <input type="text" class="form-control pl-4" placeholder="Search..." id="filterKeyword" value="@Model.FilterKeyword">
+                            <div class="input-group-append">
+                                <span class="input-group-text pr-3">
+                                    <a class="pointer mr-3" id="clearSearchBtn" @(string.IsNullOrEmpty(Model.FilterKeyword) ? "style=display:none;" : "") onclick="clearSearch()" data-toggle="tooltip" title="" data-original-title="Clear search">
+                                        <i class="fas fa-times  icon-sm"></i>
+                                    </a>
+                                    <a class="pointer" onclick="getPrayerRequestsByKeyword()" data-toggle="tooltip" title="" data-original-title="Search">
+                                        <span class="svg-icon svg-icon-lg">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect x="0" y="0" width="24" height="24"></rect>
+                                                    <path d="M14.2928932,16.7071068 C13.9023689,16.3165825 13.9023689,15.6834175 14.2928932,15.2928932 C14.6834175,14.9023689 15.3165825,14.9023689 15.7071068,15.2928932 L19.7071068,19.2928932 C20.0976311,19.6834175 20.0976311,20.3165825 19.7071068,20.7071068 C19.3165825,21.0976311 18.6834175,21.0976311 18.2928932,20.7071068 L14.2928932,16.7071068 Z" fill="#000000" fill-rule="nonzero" opacity="0.3"></path>
+                                                    <path d="M11,16 C13.7614237,16 16,13.7614237 16,11 C16,8.23857625 13.7614237,6 11,6 C8.23857625,6 6,8.23857625 6,11 C6,13.7614237 8.23857625,16 11,16 Z M11,18 C7.13400675,18 4,14.8659932 4,11 C4,7.13400675 7.13400675,4 11,4 C14.8659932,4 18,7.13400675 18,11 C18,14.8659932 14.8659932,18 11,18 Z" fill="#000000" fill-rule="nonzero"></path>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-4 order-xxl-3 d-flex align-items-center justify-content-sm-end text-right my-2">
+                        <div class="d-flex align-items-center mr-2" data-toggle="tooltip" title="" data-original-title="Records per page">
+                            <span class="text-muted font-weight-bold mr-2" data-toggle="dropdown">@Model.From - @Model.To of @Model.TotalPrayerRequests</span>
+                        </div>
+                        <a onclick="paging(this,@Model.Page)" class="previous btn btn-default btn-icon btn-sm mr-2 @(Model.Page == 1 ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Previous page">
+                            <i class="ki ki-bold-arrow-back icon-sm"></i>
+                        </a>
+                        <a onclick="paging(this,@Model.Page)" class="next btn btn-default btn-icon btn-sm mr-2  @(Model.Page ==  Model.TotalPage ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Next page">
+                            <i class="ki ki-bold-arrow-next icon-sm"></i>
+                        </a>
+                        <div class="dropdown mr-2" data-toggle="tooltip" title="" data-original-title="Sort">
+                            <span class="btn btn-default btn-icon btn-sm" data-toggle="dropdown">
+                                <i class="flaticon2-console icon-1x"></i>
+                            </span>
+                            <div class="dropdown-menu dropdown-menu-right p-0 m-0 dropdown-menu-sm">
+                                <ul class="navi py-3">
+                                    <li class="navi-item">
+                                        <a onclick="sorting('desc')" class="pointer navi-link @Model.Newest">
+                                            <span class="navi-text">Newest</span>
+                                        </a>
+                                    </li>
+                                    <li class="navi-item">
+                                        <a onclick="sorting('asc')" class="pointer navi-link @Model.Oldest">
+                                            <span class="navi-text">Oldest</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="btn btn-default btn-icon btn-sm" data-toggle="tooltip" data-html="true" title="Inbox Settings">
+                            @Html.AjaxModalLink(" <i class='fas fa-cogs'></i>", "/PrayerRequests/UserInboxSetting", "Inbox Settings", "Save", "btn btn-default btn-icon btn-sm", "", "", "", false, "")
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.PrayerRequests.Any())
+                    {
+                        <div class="card-scroll" style="min-height:600px;">
+                            <div class="table-responsive">
+                                <div class="list list-hover min-w-500px" data-inbox="list">
+                                    @foreach (var item in Model.PrayerRequests)
+                                    {
+                                        <div id="prayer-request-@item.Id">
+                                            <div class="d-flex align-items-start list-item card-spacer-x @paddingClass prayer-request-@item.Id" data-inbox="message">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="d-flex align-items-center mr-3" data-inbox="actions">
+                                                        <label class="checkbox checkbox-single checkbox-primary flex-shrink-0 mr-3">
+                                                            <input type="checkbox" class="item-checkbox" id="@item.Id" data-type="@item.Read" />
+                                                            <span></span>
+                                                        </label>
+                                                        <a href="#" onclick="markStarred('@item.Id')" class="btn btn-icon btn-xs starred-@item.Id @Html.Raw(item.Starred?"marked":"unmarked")" data-toggle="tooltip" data-placement="right" title="@Html.Raw(item.Starred?"Starred":"Not starred")">
+                                                            @Html.Raw(item.Starred ? "<i class='fas fa-star text-warning'></i>" : "<i class='far fa-star text-muted'></i>")
+                                                        </a>
+                                                    </div>
+                                                    <div class="d-flex align-items-center flex-wrap w-xxl-250px" data-toggle="view">
+                                                        <span class="symbol symbol-35 mr-3">
+                                                            @if (item.Person != null && !string.IsNullOrEmpty(item.Person.ProfileImageURL))
+                                                            {
+                                                                <span class="symbol-label" style="background-image: url('@item.Person.ProfileImageURL')"></span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="symbol-label" style="background-image:url('@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)')"></span>
+                                                            }
+                                                        </span>
+                                                        <a href="#" class="font-weight-bold text-dark-75 text-hover-primary">@Html.Raw(item.Person != null ? item.Person.Display.EllipsisAt(25) : "Unknown")</a>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 mt-1 mr-2" data-toggle="view">
+                                                    @if (!showLabels)
+                                                    {
+                                                        <span>
+                                                            @if (item.PrayedOver)
+                                                            {
+                                                                <i class="fa fa-heart text-light-dark mr-2" data-toggle="tooltip" title="Prayed Over"></i>
+                                                            }
+                                                            @if (item.Responded)
+                                                            {
+                                                                <i class="fa fa-check-circle text-success mr-2" data-toggle="tooltip" title="Responded @Convert.ToDateTime(item.RespondedDate).ToShortDateString()"></i>
+                                                            }
+                                                            @if (item.HighPriority)
+                                                            {
+                                                                <i class="fa fa-exclamation-circle text-danger mr-2" data-toggle="tooltip" title="High Priority"></i>
+                                                            }
+                                                            @if (item.Confidential)
+                                                            {
+                                                                <i class="fa fa-lock text-warning mr-2" data-toggle="tooltip" title="Confidential"></i>
+                                                            }
+                                                            @if (item.FollowUpRequired)
+                                                            {
+                                                                <i class="fas fa-user-check text-info mr-2" data-toggle="tooltip" title="Follow-Up Required"></i>
+                                                            }
+                                                        </span>
+                                                    }
+                                                    <span class="@(!item.Read ? "font-weight-bolder" : "") mr-2"><a href="/PrayerRequests/DetailPrayerRequest?id=@item.Id" class="jq_load_pr_details kt-todo__subject">@item.Message.EllipsisAt(100)</a></span>
+                                                    @if (showLabels)
+                                                    {
+                                                        <div class="mt-2">
+                                                            @if (item.PrayedOver)
+                                                            {
+                                                                <span class="label label-outline-dark label-md font-weight-bold label-inline" data-toggle="tooltip" data-placement="right" title="@item.PrayedOverDate"><i class="fa fa-heart text-light-dark mr-2"></i> Prayed Over</span>
+                                                            }
+                                                            @if (item.Responded)
+                                                            {
+                                                                <span class="label label-outline-success label-md font-weight-bold label-inline"><i class="fa fa-check-circle text-success mr-2"></i> Responded @item.RespondedDate</span>
+                                                            }
+                                                            @if (item.HighPriority)
+                                                            {
+                                                                <span class="label label-outline-danger label-md font-weight-bold label-inline"><i class="fa fa-exclamation-circle text-danger mr-2"></i> High Priority!</span>
+                                                            }
+                                                            @if (item.Confidential)
+                                                            {
+                                                                <span class="label label-outline-warning label-md font-weight-bold label-inline"><i class="fa fa-lock text-warning mr-2"></i> Confidential</span>
+                                                            }
+                                                            @if (item.FollowUpRequired)
+                                                            {
+                                                                <span class="label label-outline-info label-md font-weight-bold label-inline"><i class="fas fa-user-check text-info mr-2"></i> Follow-Up Required</span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-end flex-wrap" data-toggle="view">
+                                                    <div class="@(item.PrayedOver ? "" : "font-weight-bolder")" data-toggle="tooltip" title="Created">@item.CreatedDate.TimeAgoUtil()</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center my-2 my-6 card-spacer-x justify-content-end">
+                            <div class="d-flex align-items-center mr-2" data-toggle="tooltip" title="" data-original-title="Records per page">
+                                <span class="text-muted font-weight-bold mr-2">@Model.From - @Model.To of @Model.TotalPrayerRequests</span>
+                            </div>
+                            <a onclick="paging(this,@Model.Page)" class="previous btn btn-default btn-icon btn-sm mr-2 @(Model.Page == 1 ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Previous page">
+                                <i class="ki ki-bold-arrow-back icon-sm"></i>
+                            </a>
+                            <a onclick="paging(this,@Model.Page)" class="next btn btn-default btn-icon btn-sm mr-2  @(Model.Page ==  Model.TotalPage ? "disabled" : "")" data-toggle="tooltip" title="" data-original-title="Next page">
+                                <i class="ki ki-bold-arrow-next icon-sm"></i>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card-header py-6 border-0 h-auto">
+                            <div class="card-title">
+                                <p style="font-size:1rem;">
+                                    You don't have any prayer requests for this category or search term.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="prayer-request-details" class="col-lg-12">
+            <div id="pr_details"></div>
+        </div>
+    </div>
+</div>
+@*@section belowscripts
+{
+    <script src="~/Content/assets/js/pages/custom/inbox/inbox.js"></script>
+}*@

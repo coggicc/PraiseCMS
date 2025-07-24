@@ -1,0 +1,75 @@
+﻿@model PraiseCMS.DataAccess.Models.ViewModels.SermonViewModel
+
+<div id="sermon-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "sermon-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="kt-section kt-section--first">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.Sermon.Id)
+            @Html.HiddenFor(x => x.Sermon.ChurchId)
+            @Html.HiddenFor(x => x.Sermon.CreatedBy)
+            @Html.HiddenFor(x => x.Sermon.CreatedDate)
+            @Html.HiddenFor(x => x.Sermon.Image)
+
+
+            <div class="kt-section__body">
+                <div class="form-group row">
+                    @Html.LabelFor(x => x.Sermon.Title, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(x => x.Sermon.Title, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Sermon.Title, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3">Series</label>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(x => x.Sermon.SeriesId, Model.TopicsList.ToSelectList("Select a series...", x => x.Title, x => x.Id), new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(x => x.Sermon.SeriesId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3">Preached By</label>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(x => x.Sermon.PreachedById, Model.Pastors.ToSelectList("Select a pastor...", x => x.FullName, x => x.Id), new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(x => x.Sermon.SeriesId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3">Topic</label>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(x => x.Sermon.TopicId, Model.TopicsList.ToSelectList("Select a topic...", x => x.Title, x => x.Id), new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(x => x.Sermon.TopicId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(x => x.Sermon.Services, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(x => x.Sermon.Services, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Sermon.Services, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Is Current?</label>
+                    <div class="col-lg-9">
+                        <span class="switch switch-icon">
+                            <label>
+                                @Html.CheckBoxFor(x => x.Sermon.IsCurrent, new { name = "Active" })
+                                @Html.ValidationMessageFor(x => x.Sermon.IsCurrent, "", new { @class = "text-danger" })
+                            </label>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section belowscripts{
+    <script src="~/Content/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+    <script src="~/Content/assets/js/pages/crud/forms/editors/ckeditor-classic.js"></script>
+}

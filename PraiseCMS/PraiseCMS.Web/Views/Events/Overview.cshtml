@@ -1,0 +1,222 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.EventSD>
+@{
+    ViewBag.Title = "Event Overview";
+    var events = Model.OrderBy(o => o.StartDate).ThenBy(x => Convert.ToDateTime(x.StartTime)).ThenBy(x => x.Title).ToList();
+}
+
+@section leftsubheader{
+    @Html.Partial("_EventsSubheader")
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-toolbar" style="width:100%">
+            @if (Model.Any())
+            {
+                <table class="table table-borderless table-vertical-center">
+                    <thead>
+                        <tr>
+                            <th width="80%" class="p-0"></th>
+                            <th width="20%" class="p-0"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var count = 0;
+                            foreach (var item in Model)
+                            {
+                                count++;
+                                <tr>
+                                    <td class="text-left pb-0 hideAll-1" id="td-1-@item.Id" @Html.Raw(item.Id.Equals(ViewBag.DefaultSelectedId) ? "block" : "style='display:none'")>
+                                        <span class="d-block font-size-h6 font-weight-bolder mb-1">@item.Title </span>
+                                        <span class="mt-3 d-block"></span>
+                                        <span class="text-muted text-uppercase font-weight-bolder">@Html.Raw(item.AllDay ? $"{item.StartDate:MMMM dd, yyyy} - All Day" : $"{item.StartDate:MMMM dd, yyyy} at ")<span>@item.StartTime</span></span>
+                                    </td>
+                                    <td class="text-right pr-0 pb-0 hideAll-2" @Html.Raw(item.Id.Equals(ViewBag.DefaultSelectedId) ? "block" : "style='display:none'")>
+                                        <i @Html.Raw(Model.Count() == 1 || count == 1 ? "style='cursor:default'" : "style='cursor:pointer'") data-toggle="tooltip" title="@Html.Raw(Model.Count() == 1 || count == 1 ? "No previous event time" : "Previous event time")" onclick="showEvent(this, 'prev')" class="mr-10 prev fas fa-chevron-left fa-2x @Html.Raw(Model.Count() == 1 || count == 1 ? "text-dark-25" : "text-primary")"></i>
+                                        <i @Html.Raw(count == Model.Count() || Model.Count() == 1 ? "style='cursor:default'" : "style='cursor:pointer'") onclick="showEvent(this, 'next')" data-toggle="tooltip" title="@Html.Raw(count == Model.Count() || Model.Count() == 1 ? "No next event time" : "Next event time")" class="next fas fa-chevron-right fa-2x @Html.Raw(count == Model.Count() || Model.Count() == 1 ? "text-dark-25" : "text-primary")"></i>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <span class="font-size-h6 font-weight-bolder">There are no upcoming events</span>
+            }
+        </div>
+    </div>
+</div>
+<div class="row mb-10">
+    <div class="col-3">
+        <div class="card card-custom card-stretch gutter-b">
+            <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-receipt fa-5x text-warning mt-6 mb-10"></i>
+                    <h3 class="font-weight-bold mb-5">View Check-Ins</h3>
+                    <h4 class="text-muted font-size-sm mb-5">View or search check-in dashboard.</h4>
+                    <a href="#" class="btn btn-light-primary font-weight-bold" style="width:75%;">Go to Check-Ins</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-header d-block border-0 py-5">
+                <div class="card-title flex-column">
+                    <h3 class="card-label font-weight-bolder text-dark">Total Attendance</h3>
+                    <span class="text-muted font-weight-bold font-size-sm mt-1">Total attendance for this event</span>
+                </div>
+            </div>
+            <div class="card-body pb-12">
+                <div id="kt_Total_Attendance_Chart" class="card-rounded-bottom" data-color="success" style="height: 170px"></div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <span class="mr-3"><i class="fas fa-circle text-primary mr-1"></i> Regular</span>
+                    <span class="mr-3"><i class="fas fa-circle text-success mr-1"></i> Guest</span>
+                    <span class="mr-3"><i class="fas fa-circle text-warning mr-1"></i> Volunteer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card card-custom gutter-b">
+            <div class="card-header d-block border-0 py-5">
+                <div class="card-title flex-column">
+                    <h3 class="card-label font-weight-bolder text-dark">Checked Out</h3>
+                    <span class="text-muted font-weight-bold font-size-sm mt-1">Percentage of people checked out</span>
+                </div>
+            </div>
+            <div class="card-body py-0 kt_Checked_Out_Div">
+                <div id="kt_Checked_Out" class="card-rounded-bottom" data-color="success" style="height: 250px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        attendanceChart();
+        checkedOutChart();
+    });
+
+    function attendanceChart() {
+        var element = document.getElementById("kt_Total_Attendance_Chart");
+        var height = parseInt(KTUtil.css(element, 'height'));
+        if (!element) {
+            return;
+        }
+
+        var options = {
+            series: [101, 33, 55],
+            labels: ['Regular', 'Guest', 'Volunteer'],
+            chart: {
+                type: 'donut',
+                height: height
+            },
+            legend: 'none'
+        };
+
+        var chart = new ApexCharts(element, options);
+        chart.render();
+    }
+
+    function checkedOutChart() {
+        var element = document.getElementById("kt_Checked_Out");
+        var height = parseInt(KTUtil.css(element, 'height'));
+
+        if (!element) {
+            return;
+        }
+        var options = {
+            series: [75],
+            chart: {
+                height: height,
+                type: 'radialBar'
+            },
+            plotOptions: {
+                radialBar: {
+                    startAngle: 0,
+                    endAngle: 360,
+                    hollow: {
+                        margin: 0,
+                        size: '55%',
+                        background: '#fff',
+                        image: undefined,
+                        imageOffsetX: 0,
+                        imageOffsetY: 0,
+                        position: 'front',
+                        dropShadow: {
+                            enabled: true,
+                            top: 3,
+                            left: 0,
+                            blur: 4,
+                            opacity: 0.24
+                        }
+                    },
+                    dataLabels: {
+                        show: true,
+                        name: {
+                            offsetY: -10,
+                            show: false,
+                            color: '#888',
+                            fontSize: '17px'
+                        },
+                        value: {
+                            formatter: function (val) {
+                                return parseInt(val) + "%";
+                            },
+                            color: '#111',
+                            fontSize: '36px',
+                            show: true
+                        }
+                    }
+                }
+            },
+            stroke: {
+                lineCap: 'round'
+            }
+        };
+        var chart = new ApexCharts(element, options);
+        chart.render();
+    }
+
+    function showEvent(self, action) {
+        if (action === 'next') {
+            let nextTR = $(self).parents('tr').next('tr');
+            if (nextTR && nextTR.length) {
+                $('.hideAll-1').hide(500);
+                setTimeout(function () {
+                    $('.hideAll-2').hide();
+                    $(nextTR).find('.hideAll-2').show();
+                    $(nextTR).find('.hideAll-1').show(1000);
+                }, 500);
+                let moreNext = nextTR.next('tr');
+                if (!moreNext || !moreNext.length) {
+                    $(nextTR).find('i.next').css('cursor', 'default').removeClass('text-primary').addClass('text-dark-25').data('original-title', 'No next event time');
+                } else {
+                    $(nextTR).find('i.next').css('cursor', 'pointer').removeClass('text-dark-25').addClass('text-primary').data('original-title', 'Next event time');
+                }
+            }
+        } else if (action === 'prev') {
+            let prevTR = $(self).parents('tr').prev('tr');
+            if (prevTR && prevTR.length) {
+                $('.hideAll-1').hide(500);
+                setTimeout(function () {
+                    $('.hideAll-2').hide();
+                    $(prevTR).find('.hideAll-2').show();
+                    $(prevTR).find('.hideAll-1').show(1000);
+                }, 500);
+
+                let morePrev = prevTR.prev('tr');
+                if (!morePrev || !morePrev.length) {
+                    $(prevTR).find('i.prev').css('cursor', 'default').removeClass('text-primary').addClass('text-dark-25').data('original-title', 'No previous event time');
+                } else {
+                    $(prevTR).find('i.prev').css('cursor', 'pointer').removeClass('text-dark-25').addClass('text-primary').data('original-title', 'Previous event time');
+                }
+            }
+        }
+    }
+</script>

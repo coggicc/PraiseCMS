@@ -1,0 +1,74 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.Lead>
+@{
+    ViewBag.Title = "Leads";
+}
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Create", "/leads/Create", "Create Lead", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Church</th>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Phone</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Demo Date</th>
+                            <th class="text-center">Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @Html.AjaxModalLink($"{item.ChurchDisplay}", $"/leads/Edit/{item.Id}", "Update Lead", "Update", "", "", $"/leads/Delete/{item.Id}")
+                                </td>
+                                <td class="text-center">
+                                    @item.FullName
+                                </td>
+                                <td class="text-center">
+                                    @item.Email
+                                </td>
+                                <td class="text-center">
+                                    @(item.PhoneNumber.IsNotNullOrEmpty() ? item.PhoneNumber: "")
+                                </td>
+                                <td class="text-center">
+                                    @(((LeadStatuses)item.Status).GetDescription())
+                                </td>
+                                <td class="text-center">
+                                    @(item.DemoDate.IsNotNullOrEmpty()? Convert.ToDateTime(item.DemoDate).ToShortDateString():"")
+                                </td>
+                                <td class="text-center">
+                                    @(item.ModifiedDate.IsNotNullOrEmpty() ? Convert.ToDateTime(item.ModifiedDate).ToShortDateString() : item.CreatedDate.ToShortDateString())
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col">
+                    <p style="font-size:18px;">No leads have been created.</p>
+                    @Html.AjaxModalLink("Create", "/leads/Create", "Create Lead", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+                </div>
+            </div>
+        }
+    </div>
+</div>

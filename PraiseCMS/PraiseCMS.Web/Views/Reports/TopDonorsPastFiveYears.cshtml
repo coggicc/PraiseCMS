@@ -1,0 +1,103 @@
+﻿@model List<PraiseCMS.DataAccess.Models.ViewModels.TopDonationVM>
+@{
+    ViewBag.Title = "Top Donors - Past Five Years";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+@if (Model.Any())
+{
+    int index = 1; // Start index from 1
+    foreach (var topDonation in Model)
+    {
+        var cardId = $"kt_card_{index++}";
+        <div class="card card-custom gutter-b" id="@cardId">
+            <div class="card-header border-0 py-5">
+                <div class="card-title">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">@topDonation.Year</span>
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <a href="javascript:;" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                        <i class="fas fa-chevron-down icon-nm"></i>
+                    </a>
+                    <a href="/Reports/ExportTopDonorsPastFiveYearsToCSV" class="btn btn-icon btn-sm btn-light-warning" data-toggle="tooltip" data-placement="top" data-original-title="Export">
+                        <i class="fas fa-file-export"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body pt-0 pb-3">
+                @if (topDonation.Donations.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                            <thead>
+                                <tr class="text-left text-uppercase">
+                                    <th style="min-width: 250px" class="pl-7">Donor</th>
+                                    <th style="min-width: 100px">Digital</th>
+                                    <th style="min-width: 100px">Offline</th>
+                                    <th style="min-width: 100px">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var donation in topDonation.Donations)
+                                {
+                                    <tr>
+                                        <td class="pl-7 py-8">
+                                            <span class="text-dark-75 d-block font-size-lg">@donation.Donor.Display</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark-75 d-block font-size-lg">@donation.TotalDigitalAmount.ToCurrencyString()</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark-75 d-block font-size-lg">@donation.TotalOfflineAmount.ToCurrencyString()</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark-75 d-block font-size-lg">@donation.TotalAmount.ToCurrencyString()</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="tfoot-grey">
+                                <tr class="text-left text-uppercase">
+                                    <th style="min-width: 250px" class="pl-7">
+                                        <span class="text-dark-75">Totals</span>
+                                    </th>
+                                    <th style="min-width: 100px">@topDonation.Donations.Sum(item => item.TotalDigitalAmount).ToCurrencyString()</th>
+                                    <th style="min-width: 100px">@topDonation.Donations.Sum(item => item.TotalOfflineAmount).ToCurrencyString()</th>
+                                    <th style="min-width: 100px">@topDonation.Donations.Sum(item => item.TotalAmount).ToCurrencyString()</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p>Giving has not been applied to a specific donor for this year.</p>
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>No giving data available.</p>
+}
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            // Get all card elements
+            var cards = $(".card.card-custom");
+
+            // Loop through each card and initialize it
+            cards.each(function () {
+                var cardId = $(this).attr("id");
+                if (cardId) {
+                    new KTCard(cardId);
+                }
+            });
+        });
+    </script>
+}

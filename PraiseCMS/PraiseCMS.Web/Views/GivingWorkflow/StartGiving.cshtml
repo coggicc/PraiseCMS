@@ -1,0 +1,661 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ViewModels.GivingSignUpViewModel
+@{
+    Layout = "~/Views/Shared/_GivingWorkflowLayout.cshtml";
+    ViewBag.Title = !string.IsNullOrEmpty(Model.Church.Name) ? "to " + Model.Church.Name : "";
+}
+@if (Model.HasMerchantAccount)
+{
+    <div class="d-flex flex-column flex-root">
+        <div class="login login-3 wizard d-flex flex-column flex-lg-row flex-column-fluid wizard" id="kt_login">
+            <div class="login-aside d-flex flex-column flex-row-auto">
+                <div class="d-flex flex-column-auto flex-column pt-15 px-30">
+                    <a href="@(Model.Church.Website.IsNotNullOrEmpty() ? Model.Church.Website: $"/givingworkflow/StartGiving/{ Model.Church.Id}?guest={Model.IsGuest}")" class="login-logo py-6 cursor-pointer">
+                        @if (Model.Church != null && !string.IsNullOrEmpty(Model.Church.Logo))
+                        {
+                            <img src="@Html.AmazonLink(Model.Church.Logo, "Uploads/Logos")" class="max-h-70px" alt="" />
+                        }
+                        else
+                        {
+                            <img src="~/Content/assets/media/logos/praise_logo.png" class="max-h-70px" alt="" />
+                        }
+                    </a>
+                    <div class="wizard-nav pt-5 pt-lg-30">
+                        <div class="wizard-steps">
+                            <div class="wizard-step" data-wizard-type="step" data-wizard-state="current">
+                                <div class="wizard-wrapper">
+                                    <div class="wizard-icon">
+                                        <i class="wizard-check ki ki-check"></i>
+                                        <span class="wizard-number">1</span>
+                                    </div>
+                                    <div class="wizard-label">
+                                        <h3 class="wizard-title">Giving Details</h3>
+                                        <div class="wizard-desc">Amount, Frequency, &amp; Fund</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wizard-step" data-wizard-type="step">
+                                <div class="wizard-wrapper">
+                                    <div class="wizard-icon">
+                                        <i class="wizard-check ki ki-check"></i>
+                                        <span class="wizard-number">2</span>
+                                    </div>
+                                    <div class="wizard-label">
+                                        <h3 class="wizard-title">Donor Verification</h3>
+                                        <div class="wizard-desc">Verify Your Identity</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wizard-step" data-wizard-type="step">
+                                <div class="wizard-wrapper">
+                                    <div class="wizard-icon">
+                                        <i class="wizard-check ki ki-check"></i>
+                                        <span class="wizard-number">3</span>
+                                    </div>
+                                    <div class="wizard-label">
+                                        <h3 class="wizard-title">Giving Method</h3>
+                                        <div class="wizard-desc">Credit/Debit Card or Bank Account</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wizard-step" data-wizard-type="step">
+                                <div class="wizard-wrapper">
+                                    <div class="wizard-icon">
+                                        <i class="wizard-check ki ki-check"></i>
+                                        <span class="wizard-number">4</span>
+                                    </div>
+                                    <div class="wizard-label">
+                                        <h3 class="wizard-title">Summary</h3>
+                                        <div class="wizard-desc">Review Your Gift</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="aside-img-wizard d-flex flex-row-fluid bgi-no-repeat bgi-position-y-bottom bgi-position-x-center pt-2 pt-lg-5" style="background-position-y: calc(100%); background-image: url(../../Content/assets/image/donor-giving-girl.svg)"></div>
+            </div>
+            <div class="login-content flex-column-fluid d-flex flex-column p-10">
+                <div class="text-right d-flex justify-content-center">
+                    <div class="top-signup text-right d-flex justify-content-end pt-5 pb-lg-0 pb-10">
+                        <span class="font-weight-bold text-muted font-size-h4">Having issues?</span>
+                        @Html.AjaxModalLink("Get Help", $"/givingworkflow/GivingOptions?guest={Model.IsGuest}", "View Giving Options", "", "font-weight-bolder text-primary font-size-h4 ml-2 mr-2", "", "", "", false, ModalSizes.Large)
+                        @if (SessionVariables.CurrentUser != null && !Model.IsGuest)
+                        {
+                            <span class="font-weight-bold text-muted font-size-h4"> | </span>
+                            <a href="/home" class="font-weight-bolder text-primary font-size-h4 ml-2 mr-2">View Account</a>
+                        }
+                    </div>
+                </div>
+                <div class="d-flex flex-row-fluid flex-center mt-lg-20">
+                    <div class="login-form login-form-signup">
+                        <div id="alert-container" class="text-center"></div>
+                        @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post" }, new { @class = "form", id = "kt_login_signup_form" }))
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(x => x.Church.Id)
+                            @Html.HiddenFor(x => x.IsGuest)
+                            @Html.HiddenFor(x => x.AccountFound)
+                            @Html.HiddenFor(x => x.DonorGUID)
+
+                            @Html.HiddenFor(x => x.Payment.Id)
+                            @Html.HiddenFor(x => x.Payment.Merchant)
+                            @Html.HiddenFor(x => x.Payment.MerchantId)
+                            @Html.HiddenFor(x => x.Payment.ChurchId)
+                            @Html.HiddenFor(x => x.Payment.UserId)
+                            @Html.HiddenFor(x => x.Payment.DigitalPaymentMethod)
+                            @Html.HiddenFor(x => x.Payment.TransactionType)
+                            @Html.HiddenFor(x => x.Payment.CreatedBy)
+                            @Html.HiddenFor(x => x.Payment.CreatedDate)
+
+                            @Html.HiddenFor(x => x.ScheduledPayment.Id)
+                            @Html.HiddenFor(x => x.ScheduledPayment.Merchant)
+                            @Html.HiddenFor(x => x.ScheduledPayment.MerchantId)
+                            @Html.HiddenFor(x => x.ScheduledPayment.ChurchId)
+                            @Html.HiddenFor(x => x.ScheduledPayment.UserId)
+                            @Html.HiddenFor(x => x.ScheduledPayment.TransactionType)
+                            @Html.HiddenFor(x => x.ScheduledPayment.CreatedBy)
+                            @Html.HiddenFor(x => x.ScheduledPayment.CreatedDate)
+                            <div class="pb-5" data-wizard-type="step-content" data-wizard-state="current">
+                                <div class="pb-10 pb-lg-15">
+                                    <h3 class="font-weight-bolder text-dark display5">@(Model.Church!=null? Model.Church.Display : "Praise CMS")</h3>
+                                    <div class="font-weight-bold font-size-h4">Giving Details</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Amount</label>
+                                    @Html.TextBoxFor(x => x.Amount, "{0:#.#}", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 currency amount numeric", placeholder = "$0.00", name = "amount", autocomplete = "off" })
+                                    @Html.ValidationMessageFor(x => x.Amount, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Frequency</label>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <label class="option h-auto py-7 px-6 border-0 rounded-lg" style="background:#fff;">
+                                                <span class="option-control">
+                                                    <span class="radio">
+                                                        @Html.RadioButtonFor(x => x.Payment.Frequency, PaymentOccurrence.OneTime, new { style = "position:initial;" })
+                                                        <span></span>
+                                                    </span>
+                                                </span>
+                                                <span class="option-label">
+                                                    <span class="option-head">
+                                                        <span class="option-title">One Time</span>
+                                                    </span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="option h-auto py-7 px-6 border-0 rounded-lg" style="background:#fff;">
+                                                <span class="option-control">
+                                                    <span class="radio">
+                                                        @Html.RadioButtonFor(x => x.Payment.Frequency, PaymentOccurrence.Recurring, new { style = "position:initial;" })
+                                                        <span></span>
+                                                    </span>
+                                                </span>
+                                                <span class="option-label">
+                                                    <span class="option-head">
+                                                        <span class="option-title">Set Up Recurring</span>
+                                                    </span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display:none" id="recurringInfo">
+                                    <div class="form-group">
+                                        <label class="font-size-h6 font-weight-bolder text-dark">Recurring Type</label>
+                                        @Html.DropDownListFor(x => x.ScheduledPayment.RecurringFrequency, PaymentFrequency.Items.ToSelectList(x => x), "Select a giving frequency...", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", style = "width:100%;" })
+                                        @Html.ValidationMessageFor(x => x.ScheduledPayment.RecurringFrequency, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-size-h6 font-weight-bolder text-dark">Starting</label>
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(x => x.ScheduledPayment.RecurringStartDate, "{0:MM/dd/yyyy}", new { onchange = "startDateSelect(this);", @class = "datepicker w-100 form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", autocomplete = "off", placeholder = "MM/DD/YYYY" })
+                                        </div>
+                                        @Html.ValidationMessageFor(x => x.ScheduledPayment.RecurringStartDate, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-size-h6 font-weight-bolder text-dark">Ending</label>
+                                        @Html.DropDownListFor(x => x.ScheduledPayment.GiftEndingReason, GiftEndingReasons.Items.ToSelectList(x => x, null, x => x.Contains(GiftEndingReasons.WhenICancelIt)), "Select an ending reason...", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", style = "width:100%;" })
+                                        @Html.ValidationMessageFor(x => x.ScheduledPayment.GiftEndingReason, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group" style="display:none" id="maxGift">
+                                        <div class="form-group">
+                                            <label class="font-size-h6 font-weight-bolder text-dark">Max Gifts</label>
+                                            @Html.TextBoxFor(x => x.ScheduledPayment.MaxGifts, new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 numeric" })
+                                            @Html.ValidationMessageFor(x => x.ScheduledPayment.MaxGifts, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="display:none" id="endingDate">
+                                        <div class="form-group">
+                                            <label class="font-size-h6 font-weight-bolder text-dark">Ending Date <small id="end-date-note"></small></label>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(x => x.ScheduledPayment.RecurringEndDate, "{0:MM/dd/yyyy}", new { @class = "datepickerEnd w-100 form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", autocomplete = "off", placeholder = "MM/DD/YYYY" })
+                                            </div>
+                                            @Html.ValidationMessageFor(x => x.ScheduledPayment.RecurringEndDate, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Giving Fund</label>
+                                    @Html.DropDownListFor(x => x.Payment.FundId, Model.Funds, "Select a fund...", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", name = "fund", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.Payment.FundId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-size-h6 font-weight-bolder text-dark">Campus</label>
+                                    @Html.DropDownListFor(x => x.Payment.CampusId, Model.Campuses, "Select a campus...", new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", name = "campus", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.Payment.CampusId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            if (Model.IsGuest)
+                            {
+                                <div class="pb-5" data-wizard-type="step-content">
+                                    <div id="phoneNumber_div" class="active">
+                                        <div class="pt-lg-0 pt-5 pb-15">
+                                            <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Donor Verification</h3>
+                                            <div class="text-muted font-weight-bold font-size-h4">Enter your mobile phone number to verify your identity.<br /><small>We'll send you a unique code via text message.</small></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="font-size-h6 font-weight-bolder text-dark">Mobile Phone Number</label>
+                                                    @Html.TextBoxFor(x => x.Phone, new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 phone", name = "phone", placeholder = "(555) 555-5555" })
+                                                    @Html.ValidationMessageFor(x => x.Phone, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="securityCode_div" style="display:none">
+                                        <div class="pt-lg-0 pt-5 pb-15">
+                                            <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Donor Verification</h3>
+                                            <div class="text-muted font-weight-bold font-size-h4">
+                                                Enter the verification code we sent to <span id="spn_phone"></span>. <a onclick="sendCode(true)" class="text-primary font-weight-bolder cursor-pointer">Resend Code</a>
+                                            </div>
+                                            <div class="resend-code-msg-div"><span class="resend-code-msg"></span> </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group fv-plugins-icon-container has-success">
+                                                    <label class="font-size-h6 font-weight-bolder text-dark">Verification Code</label>
+                                                    @Html.TextBoxFor(x => x.VerificationCode, new { maxlength = "6", @class = "numeric form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", name = "securityCode" })
+                                                    @Html.ValidationMessageFor(x => x.VerificationCode, "", new { @class = "text-danger" })
+                                                    <div class="fv-plugins-message-container"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="pb-5" data-wizard-type="step-content">
+                                    <div id="phoneNumber_div" class="active">
+                                        <div class="pt-lg-0 pt-5 pb-15">
+                                            <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Donor Verification</h3>
+                                            <div class="text-muted font-weight-bold font-size-h4">Enter your email and password to verify your identity.</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="font-size-h6 font-weight-bolder text-dark">Email</label>
+                                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", placeholder = "example@domain.com", autocomplete = "off" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="font-size-h6 font-weight-bolder text-dark">Password</label>
+                                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6", autocomplete = "off", placeholder = "Enter your password" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="pb-5" data-wizard-type="step-content">
+                                <div id="listPaymentMethods">
+                                    <div class="pt-lg-0 pt-5 pb-15">
+                                        <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Giving Method</h3>
+                                        <div class="text-muted font-weight-bold font-size-h4">Use your current payment method or add a new one.</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-7">
+                                                <label class="font-size-h6 font-weight-bolder text-dark">Select an Existing Payment Method</label>
+                                                <div class="form-group">
+                                                    <select class="select2 form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" name="Payment.PaymentMethod" id="Payment_PaymentMethod" style="width:100%;" onchange="calculateFees(this)">
+                                                        <option>Select a payment method...</option>
+                                                        @foreach (var item in Model.Accounts.Where(q => !q.Disabled).ToList())
+                                                        {
+                                                            <option @(item.IsPrimary ? Html.Raw("selected='selected'") : Html.Raw("")) @(item.IsPrimary ? Html.Raw("data-content='<span class=\"primary-card ml-2\">(Primary)</span>'") : Html.Raw("")) @(item.Disabled ? "disabled='disabled' data-content='<i class=\"fas fa-exclamation-circle text-danger\"></i>'>" : "") value="@item.Value">@item.Text</option>
+                                                        }
+                                                    </select>
+                                                    @Html.ValidationMessageFor(x => x.Payment.PaymentMethod, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <label class="font-size-h6 font-weight-bolder">Or Add a New One</label>
+                                                <p><a href="javascript:addPaymentMethod()">Add a new credit/debit card or bank account.</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="allow_Processing_fee" value="@(Model.Church.AllowDonorCoverProcessingFee?"true":"")" />
+                                    @if (Model.Church.AllowDonorCoverProcessingFee)
+                                    {
+                                        <div id="processingFee-div" class="form-check mt-5">
+                                            @Html.CheckBoxFor(x => x.IncludeProcessingFee, new { id = "IncludeProcessingFee", @class = "cursor-pointer form-check-input h-20px w-20px" })
+                                            <label class="cursor-pointer font-size-h6 form-check-label ml-5" for="IncludeProcessingFee"> Do you want to contribute an additional <span id="processingFeeAmount"></span> to help us cover our merchant processing fees?</label>
+                                        </div>
+                                    }
+                                </div>
+                                <div id="newPaymentMethod" style="display:none">
+                                    <div id="payment-method-heading" class="pt-lg-0 pt-5 pb-5">
+                                        <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Giving Method</h3>
+                                        <div class="text-muted font-weight-bold font-size-h4">Add a payment method for your gift.</div>
+                                    </div>
+
+                                    <div id="user-name-heading" style="display:none" class="pt-5 pb-5">
+                                        <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Donor Info &amp; Giving Method.</h3>
+                                        <div class="text-muted font-weight-bold font-size-h4">Add your personal information and payment method details below.</div>
+                                    </div>
+                                    <div id="user-name" style="display:none">
+                                        <label class="font-size-h3 font-weight-bolder m-4">Donor Info</label>
+                                        <div style="background: #F3F5FB;">
+                                            <div class="p-5">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">First Name</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="firstName" name="firstName" value="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Last Name</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="lastName" name="lastName" value="" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Address</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="Address1" name="Address1" value="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Apt/Unit/Suite#</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="Address2" name="Address2" value="" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">City</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="City" name="City" value="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">State</label>
+                                                            <select name="State" id="State" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" style="width:100%">
+                                                                <option value="">Select a state...</option>
+                                                                @foreach (var item in Constants.GetAbbrevToStateAsDropdown().OrderBy(x => x.Text))
+                                                                {
+                                                                    <option value="@item.Value">@item.Text</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Zip</label>
+                                                            <input type="text" maxlength="5" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 numeric" id="Zip" name="Zip" value="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Email</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="Email" name="Email" value="" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label class="font-size-h3 font-weight-bolder m-4">Payment Method Info</label>
+                                    <div style="background: #F3F5FB;">
+                                        <div class="p-5">
+                                            <div class="form-group">
+                                                <label class="font-size-h6 font-weight-bolder text-dark">Payment Method Type</label>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <label class="option h-auto py-7 px-6 border-0 rounded-lg" style="background:#fff;">
+                                                            <span class="option-control">
+                                                                <span class="radio">
+                                                                    <input type="radio" name="paymentMethod" value="@DigitalPaymentMethods.Card" checked="checked" style="position:initial;">
+                                                                    <span></span>
+                                                                </span>
+                                                            </span>
+                                                            <span class="option-label">
+                                                                <span class="option-head">
+                                                                    <span class="option-title">Credit/Debit Card</span>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <label class="option h-auto py-7 px-6 border-0 rounded-lg" style="background:#fff;">
+                                                            <span class="option-control">
+                                                                <span class="radio">
+                                                                    <input type="radio" name="paymentMethod" value="@DigitalPaymentMethods.ACH" style="position:initial;">
+                                                                    <span></span>
+                                                                </span>
+                                                            </span>
+                                                            <span class="option-label">
+                                                                <span class="option-head">
+                                                                    <span class="option-title">Bank Account</span>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="cardInfo">
+                                                <div class="row">
+                                                    <div class="col-lg">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Name On Card</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="ccName" name="ccName" value="" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="font-size-h6 font-weight-bolder text-dark">Card Number</label>
+                                                    <div class="row">
+                                                        <div class="col-lg-10 pr-0">
+                                                            <div class="form-group">
+                                                                <input type="text" maxlength="19" oncopy="return false" onkeyup="cardformat(this)" onpaste="return false" oncut="return false" class="numeric form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6 card-number" id="cardNumber" name="cardNumber" placeholder="" value="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-2 card-type">
+                                                            <img id="card_logo" src="/Content/assets/image/card_Logos/blank_card.png" class="card-type-span" alt="">
+                                                            <span hidden id="cardType"></span>
+                                                        </div>
+                                                        <div class="card-validation ml-5"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Expiration Date</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="expiryDate" name="expiryDate" placeholder="MM/YY" minlength="5" maxlength="5" value="" />
+                                                            <span id="expiryErrorMessage" class="error-message"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Nick Name</label>
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="nickName" placeholder="" value="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="bankInfo" style="display:none">
+                                                <div class="form-group">
+                                                    <label class="font-size-h6 font-weight-bolder text-dark">Bank Account Type</label>
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <label class="option h-auto py-7 px-6 border-0 rounded-lg" style="background:#fff;">
+                                                                <span class="option-control">
+                                                                    <span class="radio">
+                                                                        <input type="radio" name="accountType" id="accountType" value="@BankAccountTypes.Checking" checked="checked" style="position:initial;">
+                                                                        <span></span>
+                                                                    </span>
+                                                                </span>
+                                                                <span class="option-label">
+                                                                    <span class="option-head">
+                                                                        <span class="option-title">Checking</span>
+                                                                    </span>
+                                                                </span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <label class="option h-auto py-7 px-6 border-0 rounded-lg" style="background:#fff;">
+                                                                <span class="option-control">
+                                                                    <span class="radio">
+                                                                        <input type="radio" name="accountType" id="accountType" value="@BankAccountTypes.Savings" style="position:initial;">
+                                                                        <span></span>
+                                                                    </span>
+                                                                </span>
+                                                                <span class="option-label">
+                                                                    <span class="option-head">
+                                                                        <span class="option-title">Savings</span>
+                                                                    </span>
+                                                                </span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Routing Number</label>
+                                                            <input type="text" class="numeric form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" name="PaymentAccount_RoutingNumber" id="PaymentAccount_RoutingNumber" placeholder="" value="" />
+                                                            <div class="routing-feedback"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="font-size-h6 font-weight-bolder text-dark">Account Number</label>
+                                                            <input type="text" class="numeric form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" name="accountNumber" id="accountNumber" placeholder="" value="" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="font-size-h6 font-weight-bolder text-dark">Nick Name</label>
+                                                    <div class="row">
+                                                        <div class="col-lg">
+                                                            <input type="text" class="form-control h-auto py-7 px-6 border-0 rounded-lg font-size-h6" id="nickName" placeholder="" value="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pb-5" data-wizard-type="step-content">
+                                <div class="pt-lg-0 pt-5 pb-15">
+                                    <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Giving Summary</h3>
+                                    <div class="text-muted font-weight-bold font-size-h4">Review your giving details before submitting.</div>
+                                </div>
+                                <div>
+                                    <h4 class="font-weight-bolder mb-3 text-dark-50">Amount:&nbsp;<span class="font-weight-400" id="summary-amount"></span></h4>
+                                    <h4 class="font-weight-bolder mb-3 text-dark-50">Frequency:&nbsp;<span class="font-weight-400" id="summary-frequency"></span></h4>
+                                    <div id="recurring-parameters" style="display:none">
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Recurring Type:&nbsp;<span class="font-weight-400" id="summary-recurring-frequency"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Starting Date:&nbsp;<span class="font-weight-400" id="summary-starting"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Gift Ending Reason:&nbsp;<span class="font-weight-400" id="summary-ending-reason"></span></h4>
+                                        <div style="display:none" id="summry-maxGift-div">
+                                            <h4 class="font-weight-bolder mb-3 text-dark-50">Max Gifts:&nbsp;<span class="font-weight-400" id="summary-maxgifts"></span></h4>
+                                        </div>
+                                        <div style="display:none" id="summry-endingDate-div">
+                                            <h4 class="font-weight-bolder mb-3 text-dark-50">Ending Date:&nbsp;<span class="font-weight-400" id="summary-endingDate"></span></h4>
+                                        </div>
+                                    </div>
+                                    <h4 class="font-weight-bolder mb-3 text-dark-50">Fund:&nbsp;<span class="font-weight-400" id="summary-fund"></span></h4>
+                                    <h4 class="font-weight-bolder mb-3 text-dark-50">Campus:&nbsp;<span class="font-weight-400" id="summary-campus"></span></h4>
+                                    <h4 class="font-weight-bolder mb-3 text-dark-50">Payment Method:&nbsp;<span class="font-weight-400" id="summary-payment-method"></span></h4>
+                                    <div id="userInfo" style="display:none">
+                                        <div class="separator"></div>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Full Name:&nbsp;<span class="font-weight-400" id="user-fullName"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Email:&nbsp;<span class="font-weight-400" id="user-email"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Address:&nbsp;<span class="font-weight-400" id="user-address1"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Apt/Unit/Suite#:&nbsp;<span class="font-weight-400" id="user-address2"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">City:&nbsp;<span class="font-weight-400" id="user-city"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">State:&nbsp;<span class="font-weight-400" id="user-state"></span></h4>
+                                        <h4 class="font-weight-bolder mb-3 text-dark-50">Zip:&nbsp;<span class="font-weight-400" id="user-zip"></span></h4>
+                                    </div>
+                                    <a onclick="changeDetails()" class="anchor font-size-h5 font-weight-bolder mb-3">Change giving details</a>
+                                </div>
+                            </div>
+                            <div id="paymentMethodSubmit" class="hideDiv d-flex justify-content-between pt-3">
+                                <div class="mr-2">
+                                    <button type="button" onclick="addPaymentMethod()" class="btn btn-light-primary font-weight-bolder font-size-h6 pl-6 pr-8 py-4 my-3 mr-3">
+                                        <span class="svg-icon svg-icon-md mr-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(15.000000, 12.000000) scale(-1, 1) rotate(-90.000000) translate(-15.000000, -12.000000)" x="14" y="7" width="2" height="10" rx="1" />
+                                                    <path d="M3.7071045,15.7071045 C3.3165802,16.0976288 2.68341522,16.0976288 2.29289093,15.7071045 C1.90236664,15.3165802 1.90236664,14.6834152 2.29289093,14.2928909 L8.29289093,8.29289093 C8.67146987,7.914312 9.28105631,7.90106637 9.67572234,8.26284357 L15.6757223,13.7628436 C16.0828413,14.136036 16.1103443,14.7686034 15.7371519,15.1757223 C15.3639594,15.5828413 14.7313921,15.6103443 14.3242731,15.2371519 L9.03007346,10.3841355 L3.7071045,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(9.000001, 11.999997) scale(-1, -1) rotate(90.000000) translate(-9.000001, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span> Previous
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" id="save-paymnet-method" onclick="saveNewPaymentMethod()" class="btn btn-primary font-weight-bolder font-size-h6 pl-8 pr-4 py-4 my-3">
+                                        Next Step <span class="svg-icon svg-icon-md ml-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(8.500000, 12.000000) rotate(-90.000000) translate(-8.500000, -12.000000)" x="7.5" y="7.5" width="2" height="9" rx="1" />
+                                                    <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="footerBtn" class="d-flex justify-content-between pt-3">
+                                <div class="mr-2">
+                                    <button type="button" class="btn btn-light-primary font-weight-bolder font-size-h6 pl-6 pr-8 py-4 my-3 mr-3 previous" data-wizard-type="action-prev">
+                                        <span class="svg-icon svg-icon-md mr-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(15.000000, 12.000000) scale(-1, 1) rotate(-90.000000) translate(-15.000000, -12.000000)" x="14" y="7" width="2" height="10" rx="1" />
+                                                    <path d="M3.7071045,15.7071045 C3.3165802,16.0976288 2.68341522,16.0976288 2.29289093,15.7071045 C1.90236664,15.3165802 1.90236664,14.6834152 2.29289093,14.2928909 L8.29289093,8.29289093 C8.67146987,7.914312 9.28105631,7.90106637 9.67572234,8.26284357 L15.6757223,13.7628436 C16.0828413,14.136036 16.1103443,14.7686034 15.7371519,15.1757223 C15.3639594,15.5828413 14.7313921,15.6103443 14.3242731,15.2371519 L9.03007346,10.3841355 L3.7071045,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(9.000001, 11.999997) scale(-1, -1) rotate(90.000000) translate(-9.000001, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span>Previous
+                                    </button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary font-weight-bolder font-size-h6 pl-5 pr-8 py-4 my-3" data-wizard-type="action-submit" type="button" id="form_submit_button">
+                                        Submit
+                                        <span class="svg-icon svg-icon-md ml-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(8.500000, 12.000000) rotate(-90.000000) translate(-8.500000, -12.000000)" x="7.5" y="7.5" width="2" height="9" rx="1" />
+                                                    <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <button type="button" id="next-step" class="btn btn-primary font-weight-bolder font-size-h6 pl-8 pr-4 py-4 my-3" data-wizard-type="action-next">
+                                        Next Step
+                                        <span class="svg-icon svg-icon-md ml-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(8.500000, 12.000000) rotate(-90.000000) translate(-8.500000, -12.000000)" x="7.5" y="7.5" width="2" height="9" rx="1" />
+                                                    <path d="M9.70710318,15.7071045 C9.31657888,16.0976288 8.68341391,16.0976288 8.29288961,15.7071045 C7.90236532,15.3165802 7.90236532,14.6834152 8.29288961,14.2928909 L14.2928896,8.29289093 C14.6714686,7.914312 15.281055,7.90106637 15.675721,8.26284357 L21.675721,13.7628436 C22.08284,14.136036 22.1103429,14.7686034 21.7371505,15.1757223 C21.3639581,15.5828413 20.7313908,15.6103443 20.3242718,15.2371519 L15.0300721,10.3841355 L9.70710318,15.7071045 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.999999, 11.999997) scale(1, -1) rotate(90.000000) translate(-14.999999, -11.999997)" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container">
+        <div class="alert alert-custom alert-notice alert-light-danger fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text"></div>
+            <div class='alert-text'><strong>Something went wrong. Please try again.</strong><br />Error: @Html.Raw(ViewBag.Message)</div>
+            <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i class="ki ki-close"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+}

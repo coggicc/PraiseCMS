@@ -1,0 +1,175 @@
+﻿@model PraiseCMS.DataAccess.Models.SmallGroup
+@{
+    var creating = ViewBag.Creating;
+    var db = new ApplicationDbContext();
+    var categories = db.SmallGroupCategoryTypes.Where(x => x.IsActive && (x.IsGlobal || string.IsNullOrEmpty(x.ChurchId))).OrderBy(x => x.Name).ToList();
+}
+<div id="small-group-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "small-group-div" }, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ChurchId)
+        @Html.HiddenFor(x => x.CreatedDate)
+        @Html.HiddenFor(x => x.CreatedBy)
+
+        if (creating)
+        {
+            @Html.HiddenFor(x => x.IsActive)
+        }
+        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Small Group Info</h3>
+        <div class="form-group row">
+            <div class="col-lg-6">
+                <label>Name:</label>
+                @Html.EditorFor(x => x.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-12">
+                <label>Description:</label>
+                @Html.TextAreaFor(x => x.Description, new { @class = "form-control", rows = "5" })
+                @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-6">
+                <label>Campus:</label>
+                @Html.DropDownListFor(x => x.CampusId, SessionVariables.Campuses.ToSelectList(x => x.Display, x => x.Id, x => SessionVariables.Campuses.Count() == 1 && x.Id == SessionVariables.Campuses.First().Id), "Select a campus...", new { @class = "form-control select2" })
+                @Html.ValidationMessageFor(x => x.CampusId, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-6">
+                <label>Category:</label>
+                @Html.DropDownListFor(x => x.CategoryId, categories.ToSelectList(x => x.Display, x => x.Id), "Select a category...", new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.CategoryId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-6">
+                <label>Age Range:</label>
+                @Html.DropDownListFor(x => x.AgeRange, AgeGroups.Items.ToSelectList(x => x, x => x), "Select an age group...", new { @class = "form-control select2", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.AgeRange, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-6">
+                <div class="checkbox-list">
+                    <label class="checkbox">
+                        @Html.EditorFor(x => x.ChildCareProvided)
+                        <span></span>
+                        Childcare Provided
+                    </label>
+                    <label class="checkbox">
+                        @Html.EditorFor(x => x.HandicapAccessible)
+                        <span></span>
+                        Handicap Accessible
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="separator separator-dashed my-5"></div>
+        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Leader One</h3>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label>Leader One Name:</label>
+                @Html.EditorFor(x => x.LeaderOneName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.LeaderOneName, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-4">
+                <label>Leader One Phone:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    </div>
+                    @Html.EditorFor(x => x.LeaderOnePhone, new { htmlAttributes = new { @class = "form-control phone" } })
+                </div>
+                @Html.ValidationMessageFor(x => x.LeaderOnePhone, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-4">
+                <label>Leader One Email:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    </div>
+                    @Html.EditorFor(x => x.LeaderOneEmail, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                @Html.ValidationMessageFor(x => x.LeaderOneEmail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Leader Two <small>(optional)</small></h3>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label>Leader Two Name:</label>
+                @Html.EditorFor(x => x.LeaderTwoName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.LeaderTwoName, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-4">
+                <label>Leader Two Phone:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    </div>
+                    @Html.EditorFor(x => x.LeaderTwoPhone, new { htmlAttributes = new { @class = "form-control phone" } })
+                </div>
+                @Html.ValidationMessageFor(x => x.LeaderTwoPhone, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-4">
+                <label>Leader Two Email:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    </div>
+                    @Html.EditorFor(x => x.LeaderTwoEmail, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                @Html.ValidationMessageFor(x => x.LeaderTwoEmail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="separator separator-dashed my-5"></div>
+        <h3 class="font-size-lg text-dark font-weight-bold mb-6">Meeting Location</h3>
+        <div class="form-group row">
+            <div class="col-lg-6">
+                <label>Address</label>
+                @Html.EditorFor(x => x.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Address1, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-6">
+                <label>Apt/Unit/Suite</label>
+                @Html.EditorFor(x => x.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Address2, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-6">
+                <label>City</label>
+                @Html.EditorFor(x => x.City, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.City, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-6">
+                <label>State</label>
+                @Html.DropDownListFor(x => x.State, Constants.AbbrevToState.ToSelectList(x => x.Value, x => x.Key), "Select a state...", new { @class = "form-control select2 formal", style = "width:100%;" })
+                @Html.ValidationMessageFor(x => x.State, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-6">
+                <label>Zip</label>
+                @Html.EditorFor(x => x.Zip, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.Zip, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        if (!creating)
+        {
+            <div class="form-group row">
+                <div class="col-lg-6">
+                    <div class="checkbox-list">
+                        <label class="checkbox">
+                            @Html.EditorFor(x => x.IsActive)
+                            <span></span>
+                            Is Active
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

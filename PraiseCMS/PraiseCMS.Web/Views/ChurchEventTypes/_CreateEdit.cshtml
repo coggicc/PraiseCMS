@@ -1,0 +1,60 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ChurchEventTypeView
+
+<div id="eventType-div">
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "eventType-div" }, new { @class = "form", id="churchEventTypeForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.ChurchEventType.Id)
+        @Html.HiddenFor(x => x.ChurchEventType.CreatedBy)
+        @Html.HiddenFor(x => x.ChurchEventType.CreatedDate)
+        @Html.HiddenFor(x => x.ReturnUrl)
+
+        if (RouteHelpers.Creating && Model.CommonEventType.IsNotNullOrEmpty() && Model.CommonEventType.Any())
+        {
+            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Common Church Event Types:</h3>
+            <p>Here are a few common church event types we recommend implementing. The @ChurchEvents.WorshipService event type is required, but feel free to add a new event type or deselect any that don't fit your needs.</p>
+            <div class="form-group">
+                <div class="checkbox-list">                    
+                    @foreach (var item in Model.CommonEventType)
+                    {
+                        <label class="checkbox @Html.Raw(item.EqualsIgnoreCase(ChurchEvents.WorshipService) ? "text-dark-50" : "")">
+                            <input class="cbx_event_type" @Html.Raw(item.EqualsIgnoreCase(ChurchEvents.WorshipService) ? "disabled='disabled'" : "") type="checkbox" name="CommonEventType" checked value="@item"> @item
+                            <span @Html.Raw(item.EqualsIgnoreCase(ChurchEvents.WorshipService) ? "style='background-color: #80808F !important;'" : "")></span>
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="separator separator-dashed my-5"></div>
+        }
+
+        <div class="form-group">
+            <label>Type:</label>
+            @Html.TextBoxFor(x => x.ChurchEventType.Type, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ChurchEventType.Type, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Custom Name:</label>
+            @*@Html.TextBoxFor(x => x.ChurchEventType.CustomName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.ChurchEventType.CustomName, "", new { @class = "text-danger" })*@
+        </div>
+        <div class="form-group">
+            <label>Description:</label>
+            @Html.TextAreaFor(x => x.ChurchEventType.Description, new { @class = "form-control", rows = 3 })
+            @Html.ValidationMessageFor(x => x.ChurchEventType.Description, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Calendar Color:</label>
+            @Html.DropDownListFor(x => x.ChurchEventType.CalendarColor, Constants.ButtonColors.ToSelectList(x => x.Value, x => x.Key).OrderBy(x => x.Text), "Select a calendar color...", new { @class = "form-control select2", style = "width:100%;" })
+            <span class="form-text text-muted">Your event will be represented by this color on your calendar</span>
+        </div>
+        <div class="d-flex mb-5">
+            @foreach (var color in Constants.ButtonColors.OrderBy(x => x.Value))
+            {
+                <div class="bg-@color.Key d-flex flex-center w-75px h-75px mr-5 mb-1 mb-md-0 text-white">@color.Value</div>
+            }
+        </div>
+    }
+</div>

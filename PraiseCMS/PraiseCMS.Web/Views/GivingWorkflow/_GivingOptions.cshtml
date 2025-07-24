@@ -1,0 +1,29 @@
+﻿<div id="giving-options-div">
+    <div id="optional-links">
+        @if (ViewBag.Guest)
+        {
+            <h4 class="text-primary">
+                <a href="/givingworkflow/startgiving/@SessionVariables.CurrentChurch.Id?guest=false" data-pp-at-target="Give with an email and password">Give with an email and password.</a>
+            </h4>
+        }
+        else
+        {
+            @*<h4 class="text-primary">
+                <a href="/givingworkflow/GiveAsGuest/@SessionVariables.CurrentChurch.Id" data-pp-at-target="Give as a guest">Give as a guest</a>
+            </h4>
+            <div class="separator separator-solid separator-border-2 my-5"></div>*@
+            <h4 class="text-primary">
+                <a href="/givingworkflow/startgiving/@SessionVariables.CurrentChurch.Id?guest=true" data-pp-at-target="Give with phone number">Give with a phone number.</a>
+            </h4>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        if (isSecurityCodeConfirmed) {
+            $('#optional-links').hide();
+        } else {
+            $('#optional-links').show();
+        }
+    })
+</script>

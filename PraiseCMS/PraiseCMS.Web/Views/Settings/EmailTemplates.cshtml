@@ -1,0 +1,123 @@
+﻿@model EmailTemplateVM
+
+@{
+    ViewBag.Title = "Email Templates";
+}
+
+@section leftsubheader{
+    @Html.Partial("_SettingsSubHeader")
+}
+
+@* Add Admin role once this is working properly *@
+@if (SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            @Html.AjaxModalLink("Create", "/settings/CreateEmailTemplate/", "Create Email Template", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+        </div>
+    }
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model.Church)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom card-stretch">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">Email Templates</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (SessionVariables.CurrentUser.IsSuperAdmin)
+                {
+                    <div class="row">
+                        <div class="col">
+                            <ul class="list-unstyled">
+                                @foreach (var item in Model.EmailTemplates.Where(x => x.Type == Constants.System).OrderBy(x => x.Name))
+                                {
+                                    <li>
+                                        @Html.AjaxModalLink(item.Name, "/settings/EditEmailTemplate/" + item.Id, "Edit Email Template", "Update", "btn btn-link-primary", "", "", "", false, ModalSizes.XL)
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+                <h3 class="font-size-lg text-dark font-weight-bold my-6">Preview Email Template:</h3>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select class="form-control select2" name="Template" id="Template" style="width: 100%;" onchange="showTemplatePreview(this.value)">
+                                <option value="">Select a template...</option>
+                                @*@if (SessionVariables.CurrentUser.IsSuperAdmin)
+                                    {
+                                        foreach (var item in Model.EmailTemplates.Where(x => x.Type == EmailTemplateTypes.System).OrderBy(x => x.Name))
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    }*@
+                                @foreach (var item in EmailTemplatesNameList.Items.Where(item => SessionVariables.CurrentUser.IsSuperAdmin || !item.Contains("Registration")).OrderBy(x => x))
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 offset-lg-1">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <label class="col-form-label">Include unverified email address message</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <span class="switch switch-sm switch-icon">
+                                    <label>
+                                        <input type="checkbox" id="include_unverified" name="include_unverified" onchange="showTemplatePreview()" class="form-control" />
+                                        <span class="mt-3"></span>
+                                    </label>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div id="template-preview" style="overflow: auto; text-align: center;">
+                            <p class="mt-5">Select a template from the dropdown above to preview your system emails.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        function showTemplatePreview() {
+            const value = $('#Template').val();
+            if (!value) {
+                $('#template-preview').html('');
+                $('#template-preview').html('<p style="margin-top:5%">Select a template from the dropdown above to preview your system emails.</p>');
+                return false;
+            }
+            $.ajax({
+                url: '/Settings/GetEmailTemplateByName',
+                type: 'GET',
+                data: { value: value, includeUnverified: $("#include_unverified").prop('checked') },
+                success: function (result) {
+                    $('#template-preview').html('');
+                    $('#template-preview').html(result);
+                },
+                error: function (result) {
+                }
+            });
+        }
+    </script>
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

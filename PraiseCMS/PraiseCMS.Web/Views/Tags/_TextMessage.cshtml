@@ -1,0 +1,145 @@
+﻿@model PraiseCMS.DataAccess.Models.TextModel
+
+<div id="text-message-div">
+    <div id="alert-container"></div>
+    <p class="pl-1 text-dark-50"><span class="font-weight-bolder">Note:</span> Select an existing person from the list or add a new phone number.</p>
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "text-message-div" }, new { @class = "kt-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(q => q.TagId)
+        <div class="form-group">
+            <label>To:</label>
+            @Html.DropDownListFor(x => x.To, Model.People.ToSelectList(x => x.Display, x => x.PhoneNumber), new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%", multiple = "multiple" })
+            @Html.ValidationMessageFor(x => x.To, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Message: <small id="limit" class="text-dark-50">(Limit: 160 characters)</small></label>
+            @Html.TextAreaFor(x => x.Message, new { maxlength = "160", @class = "form-control", placeholder = "Enter your message", rows = "3" })
+            @Html.ValidationMessageFor(x => x.Message, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        var people = @Html.Raw(Json.Encode(Model.People));
+        var formValidations = [];
+        var IsSubmitted = false;
+
+        function initSelect2() {
+            $('.select2').select2({
+                tags: true
+            });
+        }
+
+        $(document).on('keyup', '.select2-search__field', function (e) {
+            if ($(".select2-search__field").parent().prev('li').text().replace('×', '') === $(this).val()) {
+                setTimeout(function() {
+                    $(".select2-search__field").val('');
+                });
+            }
+            $(this).inputmask("mask", { "mask": "(999) 999-9999" });
+        });
+
+        $(function () {
+            var defaultTo = [];
+            $.each(people, function (index, value) {
+                defaultTo.push(value.PhoneNumber);
+            });
+            $("#To").val(defaultTo);
+            initSelect2();
+            setValidationStep();
+        });
+
+        $(document).on('keyup', '#Message', function () {
+            if ($(this).val()) {
+                var pendingLength = parseInt(160 - $(this).val().length);
+                $("#limit").text('('+pendingLength + ' characters left)');
+            } else {
+                $("#limit").text('(Limit: 160 characters)');
+            }
+            if (pendingLength === new 0) {
+                $("#limit").addClass('text-danger').removeClass('text-dark-50');
+            } else {
+                $("#limit").removeClass('text-danger').addClass('text-dark-50');
+            }
+        });
+
+        function setValidationStep() {
+            let form = document.getElementById('communicationTextForm');
+           formValidations.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'To': {
+                        validators: {
+                            callback: {
+                                message: 'Please add at least one recipient',
+                                callback: function () {
+                                 let to = $('#communicationTextForm #To').val();
+                                    return to && to.length ? true : false;
+                                }
+                            }
+                        }
+                    },
+                     'Message': {
+                        validators: {
+                            callback: {
+                                message: 'Please enter the message',
+                                callback: function (input) {
+                                    if (!input.value) {
+                                        return false;
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+        }
+
+        $("#communicationTextForm").submit(function(e) {
+            IsSubmitted = true;
+            e.preventDefault();
+            formValidations[0].validate().then(function(status) {
+                if (status === 'Valid') {
+                    $.ajax({
+                        type: "POST",
+                        url: $('#communicationTextForm').attr('action'),
+                        data: $('#communicationTextForm').serialize(),
+                        success: function(result) {
+                            if (result.Success === false) {
+                                ShowErrorAlert(result.Message);
+                            } else {
+                                document.getElementById("communicationTextForm").reset();
+                                $('#communication-history').html('');
+                                $('#communication-history').html(result);
+                                $('#ajax-modal').modal('toggle');
+                                //Notify("success", "SUCCESS", "The message has been sent");
+                                ShowErrorAlert(result.Message);
+                            }
+                        },
+                        error: function(result) {
+                            ShowErrorAlert(result.Message);
+                        }
+                    });
+                } else {
+                    setTimeout(function() {
+                        StopLoading();
+                    });
+                }
+            });
+        });
+
+        function validateForm(self) {
+            if (IsSubmitted) {
+                formValidations[0].validate();
+            }
+        }
+    </script>
+}

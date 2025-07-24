@@ -1,0 +1,122 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.ChurchEventCheckIn>
+@{
+    ViewBag.Title = "Check-Ins";
+}
+<style>
+    .dataTables_filter {
+        display: none !important;
+    }
+</style>
+<div class="card card-custom card-stretch gutter-b">
+    <div class="card-header">
+        <div class="col-xxl-4 d-flex align-items-center justify-content-center">
+            <div class="input-group input-group-lg input-group-solid my-2">
+                <input type="text" class="form-control pl-4" placeholder="Search..." id="filterKeyword">
+            </div>
+        </div>
+        <div class="card-toolbar">
+            <div class="dropdown">
+                <div id="filter-modal" class="topbar-item" data-toggle="dropdown" data-offset="10px,0px">
+                    <div class="btn btn-light-primary btn-sm font-weight-bold mr-2"><i class="fas fa-filter"></i>Filter</div>
+                </div>
+                <div class="mt-2 dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-md">
+                    <form id="filter-form">
+                        <div class="card card-custom">
+                            <div class="card-header">
+                                <div class="card-title"><h3 class="card-label">Filter Options</h3></div>
+                                <div class="card-toolbar cursor-pointer" onclick="closeFilterModal()"><i class="fas fa-times"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group row">
+                                    <div class="checkbox-list">
+                                        <label class="checkbox mb-5 ml-5">
+                                            <input type="checkbox" name="filterCheckbox" value="regular" />
+                                            <span></span>
+                                            Regular
+                                        </label>
+                                        <label class="checkbox mb-5 ml-5">
+                                            <input type="checkbox" name="filterCheckbox" value="guest" />
+                                            <span></span>
+                                            Guest
+                                        </label>
+                                        <label class="checkbox mb-5 ml-5">
+                                            <input type="checkbox" name="filterCheckbox" value="volunteer" />
+                                            <span></span>
+                                            Volunteer
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" onclick="resetFilter()" class="btn btn-hover-light-dark font-weight-bold">Reset</button>
+                                <button type="button" onclick="applyFilter()" class="btn btn-light-primary font-weight-bold">Apply</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @Html.AjaxModalLink("Check-In Someone", "/events/_CheckInSomeone", "Check-In Someone", "CheckIn", "btn btn-light-primary font-weight-bold btn-sm", "")
+        </div>
+    </div>
+    <div class="card-body pb-3">
+        <div class="checkInsList">
+            @Html.Partial("_CheckinsList", Model)
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var checkInPeopleListDataTable;
+    $(function() {
+        setDatatable();
+    });
+    $(document).on('keyup', '#filterKeyword', function () {
+        checkInPeopleListDataTable.fnFilter(this.value);
+    });
+    function setDatatable() {
+        var records = parseInt($("#checkIn-people-list-table tr").length) - 1;
+        var pageCount = 10;
+        if (checkInPeopleListDataTable) {
+            checkInPeopleListDataTable.empty();
+        }
+        checkInPeopleListDataTable = $('#checkIn-people-list-table').dataTable({
+            responsive: true,
+            bFilter: false,
+            bInfo: records > pageCount,
+            bPaginate: records > pageCount,
+            bLengthChange: false,
+            bAutoWidth: false,
+            searching: true,
+            ordering: false,
+            pageLength: pageCount,
+            orderable: false,
+            language: { "emptyTable": "You don't have any check-ins yet" }
+        });
+    }
+    var filterApplied = false;
+    function resetFilter() {
+        document.getElementById('filter-form').reset();
+        if (filterApplied) {
+            filterApplied = false;
+            getData();
+        }
+    }
+    function applyFilter() {
+        let filterArray = $('input[name="filterCheckbox"]').filter(":checked").map(function () { return this.value; }).get();
+        if (!filterArray.length) {
+            Notify("warning", "WARNING", 'No Filter Applied!');
+            return false;
+        }
+        filterApplied = true;
+        getData();
+    }
+    function getData() {
+        let filterArray = $('input[name="filterCheckbox"]').filter(":checked").map(function () { return this.value; }).get();
+        jQuery.ajaxSettings.traditional = true;
+        $.get("/events/filterdcheckins", { filter: filterArray }, function (result) {
+            $('#filter-modal').trigger('click');
+            $('.checkInsList').html('');
+            $('.checkInsList').html(result);
+            setDatatable();
+        });
+    }
+</script>

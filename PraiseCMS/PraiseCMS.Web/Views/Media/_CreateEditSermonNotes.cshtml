@@ -1,0 +1,123 @@
+﻿@model PraiseCMS.DataAccess.Models.SermonNoteView
+
+<script src="~/Content/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+<script src="~/Content/assets/js/pages/crud/forms/editors/ckeditor-classic.js"></script>
+<style>
+    .modal-dialog {
+        max-width: 50% !important;
+    }
+</style>
+<div class="modal fade" id="AddNoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "sermonnotes-div" }, new { @class = "kt-form" }))
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add sermon note</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="sermonnotes-div">
+                        @Html.AntiForgeryToken()
+                        <div class="kt-section kt-section--first">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(x => x.SermonNote.Id)
+                            @Html.HiddenFor(x => x.SermonNote.ChurchId)
+                            @Html.HiddenFor(x => x.SermonNote.CreatedBy)
+                            @Html.HiddenFor(x => x.SermonNote.CreatedDate)
+                            @Html.HiddenFor(x => x.SermonNote.NoteType)
+                            <div class="kt-section__body">
+                                <div class="form-group row">
+                                    <label class="col-md-3">Sermon</label>
+                                    <div class="col-md-9">
+                                        @Html.DropDownListFor(x => x.SermonNote.SermonId, Model.Sermons.ToSelectList("Select a sermon...", x => x.Title + " (" + x.CreatedDate.ToShortDateString() + ")", x => x.Id), new { @class = "form-control select2", style = "width:100%;" })
+                                        @Html.ValidationMessageFor(x => x.SermonNote.Id, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    @Html.LabelFor(x => x.SermonNote.Message, htmlAttributes: new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(x => x.SermonNote.Message, new { @class = "form-control", id = "ckeditor_message", rows = "10" })
+                                        @Html.ValidationMessageFor(x => x.SermonNote.Message, "", new { @class = "text-danger" })
+                                        <small>For full width blank text area use [input_full] tag , for half width use [input_half]</small>
+
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-lg-3 col-form-label">Pastor Only Version?</label>
+                                    <div class="col-lg-9">
+                                        <span class="kt-switch">
+                                            <label>
+                                                @Html.CheckBoxFor(x => x.SermonNote.IsPastorVersion, new { name = "IsPastorOnly" })
+                                                @Html.ValidationMessageFor(x => x.SermonNote.IsPastorVersion, "", new { @class = "text-danger" })
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" id="pastorNotes">
+                                    @Html.LabelFor(x => x.SermonNote.PastorOnlyNotes, htmlAttributes: new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(x => x.SermonNote.PastorOnlyNotes, new { @class = "form-control", id = "ckeditor_pastornotes", rows = "10" })
+                                        @Html.ValidationMessageFor(x => x.SermonNote.PastorOnlyNotes, "", new { @class = "text-danger" })
+                                        <small>For full width blank text area use [input_full] tag , for half width use [input_half]</small>
+
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-lg-3 col-form-label">Notify Subscribers?</label>
+                                    <div class="col-lg-9">
+                                        <span class="kt-switch">
+                                            <label>
+                                                @Html.CheckBoxFor(x => x.SermonNote.NotifySubscribers, new { name = "IsPastorOnly" })
+                                                @Html.ValidationMessageFor(x => x.SermonNote.NotifySubscribers, "", new { @class = "text-danger" })
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-light-primary font-weight-bold">Save</button>
+                    <button type="button" class="btn btn-light-dark font-weight-bold" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    var editMode = '@ViewBag.EditMode';
+    if (editMode == "True") {
+        if (!$('#SermonNote_IsPastorVersion').prop('checked')) {
+            $('#pastorNotes').hide();
+        }
+    } else {
+        $('#pastorNotes').hide();
+    }
+
+    $('#pastorNotes').hide();
+
+    $('#SermonNote_IsPastorVersion').change(function () {
+        if (this.checked)
+            $('#pastorNotes').fadeIn('fast');
+        else
+            $('#pastorNotes').fadeOut('fast');
+    });
+
+    $(function () {
+        ClassicEditor
+            .create(document.querySelector('#ckeditor_message'))
+            .catch(error => {
+                console.error(error);
+            });
+        ClassicEditor
+            .create(document.querySelector('#ckeditor_pastornotes'))
+            .catch(error => {
+                console.error(error);
+            });
+    });
+</script>

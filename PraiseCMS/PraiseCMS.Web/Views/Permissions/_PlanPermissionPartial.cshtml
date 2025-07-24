@@ -1,0 +1,64 @@
+﻿@model PraiseCMS.DataAccess.Models.PermissionViewModel
+
+<div id="PlanPermissionTree" class="tree-demo" data-scroll="true" data-height="650" style="height: 650px;">
+    <ul>
+        @foreach (var subscription in Model.SubscriptionTypes)
+        {
+            <li>
+                <a href="javascript:;" data-id="@subscription.Id" data-name="@subscription.Name">@subscription.Name Plan</a>
+                <ul>
+                    @foreach (var parentModules in Model.Modules.Where(x => x.ParentId == null).ToList())
+                    {
+                        <li data-jstree='{ "icon" : "fa fa-folder text-dark " }'>
+                            <a href="javascript:;" class="load_permissions" data-parentId="@parentModules.Id" data-typeId="@subscription.Id" data-Id="@parentModules.Id" data-type="Subscription">@parentModules.Name </a>
+                            <ul>
+                                @foreach (var module in Model.Modules.Where(x => x.ParentId == parentModules.Id).ToList())
+                                {
+                                    <li data-jstree='{ "icon" : "fa fa-file  text-primary " }'>
+                                        <a href="javascript:;" class="load_permissions" data-parentId="@parentModules.Id" data-typeId="@subscription.Id" data-Id="@module.Id" data-type="Subscription">@module.Name </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#PlanPermissionTree').jstree({
+            "core": {
+                "themes": {
+                    "responsive": false
+                }
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-folder text-warning"
+                },
+                "file": {
+                    "icon": "fa fa-file  text-warning"
+                }
+            },
+            "plugins": ["types"]
+        });
+
+        // handle link clicks in tree nodes(support target="_blank" as well)
+        $('#PlanPermissionTree').on('select_node.jstree', function (e, data) {
+            var link = $('#' + data.selected).find('a');
+            if (link.attr("href") !== "#" && link.attr("href") !== "javascript:;" && link.attr("href") !== "") {
+                if (link.attr("target") === "_blank") {
+                    link.attr("href").target = "_blank";
+                }
+                document.location.href = link.attr("href");
+                return false;
+            }
+        });
+
+        $('#PlanPermissionTree').on('click', '.jstree-anchor', function (e) {
+            $(this).jstree(true).toggle_node(e.target);
+        });
+    });
+</script>

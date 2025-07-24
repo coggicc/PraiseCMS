@@ -1,0 +1,28 @@
+﻿@model SubscriptionViewModel
+
+@{
+    ViewBag.Title = "Your Subscription";
+}
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model.Church)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom card-stretch">
+            <div class="card-header py-3">
+                <div class="card-title align-items-start flex-column">
+                    <h3 class="card-label font-weight-bolder text-dark">@ViewBag.Title</h3>
+                </div>
+                <div class="card-toolbar">
+                    <button class="btn btn-light-primary mr-2 edit">Edit</button>
+                </div>
+            </div>
+            <div class="edit-details" style="display:none;">
+                <p>Add editable subscription info here.</p>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowscripts
+{
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

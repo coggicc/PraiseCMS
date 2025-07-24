@@ -1,0 +1,114 @@
+﻿@model PraiseCMS.Web.Controllers.SuperAdminController.OfflineGivingFormViewModel
+
+@{
+    ViewBag.Title = "Generate Offline Giving Data";
+}
+
+@using (Html.BeginForm("GenerateOfflineGivingData", "SuperAdmin", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(m => m.ChurchId)
+
+    <div>
+        <label>Campuses</label>
+        @for (int i = 0; i < Model.Campuses.Count; i++)
+        {
+            <div>
+                <input type="checkbox"
+                       name="SelectedCampusIds"
+                       value="@Model.Campuses[i].Id"
+                       @(Model.SelectedCampusIds.Contains(Model.Campuses[i].Id) ? "checked" : "") />
+                @Model.Campuses[i].Name
+            </div>
+        }
+    </div>
+
+    <div>
+        <label>Funds</label>
+        @for (int i = 0; i < Model.Funds.Count; i++)
+        {
+            <div>
+                <input type="checkbox"
+                       name="SelectedFundIds"
+                       value="@Model.Funds[i].Id"
+                       @(Model.SelectedFundIds.Contains(Model.Funds[i].Id) ? "checked" : "") />
+                @Model.Funds[i].Name
+            </div>
+        }
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.WeeksOfData)
+        @Html.TextBoxFor(m => m.WeeksOfData)
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.MinAmount)
+        @Html.TextBoxFor(m => m.MinAmount)
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.MaxAmount)
+        @Html.TextBoxFor(m => m.MaxAmount)
+    </div>
+
+    <div>
+        <label>Offline Payment Methods</label>
+        <div>
+            <input type="checkbox" id="cash" name="SelectedPaymentMethods" value="Cash"
+                   @(Model.SelectedPaymentMethods.Contains(OfflinePaymentMethods.Cash) ? "checked" : "") />
+            <label for="cash">Cash</label>
+        </div>
+        <div>
+            <input type="checkbox" id="check" name="SelectedPaymentMethods" value="Check"
+                   @(Model.SelectedPaymentMethods.Contains(OfflinePaymentMethods.Check) ? "checked" : "") />
+            <label for="check">Check</label>
+        </div>
+    </div>
+
+    <div>
+        <label>Offline Payment Types</label>
+        <div>
+            <input type="checkbox" id="offeringPlate" name="SelectedPaymentTypes" value="Offering Plate"
+                   @(Model.SelectedPaymentTypes.Contains(OfflinePaymentTypes.OfferingPlate) ? "checked" : "") />
+            <label for="offeringPlate">Offering Plate</label>
+        </div>
+        <div>
+            <input type="checkbox" id="dropOff" name="SelectedPaymentTypes" value="Drop-Off"
+                   @(Model.SelectedPaymentTypes.Contains(OfflinePaymentTypes.DropOff) ? "checked" : "") />
+            <label for="dropOff">Drop-Off</label>
+        </div>
+        <div>
+            <input type="checkbox" id="mail" name="SelectedPaymentTypes" value="Mail"
+                   @(Model.SelectedPaymentTypes.Contains(OfflinePaymentTypes.Mail) ? "checked" : "") />
+            <label for="mail">Mail</label>
+        </div>
+    </div>
+
+    <!-- Lump Sum Giving Checkbox -->
+    <div class="form-group">
+        @Html.CheckBoxFor(m => m.IsLumpSumGiving, new { @class = "form-check-input", id = "IsLumpSumGiving" })
+        @Html.LabelFor(m => m.IsLumpSumGiving, "Lump Sum Giving", new { @class = "form-check-label" })
+    </div>
+
+    <!-- Lump Sum Giving Amount Textboxes (visible only if LumpSumGiving is checked) -->
+    <div class="form-group" id="lumpSumAmountContainer" style="display:@(Model.IsLumpSumGiving ? "block" : "none")">
+        @Html.LabelFor(m => m.LumpSumGivingMinAmount, "Lump Sum Minimum Amount")
+        @Html.TextBoxFor(m => m.LumpSumGivingMinAmount, new { @class = "form-control", type = "number", step = "0.01" })
+
+        @Html.LabelFor(m => m.LumpSumGivingMaxAmount, "Lump Sum Maximum Amount")
+        @Html.TextBoxFor(m => m.LumpSumGivingMaxAmount, new { @class = "form-control", type = "number", step = "0.01" })
+    </div>
+
+    <div>
+        <input type="submit" value="Generate Data" />
+    </div>
+}
+
+<!-- Script to show/hide the Lump Sum Amount textboxes based on the checkbox -->
+<script>
+    document.getElementById('IsLumpSumGiving').addEventListener('change', function () {
+        document.getElementById('lumpSumAmountContainer').style.display = this.checked ? 'block' : 'none';
+    });
+</script>

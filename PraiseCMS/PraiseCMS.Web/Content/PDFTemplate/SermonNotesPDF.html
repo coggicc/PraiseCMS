@@ -1,0 +1,76 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="{bootstrap}" rel="stylesheet" media='all' />
+
+    <style>
+        .notesInput:focus {
+            outline: none;
+        }
+
+        .card-columns {
+            -webkit-column-count: 2;
+            -moz-column-count: 2;
+            column-count: 2;
+            column-gap: 40px;
+            height: 50%;
+            column-width: 200px;
+            text-align: justify;
+        }
+    </style>
+
+
+</head>
+<body>
+
+    <div id="content">
+        <div class="row">
+            <div class="col-6 ">
+                <img src="{img}" height="30" class="mx-2 w-auto" />
+                <hr />
+            </div>
+            <div class="col-6">
+                <hr style="margin-top: 2.8rem;" />
+            </div>
+
+            <div id="msg" class="ml-3 card-columns px-3">
+                {msg}
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
+<script src="{Jquery}"></script>
+
+<script>
+
+    $(document).ready(function () {
+        var noteType = $("#NoteType").val();
+        var msg = $("#msg").html();
+        msg = msg.replace(/&lt;/g, "<");
+        msg = msg.replace(/&gt;/g, ">");
+        msg = msg.replace(/&amp;nbsp;/g, "");
+        msg = msg.replace(/\[input_half\]/g, "<input type='text' size='20' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+        msg = msg.replace(/\[input_full\]/g, " <br/><input type='text'   class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;'/><br/>");
+        $("#msg").html(msg);
+
+        $("#msg").find("span.input-half").each(function () {
+            var value = $(this).text();
+            $(this).before("<input type='text' size='20' readonly value='" + value + "' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+            $(this).remove();
+        });
+        $("#msg").find("span.input-full").each(function () {
+            var value = $(this).text();
+            $(this).before("<input type='text' readonly value='" + value + "' class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;' />");
+            $(this).remove();
+        });
+
+    });
+
+</script>

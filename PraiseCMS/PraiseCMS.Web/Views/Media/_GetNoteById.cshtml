@@ -1,0 +1,244 @@
+﻿@model PraiseCMS.DataAccess.Models.SermonNoteView
+<style>
+    .modal-dialog {
+        max-width: 60% !important;
+        width: auto;
+    }
+
+    #msg {
+        column-count: 2;
+        column-gap: normal;
+        height: 50%;
+        column-width: 200px;
+    }
+</style>
+<div class="modal fade" id="ShowNoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class=" row ml-auto">
+                    @if (Model.SermonNote.NoteType == "Filled")
+                    {
+                        <div class="text-right">
+                            <button id="editCancel" type="button" class="btn btn-danger mr-4">Cancel</button>
+                            <button id="editSave" type="button" class="btn btn-success mr-4">Save</button>
+                            <button id="editFillNote" type="button" class="btn btn-light-primary font-weight-bold mr-4">Edit</button>
+                        </div>
+
+                    }
+                    <form action="/ExportMedia/Print" method="post" target="_blank" id="printform">
+                        <input type="hidden" name="Message" id="printMsg" value="" />
+                        <input type="button" id="printsubmit" class="btn btn-light-primary font-weight-bold mr-4" value="Print" />
+                    </form>
+
+                    <form action="/ExportMedia/ExportPDF" method="post" target="_blank" id="pdfform">
+                        <input type="hidden" name="Message" id="pdfMsg" value="" />
+                        <input type="hidden" name="NoteType" id="NoteType" value="StandardFilled" />
+                        <input type="button" class="btn btn-light-primary font-weight-bold mr-4" id="pdfsubmit" value="PDF" />
+                    </form>
+                </div>
+            </div>
+            @using (Ajax.BeginForm("_AddFilledSermonNotes", RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "sermonnotes-div" }, new { @class = "kt-form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.SermonNote.SermonId)
+                @Html.HiddenFor(x => x.SermonNote.ChurchId)
+                @Html.HiddenFor(x => x.SermonNote.CreatedBy)
+                @Html.HiddenFor(x => x.SermonNote.CreatedDate)
+                @Html.HiddenFor(x => x.SermonNote.Message)
+                @Html.HiddenFor(x => x.SermonNote.PastorOnlyNotes)
+                @Html.HiddenFor(x => x.SermonNote.Id)
+                <div class="modal-body text-dark">
+                    <div id="sermonnotes-div">
+                        <div class="kt-section kt-section--first">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                            <div class="kt-section__body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <img src="~/Content/assets/image/highlands_logo.png" height="50" class="mx-2 w-auto" />
+                                        </div>
+                                        <hr />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <hr style="margin-top: 4.8rem;" />
+                                    </div>
+                                    <div id="msg" class="ml-3 text-justify pr-3">
+                                        @Model.SermonNote.Message
+                                    </div>
+                                    <div id="pastornotes" class="ml-3 text-justify">
+                                        @Model.SermonNote.PastorOnlyNotes
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                if (Model.SermonNote.NoteType != "Filled")
+                {
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light-dark font-weight-bold" id="btnsubmit">Save</button>
+                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
+                    </div>
+                }
+            }
+            @if (Model.SermonNote.NoteType == "Filled")
+            {
+                @Html.HiddenFor(x => x.SermonNote.NoteType)
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#editSave").hide();
+        $("#editCancel").hide();
+
+        var notetype = $("#SermonNote_NoteType").val();
+
+        var msg = $("#msg").html();
+        msg = msg.replace(/&lt;/g, "<");
+        msg = msg.replace(/&gt;/g, ">");
+        msg = msg.replace(/&amp;nbsp;/g, "");
+
+        if (notetype != "Filled") {
+            msg = msg.replace(/\[input_half\]/g, "<input type='text' size='20' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+            msg = msg.replace(/\[input_full\]/g, " <br/><input type='text'   class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;'/><br/>");
+            $("#msg").html(msg);
+        }
+
+        if (notetype == "Filled") {
+            $("#msg").html(msg);
+            $("#msg").find("span.input-half").each(function () {
+                var value = $(this).text();
+                $(this).before("<input type='text' size='20' readonly value='" + value + "' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+                $(this).remove();
+            });
+            $("#msg").find("span.input-full").each(function () {
+                var value = $(this).text();
+                $(this).before("<input type='text' readonly value='" + value + "' class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;' />");
+                $(this).remove();
+            });
+        }
+
+        var notes = $("#pastornotes").html();
+        notes = notes.replace(/&lt;/g, "<");
+        notes = notes.replace(/&gt;/g, ">");
+        notes = notes.replace(/&amp;nbsp;/g, "");
+        if (notetype != "Filled") {
+            notes = notes.replace(/\[input_half\]/g, "<input type='text' size='20' class='input-half btm-bodr border-top-0  border-right-0 border-left-0'/>");
+            notes = notes.replace(/\[input_full\]/g, "<input type='text' size='40' class='input-full btm-bodr border-top-0  border-right-0 border-left-0'/>");
+            $("#pastornotes").html(notes);
+        }
+        if (notetype == "Filled") {
+            $("#pastornotes").html(notes);
+            $("#pastornotes").find("span.input-half").each(function () {
+                var value = $(this).text();
+                $(this).before("<input type='text' size='20' readonly value='" + value + "' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+                $(this).remove();
+            });
+            $("#pastornotes").find("span.input-full").each(function () {
+                var value = $(this).text();
+                $(this).before("<input type='text' readonly value='" + value + "' class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;' />");
+                $(this).remove();
+            });
+        }
+        $(".table td").css({ "border-top": 0 });
+    });
+
+    $("#editFillNote").click(function () {
+        $(this).hide();
+        $("#editSave").show();
+        $("#editCancel").show();
+        var MsgInputs = $("#msg :input");
+        $(MsgInputs).each(function () {
+            $(this).attr("readonly", false);
+        });
+    });
+
+    $("#editCancel").click(function () {
+        $(this).hide();
+        $("#editSave").hide();
+        $("#editFillNote").show();
+        var MsgInputs = $("#msg :input");
+        $(MsgInputs).each(function () {
+            $(this).attr("readonly", true);
+        });
+    });
+
+    $("#editSave").click(function () {
+        InputValues();
+        var msg = $("#msg").html();
+        var notes = $("#pastornotes").html();
+        var Id = $("#SermonNote_Id").val();
+        var sermonID = $("#SermonNote_SermonId").val();
+        var ChurchId = $("#SermonNote_ChurchId").val();
+        var CreatedBy = $("#SermonNote_CreatedBy").val();
+        var CreatedDate = $("#SermonNote_CreatedDate").val();
+        var NoteType = $("#SermonNote_NoteType").val();
+        var obj = {
+            Id: Id,
+            sermonID: sermonID,
+            ChurchId: ChurchId,
+            CreatedBy: CreatedBy,
+            CreatedDate: CreatedDate,
+            NoteType: NoteType,
+            Message: msg,
+            PastorOnlyNotes: notes
+        };
+        $.ajax({
+            url: "/Media/_EditFilledSermonNotes",
+            type: 'post',
+            data: obj
+        });
+    });
+
+    $("#btnsubmit").click(function () {
+        InputValues();
+        $("#form0").submit();
+    });
+
+    function InputValues() {
+        var MsgInputs = $("#msg :input");
+        $(MsgInputs).each(function () {
+            var v = $(this).val();
+            if ($(this).hasClass("input-half")) {
+                v = "<span class='input-half'>" + v + "</span>";
+            } else if ($(this).hasClass("input-full")) {
+                v = "<span class='input-full'>" + v + "</span>";
+            }
+            $(this).before(v);
+            $(this).remove();
+        });
+
+        var pastornotesInputs = $("#pastornotes :input");
+        $(pastornotesInputs).each(function () {
+            var v = $(this).val();
+            if ($(this).hasClass("input-half")) {
+                v = "<span class='input-half'>" + v + "</span>";
+            } else if ($(this).hasClass("input-full")) {
+                v = "<span class='input-full'>" + v + "</span>";
+            }
+            $(this).before(v);
+            $(this).remove();
+        });
+
+        $("#SermonNote_Message").val($("#msg").html());
+        $("#SermonNote_PastorOnlyNotes").val($("#pastornotes").html());
+    }
+
+    $("#printsubmit").click(function () {
+        $("#printMsg").val($("#SermonNote_Message").val());
+        $("#printform").submit();
+    });
+
+    $("#pdfsubmit").click(function () {
+        $("#pdfMsg").val($("#SermonNote_Message").val());
+        $("#pdfform").submit();
+
+    });
+</script>

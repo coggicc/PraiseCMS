@@ -1,0 +1,164 @@
+﻿@model SettingsViewModel
+
+@{
+    ViewBag.Title = "Church Giving Settings";
+}
+
+@section leftsubheader{
+    @Html.Partial("_SettingsSubHeader")
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model.Church)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom gutter-bs">
+            <div class="card-header card-header-tabs-line">
+                <div class="card-toolbar">
+                    <ul class="nav nav-tabs nav-tabs-space-lg nav-tabs-line nav-tabs-bold nav-tabs-line-3x" role="tablist">
+                        <li class="nav-item mr-3">
+                            <a class="nav-link active" data-toggle="tab" href="#kt_apps_projects_view_tab_2">
+                                <span class="nav-icon mr-2">
+                                    <span class="svg-icon mr-3">
+                                        <i class="fas fa-credit-card"></i>
+                                    </span>
+                                </span>
+                                <span class="nav-text font-weight-bold">Digital Giving</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mr-3">
+                            <a class="nav-link" data-toggle="tab" href="#kt_apps_projects_view_tab_3">
+                                <span class="nav-icon mr-2">
+                                    <span class="svg-icon mr-3">
+                                        <i class="fas fa-praying-hands"></i>
+                                    </span>
+                                </span>
+                                <span class="nav-text font-weight-bold">Prayer Requests</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mr-3">
+                            <a class="nav-link" data-toggle="tab" href="#kt_apps_projects_view_tab_4">
+                                <span class="nav-icon mr-2">
+                                    <i class="fas fa-bible"></i>
+                                </span>
+                                <span class="nav-text font-weight-bold">Message Requests</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body px-0">
+                <div class="tab-content pt-5">
+                    <div class="tab-pane active" id="kt_apps_projects_view_tab_2" role="tabpanel">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h2 class="mb-5">Digital Giving Form</h2>
+                                    @if (Model.ChurchMerchantAccount?.IsActive == true)
+                                    {
+                                        if (Model.Church.HasMerchantAccount && Model.Funds.Any())
+                                        {
+                                            <p class="lead mt-6 mb-12"><span class="font-weight-bold">Enable digital giving on your website effortlessly!</span> Copy and paste the provided code into your website's markup, and your congregation will enjoy a user-friendly giving form. <a href="/support">Need assistance?</a> We're here to help you with the setup.</p>
+                                            <h3 class="font-size-h6 mb-5">Giving Implementation:</h3>
+                                            <div class="form-group row mb-15">
+                                                <label class="col-4 col-xl-3 col-form-label">Button Example:</label>
+                                                <div class="col-lg-8 col-xl-9">
+                                                    <button class="btn btn-primary mb-15">Give Online Now</button>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-5">
+                                                <label class="col-4 col-xl-3 col-form-label">Button Link:</label>
+                                                <div class="col-lg-8 col-xl-9">
+                                                    <p>Copy this code to your church's website so your church family can send donations using the Praise system.</p>
+                                                    <div id="giveNowButton" class="rounded bg-gray-100 p-5">
+                                                        @Model.GiveNowButton
+                                                    </div>
+                                                    <div class="mt-4 mb-10">
+                                                        <a href="#" class="btn btn-primary" data-clipboard="true" data-clipboard-target="#giveNowButton"><i class="fa fa-copy"></i>Copy to clipboard</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-5">
+                                                <label class="col-4 col-xl-3 col-form-label">Button Styling:</label>
+                                                <div class="col-lg-8 col-xl-9">
+                                                    <p>Add the code below to the bottom of your web page's <code>&lt;head&gt;</code> tag to give your button a fresh look. Feel free to update this to match your website's design.</p>
+                                                    <div id="buttonStyling" class="rounded bg-gray-100 p-5">
+                                                        @Model.GiveNotButtonStyling
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <a href="#" class="btn btn-primary" data-clipboard="true" data-clipboard-target="#buttonStyling"><i class="fa fa-copy"></i>Copy to clipboard</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p class="lead mt-6"><span class="font-weight-bold">Create your giving account today!</span> It's a simple process – we will need your church's tax ID and banking information to get started.</p>
+                                        <a href="/onboarding/CreateMerchantAccount/@Model.Church.Id" class="btn btn-light-primary">Set Up Now</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="kt_apps_projects_view_tab_3" role="tabpanel">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h2 class="mb-5">Prayer Request Form</h2>
+                                    <p class="lead mt-6 mb-12"><span class="font-weight-bold">Accept prayer requests on your website seamlessly!</span> Insert the provided code into your website's markup, empowering your congregation to effortlessly submit prayer requests through the Praise system. <a href="/support">Need assistance?</a> We're here to guide you through the setup process.</p>
+                                    <h3 class="font-size-h6 mb-5">Prayer Request Implementation:</h3>
+                                    <div class="form-group row mb-5">
+                                        <label class="col-4 col-xl-3 col-form-label">Prayer Request Form Code:</label>
+                                        <div class="col-lg-8 col-xl-9">
+                                            <p>Add this code to your website so your congregation can submit prayer requests through the Praise system.</p>
+                                            <div id="externalPrayerRequestCode" class="rounded bg-gray-100 p-5">
+                                                @Model.ExternalPrayerRequestCode
+                                            </div>
+                                            <div class="mt-4">
+                                                <a href="#" class="btn btn-light-primary" data-clipboard="true" data-clipboard-target="#externalPrayerRequestCode"><i class="fa fa-copy"></i>Copy to clipboard</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="kt_apps_projects_view_tab_4" role="tabpanel">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h2 class="mb-5">Message Request Form</h2>
+                                    <p class="lead mt-6 mb-12"><span class="font-weight-bold">Streamline message requests on your website!</span> Integrate the provided code into your website's markup, empowering your congregation to submit message requests effortlessly through the Praise system. <a href="/support">Need assistance?</a> We're here to guide you through the setup process.</p>
+                                    <h3 class="font-size-h6 mb-5">Message Request Implementation:</h3>
+                                    <div class="form-group row mb-5">
+                                        <label class="col-4 col-xl-3 col-form-label">Message Request Form Code:</label>
+                                        <div class="col-lg-8 col-xl-9">
+                                            <p>Add this code to your website so your congregation can tell you what messages they would like to hear. The message requests can be managed on the <a href="/messagerequests">Message Requests</a> page.</p>
+                                            <div id="externalMessageRequestCode" class="rounded bg-gray-100 p-5">
+                                                @Model.ExternalMessageRequestCode
+                                            </div>
+                                            <div class="mt-4">
+                                                <a href="#" class="btn btn-light-primary" data-clipboard="true" data-clipboard-target="#externalMessageRequestCode"><i class="fa fa-copy"></i>Copy to clipboard</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowscripts
+{
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+    <script src="~/Content/assets/js/pages/crud/forms/widgets/clipboard.js"></script>
+}

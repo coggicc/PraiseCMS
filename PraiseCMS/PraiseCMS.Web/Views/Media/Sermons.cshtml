@@ -1,0 +1,53 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Sermon>
+
+@{
+    ViewBag.Title = "Sermons";
+    var db = new ApplicationDbContext();
+    var topics = db.SermonTopics.ToList();
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="text-primary fa fa-bible"></i>
+            </span>
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Add Sermon", "/media/_addsermon", "Add Sermon", "Save", "btn btn-sm btn-light-primary font-weight-bold", "", "", "", false, ModalSizes.Default)
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @if (Model.Any())
+            {
+                foreach (var sermon in Model)
+                {
+                    var image = !string.IsNullOrEmpty(sermon.Image) ? "~/Uploads/sermons/" + sermon.Image : "~/Content/assets/media/products/product1.jpg";
+                    var topic = topics.FirstOrDefault(x => x.Id.Equals(sermon.TopicId));
+                    <div class="col-4 mb-lg-5">
+                        <div class="card">
+                            <a href="@Url.Action("sermon", "media", new { sermonId = sermon.Id })">
+                                <img class="card-img-top" src="@Url.Content(image)" alt="@sermon.Title">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="@Url.Action("sermon", "media", new { sermonId = sermon.Id })">@sermon.Title</a></h5>
+                                <p class="card-text"><a href="@Url.Action("sermons", "media", new { topicId = sermon.TopicId })">@topic.Title</a></p>
+                                <p class="text-muted">@sermon.CreatedDate.ToShortDateString()</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <p>There are currently no messages for @(ViewBag.CurrentTopic != null ? Html.Raw("the topic: <b>" + ViewBag.CurrentTopic + "</b>"): "this topic").</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

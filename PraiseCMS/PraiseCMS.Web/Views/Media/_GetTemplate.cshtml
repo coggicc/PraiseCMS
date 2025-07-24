@@ -1,0 +1,87 @@
+﻿@model PraiseCMS.DataAccess.Models.SermonNote
+
+<style>
+    .modal-dialog {
+        max-width: 60% !important;
+    }
+</style>
+
+<div class="modal fade" id="BlankTemplateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class=" row ml-auto">
+                    @*<form action="/ExportMedia/Print" method="post" target="_blank" id="printform">
+                            <input type="hidden" name="Message" id="printMsg" value="" />
+                            <input type="button" id="printsubmit" class="btn btn-danger mr-4" value="Print" />
+                        </form>*@
+
+                    <form action="/ExportMedia/ExportBlankNotePDF" method="post" id="pdfblanknotesform">
+                        <input type="submit" class="btn btn-danger mr-4" value="PDF" />
+                    </form>
+                </div>
+            </div>
+            @using (Ajax.BeginForm("AddBlankTemplate", RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "sermonnotes-div" }, new { @class = "kt-form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.SermonId)
+                @Html.HiddenFor(x => x.ChurchId)
+                @Html.HiddenFor(x => x.CreatedBy)
+                @Html.HiddenFor(x => x.CreatedDate)
+                @Html.HiddenFor(x => x.Message)
+
+                <div class="modal-body">
+                    @Html.Partial("_BlankNotesPartial", SessionVariables.CurrentChurch)
+                    <div class="modal-footer">
+                        @*<button type="button" class="btn btn-light-dark font-weight-bold" id="btnsubmit">Save</button>*@
+                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //$(document).ready(function () {
+    //    var msg = $("#msg").html();
+    //    msg = msg.replace(/&lt;/g, "<");
+    //    msg = msg.replace(/&gt;/g, ">");
+    //    msg = msg.replace(/&amp;nbsp;/g, "");
+    //    msg = msg.replace(/\[input_half\]/g, "<input size='25' class='input-half border-bottom border-top-0  border-right-0 border-left-0 notesInput'/>");
+    //    msg = msg.replace(/\[input_full\]/g, "<input size='57' class='input-full border-bottom border-top-0  border-right-0 border-left-0 notesInput'/>");
+    //    $("#msg").html(msg);
+    //    $("#msg").find("td").css({ "border-top": 0 });
+    //});
+
+    $("#printsubmit").click(function () {
+        $("#printMsg").val($("#SermonNote_Message").val());
+        $("#printform").submit();
+    });
+
+    $("#pdfsubmit").click(function () {
+        $("#pdfMsg").val($("#SermonNote_Message").val());
+        $("#pdfform").submit();
+    });
+
+    $("#btnsubmit").click(function () {
+        InputValues();
+        $("#form0").submit();
+    });
+
+    function InputValues() {
+        var MsgInputs = $("#msg :input");
+        $(MsgInputs).each(function () {
+            var v = $(this).val();
+            if ($(this).hasClass("input-half")) {
+                v = "<span class='input-half'>" + v + "</span>";
+            } else if ($(this).hasClass("input-full")) {
+                v = "<span class='input-full'>" + v + "</span>";
+            }
+            $(this).before(v);
+            $(this).remove();
+        });
+
+        $("#Message").val($("#msg").html());
+    }
+</script>

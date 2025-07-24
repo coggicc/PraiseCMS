@@ -1,0 +1,401 @@
+﻿@using PraiseCMS.Shared.Methods
+@{
+    ViewBag.Title = "Change Plan";
+    string currentPlan = !string.IsNullOrEmpty(ViewBag.CurrentPlan) ? ViewBag.CurrentPlan : "NONE";
+    var basic = "plan";
+    var premium = "plan";
+    switch (currentPlan)
+    {
+        case BillingType.Free:
+            basic = "active_plan";
+            break;
+        case BillingType.Annually:
+        case BillingType.Monthly:
+            premium = "active_plan";
+            break;
+    }
+    var isChecked = currentPlan.EqualsIgnoreCase(BillingType.Monthly) ? "checked" : "";
+}
+
+@section leftsubheader{
+    @Html.Partial("_AccountSubHeader")
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+<style>
+    #features i.fa-check text-primary {
+        color: #3699FF !important;
+    }
+
+    .feature-list li {
+        font-size: 16px;
+    }
+
+    .inActivePremium {
+        background-color: #E5EAEE;
+        border-color: #E5EAEE;
+        color: #80808F;
+    }
+
+    .activePremium {
+        color: #3699FF;
+        background-color: #E1F0FF;
+        border-color: transparent;
+    }
+
+    .btn.premiumPlan:hover:not(.btn-text):not(:disabled):not(.disabled) {
+        color: #FFFFFF !important;
+        background-color: #3699FF !important;
+        border-color: #3699FF !important;
+    }
+
+    .premiumFeatures .row {
+        text-align: left;
+        padding-bottom: 10px;
+    }
+</style>
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", SessionVariables.CurrentChurch)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom gutter-b">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">
+                        Change Plan
+                    </h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <form hidden id="changePlanForm" action="/settings/ChangePlan" method="post">
+                    <input type="hidden" id="plan" name="plan" value="" />
+                    <input type="hidden" id="churchId" name="churchId" value="@SessionVariables.CurrentChurch.Id" />
+                </form>
+                <div class="row mt-5">
+                    <div class="col-lg-10 offset-lg-1">
+                        <div class="bg-white rounded">
+                            <div class="card card-custom card-fit card-border px-5">
+                                <div id="annually-plan-border" class="card-body ribbon ribbon-top ribbon-ver px-5 text-center @premium">
+                                    @if (currentPlan.EqualsIgnoreCase(BillingType.Annually))
+                                    {
+                                        <div class="ribbon-target bg-primary" style="top: 0; right: 20px;">Current Plan</div>
+                                    }
+                                    <span class="d-block font-size-h1 font-weight-boldest mb-5 text-primary">Premium</span>
+                                    <div class="row">
+                                        <div class="col-lg">
+                                            <div class="row">
+                                                <div class="col-lg">
+                                                    <h1 class="font-size-h1 font-weight-bold annuallyPrice">@Utilities.GetAnnualSubscriptionAmount().ToCurrencyString()<small class="text-dark-25">/month</small></h1>
+                                                    <h1 class="font-size-h1 font-weight-bold monthlyPrice" style="display: none;">@Utilities.GetMonthlySubscriptionAmount().ToCurrencyString()<small class="text-dark-25">/month</small></h1>
+                                                    <span id="annual-monthly-helper-text" class="text-dark-50">(billed annually)</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mt-4 mb-0">
+                                                <div class="col-lg-8 col-form-label text-right">
+                                                    <span>View Monthly Plan</span>
+                                                </div>
+                                                <div class="col-lg-4 text-left">
+                                                    <span class="switch switch-icon">
+                                                        <label>
+                                                            <input type="checkbox" name="monthlyPlan" id="monthlyPlan" class="form-control" @Html.Raw(isChecked) />
+                                                            <span></span>
+                                                        </label>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="d-flex justify-content-center btn-div premium">
+                                                @if (currentPlan.EqualsIgnoreCase(BillingType.Annually))
+                                                {
+                                                    <span class="btn btn-primary font-weight-bolder px-15 py-3" style="cursor: pointer;">Current Plan</span>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-light-primary btn-select font-weight-bolder px-15 py-3">Select Plan</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-5 premiumFeatures">
+                                        <div class="row">
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i><strong>All Basic plan Features</strong></div>
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Offline Giving (Cash &amp; Checks)</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Robust Reporting &amp; Analytics</div>
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Prayer Requests</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Unlimited Giving Funds</div>
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Church Family Management</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Priority Support</div>
+                                            <div class="col"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator separator-dashed my-15"></div>
+                <div class="row mb-5">
+                    <div class="col-lg-10 offset-lg-1">
+                        <div class="bg-white rounded">
+                            <div class="card card-custom card-fit card-border px-5">
+                                <div id="free-plan-border" class="card-body ribbon ribbon-top ribbon-ver px-5 text-center @basic">
+                                    @if (currentPlan.EqualsIgnoreCase(BillingType.Free))
+                                    {
+                                        <div class="ribbon-target bg-primary" style="top:0; right: 20px;">Current Plan</div>
+                                    }
+                                    <span class="d-block font-size-h1 font-weight-boldest mb-5 text-primary">Basic</span>
+                                    <div class="row">
+                                        <div class="col-lg">
+                                            <h1 class="font-size-h1 font-weight-bold">@Html.Raw(0m.ToCurrencyString())<small class="text-dark-25">/month</small></h1>
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="d-flex justify-content-center btn-div free">
+                                                @if (currentPlan.EqualsIgnoreCase(BillingType.Free))
+                                                {
+                                                    <span class="btn btn-primary font-weight-bolder px-15 py-3" style="cursor: pointer;">Current Plan</span>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-light-primary btn-select font-weight-bolder px-15 py-3">Select Plan</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-10 premiumFeatures">
+                                        <div class="row">
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Digital Giving (Debit/Credit Cards &amp; ACH)</div>
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Limited Giving Funds</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col"><i class="fas fa-check text-primary mr-2"></i>Limited Reports</div>
+                                            <div class="col"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Confirmation Modal -->
+                <div class="modal fade" id="confirmPlan" tabindex="-1" role="dialog" aria-labelledby="confirmPlanLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmPlanLable">Confirm Your Plan</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="features">
+                                    <div id="freePlan-feature" style="display: none">
+                                        <h6 class="mb-5 text-center">Basic Plan Features</h6>
+                                        <p>Please review the features below before confirming your plan change.</p>
+                                        <table width="100%" class="table table-bordered table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-left">Feature</th>
+                                                    <th width="10%" class="text-center">Availability</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-left">Digital Giving (Debit/Credit Cards &amp; ACH)</td>
+                                                    <td class="text-center"><i class="fa fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Limited Giving Funds</td>
+                                                    <td class="text-center"><i class="fa fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Limited Reports</td>
+                                                    <td class="text-center"><i class="fa fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Offline Giving (Cash &amp; Checks)</td>
+                                                    <td class="text-center"><i class="fa fa-times"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Robust Reporting &amp; Analytics</td>
+                                                    <td class="text-center"><i class="fas fa-times"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Prayer Requests</td>
+                                                    <td class="text-center"><i class="fas fa-times"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Unlimited Giving Funds</td>
+                                                    <td class="text-center"><i class="fas fa-times"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Church Family Management</td>
+                                                    <td class="text-center"><i class="fas fa-times"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Priority Support</td>
+                                                    <td class="text-center"><i class="fas fa-times"></i></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="premiumPlan-feature" style="display: none">
+                                        <h6 class="mb-5 text-center">Premium Plan Features (Billed <span id="planName"></span>)</h6>
+                                        <p>Please review the features below before confirming your plan change.</p>
+                                        <table width="100%" class="table table-bordered table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-left">Feature</th>
+                                                    <th width="10%" class="text-center">Availability</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-left">Digital Giving (Debit/Credit Cards &amp; ACH)</td>
+                                                    <td class="text-center"><i class="fa fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Offline Giving (Cash &amp; Checks)</td>
+                                                    <td class="text-center"><i class="fa fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Robust Reporting &amp; Analytics</td>
+                                                    <td class="text-center"><i class="fa fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Prayer Requests</td>
+                                                    <td class="text-center"><i class="fas fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Unlimited Giving Funds</td>
+                                                    <td class="text-center"><i class="fas fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Church Family Management</td>
+                                                    <td class="text-center"><i class="fas fa-check text-primary"></i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">Priority Support</td>
+                                                    <td class="text-center"><i class="fas fa-check text-primary"></i></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="submit()">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="/settings/account" class="btn btn-light-dark mr-2">Back</a>
+                <button type="button" class="btn btn-light-primary font-weight-bold mr-2" data-toggle="modal" data-target="#confirmPlan">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+   $(document).on("click", ".btn-select", function (e) {
+        const parent = $(this).parent(".btn-div");
+        if (parent.hasClass("free")) {
+            $(".active_plan").removeClass("active_plan").addClass("plan");
+            $("#free-plan-border").removeClass("plan").addClass("active_plan");
+            $(".svg-icon-primary").removeClass("svg-icon-primary").addClass("svg-icon-light");
+            $("#free-plan-icon").removeClass("svg-icon-light").addClass("svg-icon-primary");
+            $(".btn-div").html('<button type="button" class="btn btn-light-primary font-weight-bolder px-15 py-3 btn-select">Select plan</button>');
+            $(parent).html('<span class="btn btn-primary font-weight-bolder px-15 py-3" style="cursor:pointer;">Selected</span>');
+
+            $("#plan").val("@BillingType.Free");
+            $("#freePlan-feature").show();
+            $("#premiumPlan-feature").hide();
+        }
+        else if (parent.hasClass("premium")) {
+            $(".active_plan").removeClass("active_plan").addClass("plan");
+            $("#annually-plan-border").removeClass("plan").addClass("active_plan");
+
+            $(".svg-icon-primary").removeClass("svg-icon-primary").addClass("svg-icon-light");
+            $("#annually-plan-icon").removeClass("svg-icon-light").addClass("svg-icon-primary");
+
+            $(".btn-div").html('<button type="button" class="btn btn-light-primary font-weight-bolder px-15 py-3 btn-select">Select plan</button>');
+            $(parent).html('<span class="btn btn-primary font-weight-bolder px-15 py-3" style="cursor:pointer;">Selected</span>');
+
+            $("#freePlan-feature").hide();
+            $("#premiumPlan-feature").show();
+            if (!$("#monthlyPlan").prop("checked")) {
+                $(".annuallyPrice").show();
+                $(".monthlyPrice").hide();
+                $("#plan").val("@BillingType.Annually");
+                $("#planName").text("@BillingType.Annually");
+            } else {
+                $(".monthlyPrice").show();
+                $(".annuallyPrice").hide();
+                $("#plan").val("@BillingType.Monthly");
+                $("#planName").text("@BillingType.Monthly");
+            }
+        }
+    });
+
+    $(document).on("click", "#monthlyPlan", function () {
+        if (!$(this).prop("checked")) {
+            $(".annuallyPrice").show();
+            $(".monthlyPrice").hide();
+            $("#plan").val("@BillingType.Annually");
+            $("#planName").text("@BillingType.Annually");
+            $("#annual-monthly-helper-text").text("(billed annually)");
+        } else if ($(this).prop("checked")) {
+            $(".monthlyPrice").show();
+            $(".annuallyPrice").hide();
+            $("#plan").val("@BillingType.Monthly");
+            $("#planName").text("@BillingType.Monthly");
+            $("#annual-monthly-helper-text").text("(billed monthly)");
+        }
+    });
+
+    $(document).ready(function () {
+        if ($("#monthlyPlan").prop("checked")) {
+            $("#monthlyPlan").click();
+        }
+
+        $("#plan").val("@currentPlan");
+        switch ("@currentPlan") {
+        case "@BillingType.Free":
+            $("#freePlan-feature").show();
+            $("#premiumPlan-feature").hide();
+            break;
+        case "@BillingType.Annually":
+            $("#freePlan-feature").hide();
+            $("#premiumPlan-feature").show();
+            $("#planName").text("@BillingType.Annually");
+            break;
+        case "@BillingType.Monthly":
+            $("#freePlan-feature").hide();
+            $("#premiumPlan-feature").show();
+            $("#planName").text("@BillingType.Monthly");
+            break;
+        }
+    });
+
+    function submit() {
+        StartLoading();
+        $("#changePlanForm").submit();
+    }
+</script>
+@section belowscripts
+{
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

@@ -1,0 +1,39 @@
+﻿.form-group.mr-2 label.mr-2 {
+    float: left;
+    margin-top: 9px;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .select2-container {
+        width: 65% !important;
+    }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    .select2-container {
+        width: 67% !important;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .select2-container {
+        width: 70% !important;
+    }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 900px) {
+    .select2-container {
+        width: 70% !important;
+    }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .select2-container {
+        width: 75% !important;
+    }
+}

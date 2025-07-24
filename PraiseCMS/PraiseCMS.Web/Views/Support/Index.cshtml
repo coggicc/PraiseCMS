@@ -1,0 +1,48 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.Email>
+
+@{
+    ViewBag.Title = "Support Requests";
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Create Support Request", "/support/_CreateSupportRequest/", "Create Support Request", "Send", "btn btn-light-primary btn-sm font-weight-bold", "", "", "", false, ModalSizes.Large)
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ToList())
+                        {
+                            <tr>
+                                <td>@item.CreatedDate.ToShortDateAndTimeString()</td>
+                                <td>@Html.Raw(item.Message) </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center">
+                <p>You don't have any support requests.</p>
+            </div>
+        }
+    </div>
+</div>

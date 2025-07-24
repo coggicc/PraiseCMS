@@ -1,0 +1,64 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.Room>
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="20%">Name</th>
+                    <th width="10%" class="text-center">Campus</th>
+                    <th width="10%" class="text-center">Building</th>
+                    <th width="10%" class="text-center">Floor</th>
+                    <th width="5%" class="text-center">Capacity</th>
+                    <th width="15%">Phone</th>
+                    <th>Description</th>
+                    <th width="5%" class="text-center">Status</th>
+                    <th width="5%" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Display
+                        </td>
+                        <td class="text-center">
+                            <span>@(SessionVariables.Campuses.Any(q => q.Id.Equals(item.CampusId))? SessionVariables.Campuses.Find(q => q.Id.Equals(item.CampusId)).Display: "Campus Not Defined")</span>
+                        </td>
+                        <td class="text-center">
+                            <span>@item.Building.Display</span>
+                        </td>
+                        <td class="text-center">
+                            <span>@item.Floor.Display</span>
+                        </td>
+                        <td class="text-center">
+                            <span>@(item.Capacity.IsNotNullOrEmpty()? item.Capacity.ToString() : "")</span>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.Phone))
+                            {
+                                <a href="tel:1@(item.Phone)">@item.Phone</a>
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td class="text-center">
+                            <span>@(item.Status ? ActiveStatuses.Active : ActiveStatuses.Inactive)</span>
+                        </td>
+                        <td class="text-center">
+                            @Html.AjaxModalLink("Edit", "/campuses/_editroom/" + item.Id, "Edit Room", "Save", "", "", "/campuses/deleteroom/" + item.Id)
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>You haven't added any rooms yet.</p>
+}

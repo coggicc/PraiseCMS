@@ -1,0 +1,278 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ReportView
+@{
+    ViewBag.Title = Model.IsNew ? "Create Report" : "Edit Report";
+    string display = Model.Report.GraphType == "Multi Axis Line Graph" ? "flex" : "none";
+}
+@section subheader{
+    <a href="/reports/" class="btn btn-light-primary btn-sm mr-2">Back</a>
+}
+<style type="text/css">
+    .code-mirror-container {
+        width: 100%;
+        float: left;
+        position: relative;
+    }
+</style>
+<div id="churchsettings" class="card card-custom">
+    <div class="card-header card-header-tabs-line">
+        <div class="card-title">
+            <h3 class="card-label">@(Model.IsNew ? "Create Report" : Model.Report.Display)</h3>
+        </div>
+    </div>
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "kt-form", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Report.Id)
+        @Html.HiddenFor(x => x.Report.ChurchId)
+        @Html.HiddenFor(x => x.Report.CreatedDate)
+        @Html.HiddenFor(x => x.Report.CreatedBy)
+        @Html.HiddenFor(x => x.IsNew)
+        <div class="card-body">
+            <div class="mb-15">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+                <h3 class="font-size-lg text-dark font-weight-bold mb-6">Report Details:</h3>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Category</label>
+                    <div class="col-lg-10">
+                        @Html.DropDownListFor(x => x.Report.ReportCategoryId, Model.ReportCategories.ToSelectList(x => x.Display, x => x.Id), "Select a category...", new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(x => x.Report.ReportCategoryId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Name</label>
+                    <div class="col-lg-10">
+                        @Html.EditorFor(x => x.Report.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Report.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Report Type</label>
+                    @if (RouteHelpers.CurrentAction.ContainsIgnoreCase("edit"))
+                    {
+                        <div class="col-lg-10">
+                            @Html.HiddenFor(x => x.Report.ReportType)
+                            @Html.DropDownListFor(x => x.Report.ReportType, GivingReports.ReportTypes(), new { disabled = "disabled", @class = "form-control select2" })
+                            @Html.ValidationMessageFor(x => x.Report.ReportType, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-lg-10">
+                            @Html.DropDownListFor(x => x.Report.ReportType, GivingReports.ReportTypes(), new { @class = "form-control select2" })
+                            @Html.ValidationMessageFor(x => x.Report.ReportType, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                </div>
+                <div class="report-url-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">Report Url</label>
+                    <div class="col-lg-10">
+                        @Html.EditorFor(x => x.Report.ReportUrl, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Report.ReportUrl, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Description</label>
+                    <div class="col-lg-10">
+                        @Html.TextAreaFor(x => x.Report.Description, new { @class = "form-control", rows = 3 })
+                        @Html.ValidationMessageFor(x => x.Report.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">Instructions</label>
+                    <div class="col-lg-10">
+                        @Html.TextAreaFor(x => x.Report.Instructions, new { @class = "form-control", rows = 3, placeholder = "This is only shown to users if there are specific requirements to run the report." })
+                        @Html.ValidationMessageFor(x => x.Report.Instructions, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">Query</label>
+                    <div class="col-sm-10">
+                        <div class="code-mirror-container">
+                            @Html.TextAreaFor(x => x.Report.Query, new { @class = "form-control", rows = 15 })
+                        </div>
+                        @Html.ValidationMessageFor(x => x.Report.Query, "", new { @class = "text-danger" })
+                        <div class="alert alert-secondary mt-4 full" role="alert">
+                            <div class="alert-text"><strong>Keywords:</strong> {campus-id} {from-date} {to-date}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">Graph Type</label>
+                    <div class="col-lg-10">
+                        @Html.DropDownListFor(x => x.Report.GraphType, GraphTypes.Items.ToSelectList("No Graph", x => x), "Select a graph type...", new { @class = "form-control select2", style = "width:100%;" })
+                        @Html.ValidationMessageFor(x => x.Report.GraphType, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Start Date</label>
+                    <div class="col-lg-10">
+                        <div class="input-group date">
+                            @Html.TextBoxFor(x => x.Report.StartDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", autocomplete = "off" })
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(x => x.Report.StartDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">End Date</label>
+                    <div class="col-lg-10">
+                        <div class="input-group date">
+                            @Html.TextBoxFor(x => x.Report.EndDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", autocomplete = "off" })
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(x => x.Report.EndDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Use Default Dates?</label>
+                    <div class="col-lg-10">
+                        <div class="checkbox-list">
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(x => x.Report.IsDefaultDateRange, new { @class = "float-left" })
+                                <span></span>
+                                Use the default start and end dates set on the <a href="/reports/settings" target="_blank">report settings</a> page.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">X Axis Column</label>
+                    <div class="col-lg-10">
+                        @Html.EditorFor(x => x.Report.XAxisColumn, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Report.XAxisColumn, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">Y Axis Column</label>
+                    <div class="col-lg-10">
+                        @Html.EditorFor(x => x.Report.YAxisColumn, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Report.YAxisColumn, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">X Axis Title</label>
+                    <div class="col-lg-10">
+                        @Html.EditorFor(x => x.Report.XAxisTitle, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Report.XAxisTitle, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility form-group row">
+                    <label class="col-lg-2 col-form-label">Y Axis Title</label>
+                    <div class="col-lg-10">
+                        @Html.EditorFor(x => x.Report.YAxisTitle, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Report.YAxisTitle, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="report-custom-fields-visibility multi_axis form-group row" style="display:@display">
+                    <label class="col-lg-2 col-form-label">Y Multi Axis Title</label>
+                    <div class="col-lg-10">
+                        @Html.EditorFor(x => x.Report.YMultiAxisTitle, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(x => x.Report.YMultiAxisTitle, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-light-primary font-weight-bold">Save</button>
+            <a href="@Url.Action("DeleteReport", "Reports", new { id = Model.Report.Id, type = Model.Report.ReportType})" class="btn btn-light-danger font-weight-bold">Delete Report</a>
+        </div>
+    }
+</div>
+@{
+    if (Model.ReportSettings.IsNotNull())
+    {
+        <input type="hidden" id="startDate" value="@Model.ReportSettings.DateFrom.ToShortDateString()" />
+        <input type="hidden" id="endDate" value="@Model.ReportSettings.DateEnd.ToShortDateString()" />
+    }
+    else
+    {
+        <input type="hidden" id="startDate" value="" />
+        <input type="hidden" id="endDate" value="" />
+    }
+}
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("change", "#Report_GraphType", function () {
+                var $this = $(this);
+                if ($this.val() == "Multi Axis Line Graph") {
+                    $(".multi_axis").show();
+                } else {
+                    $(".multi_axis").hide();
+                }
+            });
+        });
+    </script>
+    @if (Model.Report.ReportType == "Custom")
+    {
+        <script type="text/javascript">
+            $(".report-url-visibility").hide();
+            $(".report-custom-fields-visibility").show();
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            $(".report-url-visibility").show();
+            $(".report-custom-fields-visibility").hide();
+        </script>
+    }
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("change", "#Report_IsDefaultDateRange", function () {
+                var selected = $(this).prop("checked");
+                var startDate = $("#startDate").val();
+                var endDate = $("#endDate").val();
+
+                if (selected) {
+                    if (startDate != '' && startDate != '01/01/0001') {
+                        $("#Report_StartDate").val(startDate);
+                    }
+                    if (endDate != '' && endDate != '01/01/0001') {
+                        $("#Report_EndDate").val(endDate);
+                    }
+                }
+                else {
+                    $("#Report_StartDate").val('').removeAttr("disabled");
+                    $("#Report_EndDate").val('').removeAttr("disabled");
+                }
+            });
+
+            $(document).on("change", "#Report_ReportType", function () {
+                var $value = $(this).val();
+                if ($value == "Fixed") {
+                    ReportUrlFieldsVisibility(true);
+                    ReportCustomFieldsVisibility(false);
+                } else {
+                    ReportUrlFieldsVisibility(false);
+                    ReportCustomFieldsVisibility(true);
+                }
+            });
+            function ReportUrlFieldsVisibility(visibility) {
+                if (visibility) {
+                    $(".report-url-visibility").show();
+                } else {
+                    $(".report-url-visibility").hide();
+                }
+            }
+            function ReportCustomFieldsVisibility(visibility) {
+                if (visibility) {
+                    $(".report-custom-fields-visibility").show();
+                } else {
+                    $(".report-custom-fields-visibility").hide();
+                }
+            }
+        });
+    </script>
+}

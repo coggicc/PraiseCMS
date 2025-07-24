@@ -1,0 +1,182 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.DuplicateTimeModel
+
+<div id="alert-container"></div>
+<div id="event-div">
+    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "duplicate-time-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.CampusId)
+        @Html.HiddenFor(x => x.ChurchEvent.Id)
+
+        <div class="form-group">
+            <label>Select Campus</label>
+            @Html.DropDownListFor(x => x.SelectedItem, Model.ChurchEventSchedulers.ToSelectList("Select a campus...", x => x.Campus, x => x.Id), new { @class = "form-control select2", style = "width:100%;" })
+            @Html.ValidationMessageFor(x => x.SelectedItem, "", new { @class = "text-danger" })
+        </div>
+    }
+    @foreach (var item in Model.ChurchEventSchedulers.OrderBy(q => q.Campus))
+    {
+        <div class="card card-custom gutter-b campus-time campus-time-@item.Id" style="display:none;">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label toggle cursor-pointer text-dark-50 font-size-h3">
+                        <i class="far fa-calendar-alt text-primary fa-1-5x"></i>
+                    </h3>
+                </div>
+                <div class="card-toolbar" style="width:90%">
+                    <table class="table table-borderless table-vertical-center">
+                        <thead>
+                            <tr>
+                                <th class="p-0"></th>
+                                <th class="p-0"></th>
+                                <th class="p-0"></th>
+                                <th class="p-0"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-left pb-0">
+                                    <span class="text-muted font-weight-500">Start Date</span>
+                                    <span class="text-dark-75 font-weight-bold d-block">@item.StartDate.ToShortDateString()</span>
+                                </td>
+                                <td class="text-left pb-0">
+                                    <span class="text-muted font-weight-500">Event Ends</span>
+                                    @switch (item.EventEnds)
+                                    {
+                                        case EventEnds.Never:
+                                            <span class="text-dark-75 font-weight-bold d-block">@(item.EventEnds)</span>
+                                            break;
+                                        case EventEnds.OnSpecificDate:
+                                            <span class="text-dark-75 font-weight-bold d-block">@(Convert.ToDateTime(item.EndDate).ToShortDateString())</span>
+                                            break;
+                                        case EventEnds.AfterEventOccurrences:
+                                            <span class="text-dark-75 font-weight-bold d-block">@($"After {item.Occurrences} Occurrences")</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-left pb-0">
+                                    <span class="text-muted font-weight-500">Event Frequency</span>
+                                    <span class="text-dark-75 font-weight-bold d-block">@(item.Frequency.IsNotNullOrEmpty()? item.Frequency : "")</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-vertical-center">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="text-left"><span class="text-muted font-weight-500">Time #</span></th>
+                                <th class="text-center"><i class="far fa-clock text-primary"></i> <span class="text-muted font-weight-500">Start Time</span></th>
+                                <th class="text-center"><i class="far fa-clock text-primary"></i> <span class="text-muted font-weight-500">End Time</span></th>
+                                <th class="text-center"><i class="far fa-clock text-primary"></i> <span class="text-muted font-weight-500">Show Event At</span></th>
+                                <th class="text-center"><i class="far fa-clock text-primary"></i> <span class="text-muted font-weight-500">Hide Event At</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var count = 0;
+                                foreach (var time in item.Times)
+                                {
+                                    count++;
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox-list">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" checked name="eventTime-@item.Id" value="@time.Id" />
+                                                    <span style="top: -10px;"></span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="text-left"><span class="text-dark-75 font-weight-bold d-block">Time @count</span></td>
+                                        @if (!time.AllDay)
+                                        {
+                                            <td class="text-center">
+                                                <span class="text-dark-75 font-weight-bold d-block">@(time.StartTime)</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="text-dark-75 font-weight-bold d-block">@(time.EndTime)</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="text-dark-75 font-weight-bold d-block">@(time.ShowEventAt)</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="text-dark-75 font-weight-bold d-block">@(time.HideEventAt)</span>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-left">
+                                                <span class="text-dark-75 font-weight-bold d-block">All Day</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="text-dark-75 font-weight-bold d-block">-</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="text-dark-75 font-weight-bold d-block">-</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="text-dark-75 font-weight-bold d-block">=</span>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if (item.Times.IsNotNullOrEmpty() && item.Times.Any(x => x.EndDate.IsNotNullOrEmpty()))
+            {
+                <div class="card-footer p-5">
+                    <em class="text-dark-50">Multi-day event will end after @Html.Raw((Convert.ToDateTime(item.Times.Find(x => x.EndDate.IsNotNullOrEmpty()).EndDate).Date - item.StartDate.Date).TotalDays) day of start</em>
+                </div>
+            }
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    $(document).on('change', '#SelectedItem', function (e) {
+        $('.campus-time').hide();
+        if ($(this).val()) {
+            $('.campus-time-' + $(this).val()).show();
+        }
+    });
+
+    $(document).on('submit', '#duplicate-time-form', function (e) {
+        e.preventDefault();
+        $("#alert-container").html("");
+        if ($('#SelectedItem').val()) {
+            let timesId = $('input[name="eventTime-' + $('#SelectedItem').val() + '"]:checked').map(function () { return this.value; }).get();
+            if (!timesId || !timesId.length) {
+                setTimeout(function () {
+                    StopLoading();
+                });
+                wizardValidationMessage('Please select an event time to duplicate.', 'warning', false, 'Warning');
+                return false;
+            }
+
+            $.post($(this).attr('action'), ({ selectedId: $('#SelectedItem').val(), campusId: $('#CampusId').val(), timesId: timesId }), function (result) {
+                if (result.Success) {
+                    $('#ajax-modal').modal('toggle');
+                    Notify("success", "SUCCESS", "Event time has been duplicated.", "/events", "_blank");
+                    setTimeout(function () {
+                        location.reload(true);
+                    }, 1000);
+                } else {
+                    ShowErrorAlert(result.Message);
+                }
+            });
+        } else {
+            setTimeout(function () {
+                StopLoading();
+            });
+            wizardValidationMessage('Please select a campus you would like to duplicate event times for.', 'warning', false, 'Warning');
+        }
+    });
+</script>

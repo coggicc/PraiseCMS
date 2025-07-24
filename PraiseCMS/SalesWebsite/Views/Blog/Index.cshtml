@@ -1,0 +1,51 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.ViewModels.BlogPostViewModel>
+
+@{
+    Layout = "~/Views/Shared/_BlogLayout.cshtml";
+    ViewBag.Title = "Index";
+}
+<header class="page header text-contrast bg-primary" style="">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1 class="bold display-md-4 text-contrast mb-4">Transforming Ministries Blog</h1>
+                <p class="lead text-contrast">Insights, tips, and tools to take your church to the next level.</p>
+            </div>
+        </div>
+    </div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="row gap-y">
+            @*<div class="col-lg-8 b-r">*@
+            <div class="col-lg-12 b-r">
+                <div class="row gap-y">
+                    @foreach (var post in Model)
+                    {
+                        <div class="col-md-6">
+                            <div class="card card-blog shadow-box shadow-hover border-0">
+                                <a href="@Url.Action("Post", "Blog", new { id = post.PostId })"><img class="card-img-top img-responsive" src="https://picsum.photos/350/200/?random&gravity=north" alt=""></a>
+                                <div class="card-body">
+                                    @*<div class="d-flex align-items-center justify-content-between">
+                                        <div class="author d-flex align-items-center">
+                                            <img class="author-picture rounded-circle icon-md shadow-box" src="~/Content/blog/img/avatar/user.png" alt="...">
+                                            <p class="small bold my-0">@post.AuthorName</p>
+                                        </div>
+                                        <nav class="nav"><a href="#" class="d-flex align-items-center text-secondary me-3 blog-action blog-favorite"><i class="fas fa-heart text-danger me-2"></i> <span class="small">347</span> </a><a href="javascript:;" class="d-flex align-items-center text-secondary blog-action blog-bookmark"><i class="far fa-bookmark me-2"></i> <span class="small">73</span></a></nav>
+                                    </div>
+                                    <hr>*@
+                                    <p class="card-title regular"><a href="@Url.Action("Post", "Blog", new { id = post.PostId })">@post.Title</a></p>
+                                    <p class="card-text text-secondary">@post.Lead</p>
+                                    <p class="bold small text-secondary my-0"><small>@post.PublishedDate</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @*<nav class="nav justify-content-center mt-5"><a class="btn btn-contrast btn-rounded me-5" href="#"><i class="fas fa-angle-left"></i> Previous</a> <a class="btn btn-contrast btn-rounded" href="#">Next <i class="fas fa-angle-right"></i></a></nav>*@
+            </div>
+            @*@Html.Action("_BlogRightSidebar")*@
+        </div>
+    </div>
+</section>

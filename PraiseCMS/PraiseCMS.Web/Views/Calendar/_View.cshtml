@@ -1,0 +1,82 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.ChurchEventViewModel
+
+@{
+    var timeDisplay = "";
+    var startTime = "";
+
+    if (Model.StartTime.HasValue)
+    {
+        startTime = DateTime.Today.Add(Model.StartTime.Value).ToString("h:mm tt");
+        timeDisplay = "&#8226; " + startTime;
+    }
+
+    var endTime = "";
+
+    if (Model.EndTime.HasValue)
+    {
+        endTime = DateTime.Today.Add(Model.EndTime.Value).ToString("h:mm tt");
+        timeDisplay += " - " + endTime;
+    }
+
+    if (Model.AllDay)
+    {
+        timeDisplay = ", All Day";
+    }
+}
+
+<div id="details-div" data-scroll="true" data-height="600" class="font-size-h6">
+    @Html.HiddenFor(x => x.Display, new { id = "event_display" })
+
+    @if (ViewBag.IsChurchEvent && ViewBag.isOwner)
+    {
+        <p><a data-toggle="tooltip" title="Go to Event Details Page" target="_blank" href="/events/details/@Model.Id">View Details</a></p>
+    }
+
+    @if (Model.StartDate.HasValue && Model.EndDate.HasValue && Model.StartDate.Value.Date.Equals(Model.EndDate.Value.Date))
+    {
+        <p>@Model.StartDate.Value.ToString("dddd, MMMM d") @Html.Raw(timeDisplay)</p>
+    }
+    else
+    {
+        if (Model.AllDay)
+        {
+            <p>
+                @(Model.StartDate.HasValue ? Model.StartDate.Value.ToString("MMMM d") : "")
+                @(Model.EndDate.HasValue ? "-" + Model.EndDate.Value.ToString("MMMM d") : "")
+                @Html.Raw(timeDisplay)
+            </p>
+        }
+        else
+        {
+            <p>
+                @(Model.StartDate.HasValue ? Model.StartDate.Value.ToString("MMMM d") : "") @startTime
+                @(Model.EndDate.HasValue ? " - " + Model.EndDate.Value.ToString("MMMM d") + ", " + endTime : "")
+            </p>
+        }
+    }
+    <p>@Model.Description</p>
+    <p class="small">
+        Created By: @ViewBag.OwnerName
+    </p>
+</div>
+
+<script>
+    if ("@ViewBag.isOwner" === "True" && "@ViewBag.IsChurchEvent" === "False") {
+        $('#btn-close').hide();
+        $('#btn-edit').show();
+    } else {
+        $('#btn-close').show();
+        $('#btn-edit').hide();
+    }
+    if ('@ViewBag.IsGlobal' === "True") {
+        $('#btn-edit').attr('data-global', 'true');
+        $('#btn-edit').attr('data-id', '@Model.Id');
+    } else {
+        $('#btn-edit').attr('data-global', 'false');
+    }
+
+    $(document).ready(function () {
+        $('#ajax-modal .modal-title').text($('#event_display').val());
+    });
+</script>

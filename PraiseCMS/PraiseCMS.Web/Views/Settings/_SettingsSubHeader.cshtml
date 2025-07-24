@@ -1,0 +1,7 @@
+﻿@using Roles = PraiseCMS.Shared.Shared.Roles
+
+<a href="/settings" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-958595693250ac1c90e1ed47c98ba8 @Html.IsActive("settings", "Index", true)">Church Info</a>
+<a href="/campuses" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-9320982602755ea0f9a4ba47d7a34e">Campuses</a>
+@*<a href="/serviceareas" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-07737697423e093561d03a485a9e64">Service Areas</a>*@
+<a href="/users?type=@Roles.Administrator" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-4295413424b858715f7bc14a3fb3f7">Administrators</a>
+<a href="/permissions" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2 module-28834340961e860481430b4d1fbad1">Permissions</a>

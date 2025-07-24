@@ -1,0 +1,149 @@
+﻿@model PraiseCMS.DataAccess.Models.SermonNote
+
+@{
+    ViewBag.Title = "Print";
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="~/Content/assets/css/bootstrap-4.5.0.min.css" rel="stylesheet" />
+
+    @if (Model.NoteType == "Blank")
+    {
+        <style>
+            .notesInput:focus {
+                outline: none;
+            }
+
+            .bg-transparent {
+                background-color: transparent;
+            }
+
+            table {
+                table-layout: fixed;
+                width: 1600px;
+                word-break: break-all;
+            }
+
+            textarea {
+                overflow-y: hidden;
+                border-bottom: 0px !important;
+                overflow-wrap: normal;
+                resize: none;
+            }
+        </style>
+    }
+    else
+    {
+        <style>
+
+            .notesInput:focus {
+                outline: none;
+            }
+
+            .card-columns {
+                -webkit-column-count: 2;
+                -moz-column-count: 2;
+                column-count: 2;
+                column-gap: 40px;
+                height: 50%;
+                column-width: 200px;
+                text-align: justify;
+            }
+
+            @@media print {
+                @@page {
+                    size: landscape
+                }
+
+                .card-columns {
+                    -webkit-column-count: 2;
+                    -moz-column-count: 2;
+                    column-count: 2;
+                    column-gap: 40px;
+                    height: 50%;
+                    column-width: 200px;
+                    text-align: justify;
+                }
+            }
+        </style>
+    }
+
+</head>
+<body>
+    <div id="content">
+        <div class="row">
+            <div class="col-6 ">
+                <img src='@Url.Content("~/Content/assets/image/highlands_logo.png")' height="30" class="mx-2 w-auto" />
+                <hr />
+            </div>
+            <div class="col-6">
+                <hr style="margin-top: 2.8rem;" />
+            </div>
+            @if (Model.NoteType == "Blank")
+            {
+                <div id="msg" class="ml-3 text-justify pr-3">
+                    @Model.Message
+                </div>
+            }
+            else
+            {
+                <div id="msg" class="ml-3 card-columns px-3">
+                    @Model.Message
+                </div>
+            }
+
+        </div>
+    </div>
+    @Html.HiddenFor(x => x.NoteType)
+</body>
+</html>
+<script src="~/Content/assets/plugins/general/jquery/dist/jquery.min.js"></script>
+<script>
+    function getPageHTML() {
+        return "<!DOCTYPE html><html>" + $("html").html() + "</html>";
+    }
+
+    $(document).ready(function () {
+        var noteType = $("#NoteType").val();
+        var msg = $("#msg").html();
+        msg = msg.replace(/&lt;/g, "<");
+        msg = msg.replace(/&gt;/g, ">");
+        msg = msg.replace(/&amp;nbsp;/g, "");
+        msg = msg.replace(/\[input_half\]/g, "<input type='text' size='20' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+        msg = msg.replace(/\[input_full\]/g, " <br/><input type='text'   class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;'/><br/>");
+
+        $("#msg").html(msg);
+
+        if (noteType !== "Blank") { // Standard and Filled notes
+
+            $("#msg").find("span.input-half").each(function () {
+                var value = $(this).text();
+                $(this).before("<input type='text' size='20' readonly value='" + value + "' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+                $(this).remove();
+            });
+            $("#msg").find("span.input-full").each(function () {
+                var value = $(this).text();
+                $(this).before("<input type='text'  readonly value='" + value + "' class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;' />");
+                $(this).remove();
+            });
+        } else { // Blanks notes
+            $("#msg").find(".input-full").each(function () {
+                var value = $(this).text();
+                $(this).before("<textarea  cols='105' rows='2' disabled   class='bg-transparent input-full  border-top-0  border-right-0 border-left-0 notesInput'>" + value + "</textarea>");
+                $(this).remove();
+            });
+            $(function () {
+                $("textarea").each(function () {
+                    this.style.height = (this.scrollHeight + 10) + 'px';
+                });
+            });
+            $(".table td").css({ "border-top": 0 });
+        }
+
+        window.print();
+    });
+</script>

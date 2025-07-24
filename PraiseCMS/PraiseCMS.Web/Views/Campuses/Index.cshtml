@@ -1,0 +1,171 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@model PraiseCMS.DataAccess.Models.CampusesView
+
+@{
+    ViewBag.Title = SessionVariables.Campuses.Count() > 1 ? "Campuses" : "Campus";
+}
+
+@section leftsubheader{
+    @Html.Partial("_CampusesSubheader")
+}
+
+@if (SessionVariables.CurrentUser.IsAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            @Html.AjaxModalLink("Add Campus", "/campuses/_createcampus", "Create Campus", "Save", "btn btn-light-primary btn-sm font-weight-bold", "", "", "", false, "")
+        </div>
+    }
+}
+
+@if (SessionVariables.Campuses.Any())
+{
+    foreach (var item in Model.Campuses.OrderBy(x => x.Display))
+    {
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="mr-3">
+                                <a href="@Url.Action("Dashboard", "Campuses", new { id = item.Id} )" class="d-flex align-items-center text-dark text-hover-primary font-size-h5 font-weight-bold">
+                                    @item.Display
+                                </a>
+                                <div class="d-flex flex-wrap mt-4">
+                                    @if (!string.IsNullOrEmpty(item.Email))
+                                    {
+                                        <span class="text-muted font-weight-bold mr-lg-8 mr-5">
+                                            <i class="fas fa-envelope text-primary mr-1"></i>@item.Email
+                                        </span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.Phone))
+                                    {
+                                        <span class="text-muted font-weight-bold mr-lg-8 mr-5">
+                                            <i class="fas fa-phone text-primary mr-1"></i>@item.Phone
+                                        </span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.Address))
+                                    {
+                                        <span class="text-muted font-weight-bold">
+                                            <i class="fa fa-map-marker-alt text-primary mr-1"></i>@item.Address
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="d-flex align-items-center flex-wrap justify-content-between">
+                                <div class="flex-grow-1 font-weight-bold text-dark-50 py-5 py-lg-2 mr-5">
+                                    I distinguish three main text objectives could be merely to inform people.
+                                    <br />A second could be persuade people. You want people to bay objective.
+                                </div>
+                                <div class="d-flex flex-wrap align-items-center py-2">
+                                    <div class="d-flex align-items-center mr-10">
+                                        <div class="mr-6">
+                                            <div class="font-weight-bold mb-2">Next Service</div>
+                                            <span class="btn btn-sm btn-text btn-light-primary text-uppercase font-weight-bold">8:00 AM</span>
+                                        </div>
+                                        <div class="mr-6">
+                                            <div class="font-weight-bold mb-2">Upcoming Event</div>
+                                            <span class="btn btn-sm btn-text btn-light-success text-uppercase font-weight-bold">Catalyst: 45 Days</span>
+                                        </div>
+                                        <div class="mr-6">
+                                            <div class="font-weight-bold mb-2">Due Date</div>
+                                            <span class="btn btn-sm btn-text btn-light-warning text-uppercase font-weight-bold">07/21/2021</span>
+                                        </div>
+                                        <div class="">
+                                            <div class="font-weight-bold mb-2">Another Item</div>
+                                            <span class="btn btn-sm btn-text btn-light-info text-uppercase font-weight-bold">08/15/2021</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                </div>
+                <div class="separator separator-solid my-7"></div>
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                        <span class="mr-4">
+                            <i class="fas fa-dollar-sign text-muted"></i>
+                        </span>
+                        <div class="d-flex flex-column text-dark-75">
+                            <span class="font-weight-bolder font-size-sm">Giving - YTD</span>
+                            <span class="font-weight-bolder font-size-h5">
+                                @Model.Giving.Where(x => x.CampusId.IsNotNullOrEmpty() && x.CampusId.Equals(item.Id)).Sum(x => x.Amount).ToCurrencyString()
+                            </span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                        <span class="mr-4">
+                            <i class="fas fa-users text-muted"></i>
+                        </span>
+                        <div class="d-flex flex-column text-dark-75">
+                            <span class="font-weight-bolder font-size-sm">Attendance - YTD</span>
+                            <span class="font-weight-bolder font-size-h5">
+                                @Model.Attendance.Where(x => x.CampusId.IsNotNullOrEmpty() && x.CampusId.Equals(item.Id)).Sum(x => x.Total).ToNumberString()
+                            </span>
+                        </div>
+                    </div>
+                    @*<div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                            <span class="mr-4">
+                                <i class="fas fa-praying-hands text-muted"></i>
+                            </span>
+                            <div class="d-flex flex-column text-dark-75">
+                                <span class="font-weight-bolder font-size-sm">Prayer Requests - YTD</span>
+                                <span class="font-weight-bolder font-size-h5">
+                                    @Model.PrayerRequests.Where(x => x.CampusId != null && x.CampusId.Equals(item.Id)).Count()
+                                </span>
+                            </div>
+                        </div>*@
+                    <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                        <span class="mr-4">
+                            <i class="fas fa-cross text-muted"></i>
+                        </span>
+                        <div class="d-flex flex-column text-dark-75">
+                            <span class="font-weight-bolder font-size-sm">Salvations - YTD</span>
+                            <span class="font-weight-bolder font-size-h5">
+                                @Model.Salvations.Where(x => x.CampusId != null && x.CampusId.Equals(item.Id)).Sum(x => x.Total).ToNumberString()
+                            </span>
+                        </div>
+                    </div>
+                    @*<div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                            <span class="mr-4">
+                                <i class="flaticon-pie-chart icon-2x text-muted font-weight-bold"></i>
+                            </span>
+                            <div class="d-flex flex-column text-dark-75">
+                                <span class="font-weight-bolder font-size-sm">Small Group Attendance</span>
+                                <span class="font-weight-bolder font-size-h5">
+                                    <a href="#" class="text-primary font-weight-bolder">75</a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center flex-lg-fill my-1">
+                            <span class="mr-4">
+                                <i class="flaticon-network icon-2x text-muted font-weight-bold" data-toggle="tooltip" title="Campus Leadership Team" data-placement="bottom"></i>
+                            </span>
+                            <div class="symbol-group symbol-hover">
+                                <div class="symbol symbol-30 symbol-circle" data-toggle="tooltip" title="Mark Stone">
+                                    <img alt="Pic" src="~/Content/assets/media/users/300_25.jpg" />
+                                </div>
+                                <div class="symbol symbol-30 symbol-circle" data-toggle="tooltip" title="Charlie Stone">
+                                    <img alt="Pic" src="~/Content/assets/media/users/300_19.jpg" />
+                                </div>
+                                <div class="symbol symbol-30 symbol-circle" data-toggle="tooltip" title="Luca Doncic">
+                                    <img alt="Pic" src="~/Content/assets/media/users/300_22.jpg" />
+                                </div>
+                                <div class="symbol symbol-30 symbol-circle" data-toggle="tooltip" title="Nick Mana">
+                                    <img alt="Pic" src="~/Content/assets/media/users/300_23.jpg" />
+                                </div>
+                                <div class="symbol symbol-30 symbol-circle" data-toggle="tooltip" title="Teresa Fox">
+                                    <img alt="Pic" src="~/Content/assets/media/users/300_18.jpg" />
+                                </div>
+                                <div class="symbol symbol-30 symbol-circle symbol-light">
+                                    <span class="symbol-label font-weight-bold">5+</span>
+                                </div>
+                            </div>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    }
+}

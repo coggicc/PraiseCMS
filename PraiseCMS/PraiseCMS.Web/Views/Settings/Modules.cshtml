@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Modules";
+}
+
+@if (SessionVariables.CurrentUser.IsSuperAdmin || SessionVariables.CurrentUser.IsAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            <a href="/permissions" class="btn btn-light-dark btn-sm module-28834340961e860481430b4d1fbad1">Manage Permissions</a>
+        </div>
+    }
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">@ViewBag.Title</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Manage System Modules</span>
+            </h3>
+        </div>
+        @if (SessionVariables.CurrentUser.IsSuperAdmin)
+        {
+            <div class="card-toolbar">
+                @Html.AjaxModalLink("Create Module", "/settings/createmodule/", "Create Module", "Save", "btn btn-sm btn-light-primary d-none d-lg-block", "")
+            </div>
+        }
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Id</th>
+                    </tr>
+                </thead>
+                <tbody id="view-module-container">
+                    @Html.Partial("_ViewModulePartial")
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

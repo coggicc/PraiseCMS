@@ -1,0 +1,123 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@model PraiseCMS.DataAccess.Models.ChurchDashboard
+
+@{
+    ViewBag.Title = "Churches";
+}
+
+@if (SessionVariables.CurrentUser.IsSuperAdmin)
+{
+    @section subheader{
+        <div class="d-flex align-items-center">
+            <a class="btn btn-light-primary btn-sm font-weight-bold" href="/churches/RegisterChurch">Create Church</a>
+        </div>
+    }
+}
+
+@if (Model.Churches.Any())
+{
+    foreach (var church in Model.Churches.OrderBy(x => x.IsActive).ThenBy(x => x.Display))
+    {
+        var denomination = "";
+        if (Model.Denominations.Any())
+        {
+            denomination = !string.IsNullOrEmpty(church.Denomination) ? Model.Denominations.FirstOrDefault(x => x.Id.Equals(church.Denomination))?.Display : "Denomination not provided";
+        }
+
+        var totalGiving = Model.ChurchGiving.FirstOrDefault(x => x.Key.Equals(church.Id)).Value;
+        var totalPrayerRequests = Model.ChurchPrayerRequests.FirstOrDefault(x => x.Key.Equals(church.Id)).Value;
+        var subscription = Model.Subscriptions.Find(q => q.ChurchId.Equals(church.Id));
+
+        var subscriptionTooltipText = (subscription.IsNullOrEmpty() || (subscription != null && subscription.BillingPlan != null && subscription.BillingPlan.Equals(BillingType.Free))
+            ? PlanType.Free : $"{PlanType.Premium}<br>{Html.Raw(subscription.FreeTrial ? "(Free Trial)" : "")}<br>Expiration: {Convert.ToDateTime(subscription.EndDate).ToShortDateString()}");
+
+        var subscriptionLabelClass = subscription.IsNullOrEmpty() || subscription.IsNotNullOrEmpty() && subscription.BillingPlan.IsNotNull() && subscription.BillingPlan.Equals(BillingType.Free) ? "primary" : "success";
+
+        var subscriptionLabelText = subscription.IsNullOrEmpty() || subscription.IsNotNullOrEmpty() && subscription.BillingPlan.IsNotNull() && subscription.BillingPlan.Equals(BillingType.Free) ? PlanType.Free : PlanType.Premium;
+
+        <div class="card card-custom gutter-b">
+            <div class="card-body" @Html.Raw(!church.IsActive ? "style = 'background-color:#fff7f6'" : "")>
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="mr-3">
+                                <label class="d-flex align-items-center text-dark font-size-h5 font-weight-bold mr-3">@church.Display</label>
+                                <div class="d-flex flex-wrap my-2">
+                                    @if (!string.IsNullOrEmpty(church.Email))
+                                    {
+                                        <a href="mailto:@church.Email" class="text-muted text-hover-primary font-weight-bold mr-lg-8 mr-5 mb-lg-0 mb-2">
+                                            <i class="fas fa-envelope text-primary mr-1"></i>@church.Email
+                                        </a>
+                                    }
+                                    @if (!string.IsNullOrEmpty(church.Phone))
+                                    {
+                                        <a href="tel:1@(church.Phone)" class="text-muted text-hover-primary font-weight-bold mr-lg-8 mr-5 mb-lg-0 mb-2">
+                                            <i class="fas fa-phone text-primary mr-1"></i>@church.Phone
+                                        </a>
+                                    }
+                                    @if (!string.IsNullOrEmpty(church.BillingAddress))
+                                    {
+                                        <span class="text-muted font-weight-bold mr-lg-8 mr-5 mb-lg-0 mb-2">
+                                            <i class="fa fa-map-marker-alt text-primary mr-1"></i>@church.BillingAddress
+                                        </span>
+                                    }
+                                    <span class="text-muted font-weight-bold">
+                                        <i class="fa fa-church text-primary mr-1"></i>@denomination
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="my-lg-0 my-1">
+                                <a href="/settings/account/@church.Id" data-toggle="tooltip" data-html="true" title="Plan Type: @subscriptionTooltipText" class="label label-light-@subscriptionLabelClass label-inline label-xl mr-2">@subscriptionLabelText</a>
+                                <span class="label label-light-@(church.IsActive ? "success" : "danger") label-inline label-xl mr-2" data-toggle="tooltip" title="Church Status">@(church.IsActive ? ActiveStatuses.Active : ActiveStatuses.Inactive)</span>
+                                @if (!church.HasMerchantAccount)
+                                {
+                                    @Html.ActionLink("Create Merchant Account", "CreateMerchantAccountForChurch", "SuperAdmin", new { id = church.Id }, new { @class = "btn btn-light-danger btn-sm font-weight-bold" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator separator-solid my-7"></div>
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                        <span class="mr-4">
+                            <i class="flaticon-piggy-bank icon-2x text-muted font-weight-bold"></i>
+                        </span>
+                        <div class="d-flex flex-column text-dark-75">
+                            <span class="font-weight-bolder font-size-sm">Giving</span>
+                            <span class="font-weight-bolder font-size-h5">@totalGiving.ToCurrencyString()</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                        <span class="mr-4">
+                            <i class="flaticon-confetti icon-2x text-muted font-weight-bold"></i>
+                        </span>
+                        <div class="d-flex flex-column text-dark-75">
+                            <span class="font-weight-bolder font-size-sm">Attendance</span>
+                            <span class="font-weight-bolder font-size-h5">TBD</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                        <span class="mr-4">
+                            <i class="flaticon-pie-chart icon-2x text-muted font-weight-bold"></i>
+                        </span>
+                        <div class="d-flex flex-column text-dark-75">
+                            <span class="font-weight-bolder font-size-sm">Prayer Requests</span>
+                            <span class="font-weight-bolder font-size-h5">@totalPrayerRequests</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                        <span class="mr-4">
+                            <i class="far fa-users text-muted font-weight-bold"></i>
+                        </span>
+                        <div class="d-flex flex-column text-dark-75">
+                            <span class="font-weight-bolder font-size-sm">Total Users</span>
+                            <span class="font-weight-bolder font-size-h5">TBD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

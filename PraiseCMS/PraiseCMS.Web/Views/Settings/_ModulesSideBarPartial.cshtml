@@ -1,0 +1,28 @@
+﻿@model PraiseCMS.DataAccess.Models.PermissionViewModel
+<div class="kt-portlet sticky" data-sticky="true" data-margin-top="100px" data-sticky-for="1023" data-sticky-class="kt-sticky">
+    <div class="kt-portlet__body kt-portlet__body--fit">
+        <ul class="kt-nav kt-nav--bold kt-nav--md-space kt-nav--v3 nav nav-tabs" role="tablist">
+            @foreach (var m in Model.Modules.Where(x => x.ParentId == null).ToList())
+            {
+                <li class="kt-nav__item">
+                    <a class="kt-nav__link module-toggle" href="javascript:;">
+                        <span class="kt-nav__link-text">@m.Name</span>
+                    </a>
+                    <div style="display:none;">
+                        <ul>
+                            @foreach (var c in Model.Modules.Where(x => x.ParentId == m.Id).ToList())
+                            {
+                                <li>
+                                    <a class="kt-nav__link" href="/permissions/Modules">
+                                        <span class="kt-nav__link-text">@c.Name</span>
+                                    </a>
+                                </li>
+
+                            }
+                        </ul>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

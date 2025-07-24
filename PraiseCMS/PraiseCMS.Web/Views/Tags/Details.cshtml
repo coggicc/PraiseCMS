@@ -1,0 +1,230 @@
+﻿@model PraiseCMS.DataAccess.Models.TagDetailsViewModel
+@{
+    ViewBag.Title = "Tag Details";
+}
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                <span id="tag-name-detail"><i class="text-primary fas fa-tag mr-2"></i> @Model.Tag.Display</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a class="delete-tag mr-2 btn btn-sm btn-outline-danger mr-2" href="/tags/deletetag?id=@Model.Tag.Id" data-toggle="tooltip" title="Delete Tag">Delete</a>
+            @Html.AjaxModalLink("Edit", $"/tags/EditTag?id={Model.Tag.Id}&isDetailPage=true", "Edit Tag", "Update", "btn btn-sm btn-light-primary mr-2", "", "", "", false, "")
+            <a href="/tags" class="btn btn-sm btn-light-primary btn-icon" data-toggle="tooltip" title="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="d-flex align-items-center flex-wrap">
+            <ul class="nav nav-tabs nav-tabs-line">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#tag-details">
+                        <span class="nav-icon"><i class="flaticon2-gear"></i></span>
+                        <span class="font-weight-bold nav-text">Details</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tag-communication">
+                        <span class="nav-icon"><i class="flaticon2-chat-1"></i></span>
+                        <span class="font-weight-bold nav-text">Communication</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content mt-5" id="myTabContent">
+            <div class="tab-pane fade show active" id="tag-details" role="tabpanel">
+                <div class="bg-white rounded">
+                    <!--begin::Card-->
+                    <div class="card card-custom card-fit card-border">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3 class="card-label">Details</h3>
+                            </div>
+                            <div class="card-toolbar">
+                                <a href="/tags/RemoveAllPeopleFromTag?tagId=@Model.Tag.Id" class="removeAllTagPeople btn btn-sm btn-outline-danger mr-2" data-toggle="tooltip" title="Remove ALL people from the @Model.Tag.Display tag">Remove</a>
+                                @Html.AjaxModalLink("Assign", $"/tags/AssignToTag?tagId={Model.Tag.Id}", $"Assign {Model.Tag.Display} people to other folders and tags", "Assign", "btn btn-sm btn-light-primary", "", "", "", false, ModalSizes.Large)
+                            </div>
+                        </div>
+                        <div class="card-body pt-2">
+                            <div id="tag-peoples-div" class="card card-custom card-stretch gutter-b">
+                                @Html.Partial("_TagPeople", Model)
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Card-->
+                </div>
+                @*<div class="card card-custom gutter-b">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3 class="card-label">Details</h3>
+                            </div>
+                            <div class="card-toolbar">
+                                @Html.AjaxModalLink("Assign", $"/tags/AssignToTag?tagId={Model.Tag.Id}", $"Assign {Model.Tag.Display} People to other Folders and Tags", "Assign", "btn btn-sm btn-light-primary mr-2 btn-hover-primary", "", "", "", false, ModalSizes.Large, true)
+                                <a href="/tags/RemoveAllPeopleFromTag?tagId=@Model.Tag.Id" class="removeAllTagPeople btn btn-light-primary btn-sm" data-toggle="tooltip" title="Remove ALL people from the @Model.Tag.Display tag">Remove</a>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="tag-peoples-div" class="card card-custom card-stretch gutter-b">
+                                @Html.Partial("_TagPeople", Model)
+                            </div>
+                        </div>
+                    </div>*@
+            </div>
+            <div class="tab-pane fade" id="tag-communication" role="tabpanel">
+                <div class="bg-white rounded">
+                    <!--begin::Card-->
+                    <div class="card card-custom card-fit card-border">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3 class="card-label">Communication</h3>
+                            </div>
+                            <div class="card-toolbar">
+                                @Html.AjaxModalLink("Send Email", $"/tags/Email?tagId={Model.Tag.Id}", "Send Email", "Send", "btn btn-sm btn-light-primary mr-2", "", "", "", false, ModalSizes.Large, false)
+                                @Html.AjaxModalLink("Send Text Message", $"/tags/Text?tagId={Model.Tag.Id}", "Send Text Message", "Send", "btn btn-sm btn-light-primary", "", "", "", false, ModalSizes.Large, false)
+                            </div>
+                        </div>
+                        <div class="card-body pt-2">
+                            <div id="communication-history">
+                                @Html.Partial("_CommunicationHistory", Model.CommunicationHistory)
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Card-->
+                </div>
+                @*<div class="card card-custom gutter-b">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3 class="card-label">Communication</h3>
+                            </div>
+                            <div class="card-toolbar">
+                                @Html.AjaxModalLink("Send Email", $"/tags/Email?tagId={Model.Tag.Id}", "Send Email", "Send", "btn btn-sm btn-light-primary mr-2", "", "", "", false, ModalSizes.Large, false)
+                                @Html.AjaxModalLink("Send Text Message", $"/tags/Text?tagId={Model.Tag.Id}", "Send Text Message", "Send", "btn btn-sm btn-light-primary", "", "", "", false, ModalSizes.Large, false)
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="communication-history">
+                                @Html.Partial("_CommunicationHistory", Model.CommunicationHistory)
+                            </div>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+@section belowScripts
+{
+    <script>
+        var tagId = '@Model.Tag.Id';
+        var tagPeopleListDataTable;
+        $(document).on('click', 'ul.nav-tabs a', function (event) {
+            event.preventDefault();
+            $(this).tab('show');
+        });
+
+        function setDatatable() {
+            var records = parseInt($("#tag-people-list-table tr").length) - 1;
+            var pageCount = 10;
+            if (tagPeopleListDataTable) {
+                tagPeopleListDataTable.empty();
+            }
+            tagPeopleListDataTable = $('#tag-people-list-table').dataTable({
+                responsive: true,
+                bFilter: false,
+                bInfo: records > pageCount,
+                bPaginate: records > pageCount,
+                bLengthChange: false,
+                bAutoWidth: false,
+                searching: false,
+                ordering: false,
+                pageLength: pageCount,
+                orderable: false,
+                language: { "emptyTable": "No people have been assigned to this tag." }
+            });
+        }
+
+        $(document).on("click", ".removeTagPeople", function (event) {
+            event.preventDefault();
+            Swal.fire({
+                title: "Remove Person",
+                text: "Are you sure you want to remove this person from the tag?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#aaa',
+                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Yes, remove'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    StartLoading();
+                    $.get($(this).attr("href"), function (result) {
+                        if (result.Success === false) {
+                            ShowErrorAlert(result.Message);
+                        } else {
+                            $('#tag-peoples-div').html('');
+                            $('#tag-peoples-div').html(result);
+                            Notify("success", "SUCCESS", "The person has been removed from the tag.");
+                        }
+                        StopLoading();
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-tag', function (event) {
+            event.preventDefault();
+            Swal.fire({
+                title: "Delete Tag",
+                text: "Are you sure you want to delete the " + $('#tag-name-detail').text() + " tag?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#aaa',
+                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Yes, Delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    StartLoading();
+                    $.get($(this).attr('href'), null, function (result) {
+                        if (result.Success) {
+                            Notify("success", "SUCCESS", result.Message);
+                            document.location.href = '/tags';
+                        } else {
+                            ShowErrorAlert(result.Message);
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on("click", ".removeAllTagPeople", function (event) {
+            event.preventDefault();
+            Swal.fire({
+                title: "Remove People",
+                text: "Are you sure you want to remove all people from this tag?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#aaa',
+                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Yes, remove'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    StartLoading();
+                    $.get($(this).attr("href"), function (result) {
+                        if (result.Success === false) {
+                            ShowErrorAlert(result.Message);
+                        } else {
+                            $('#tag-peoples-div').html('');
+                            $('#tag-peoples-div').html(result);
+                            Notify("success", "SUCCESS", "All people have been removed from the tag.");
+                        }
+                        StopLoading();
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,24 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.EventsByDate
+
+<h3 class="my-5">
+    @(Model.Date.Date.Equals(DateTime.Now.Date)?"Today - " + Model.Date.ToShortDateString() : Model.Date.ToString("ddd - MMMM dd, yyyy"))
+</h3>
+<div id="date-events" class="overflow-auto">
+    @if (Model.Events.Any())
+    {
+        foreach (var item in Model.Events)
+        {
+            <div class="border-3 border-left mb-10 pl-5 text-left border-left-@item.CalendarColor">
+                <span class="text-muted font-weight-bold">@(item.AllDay?"All Day":item.StartTime) @(item.AllDay?"": item.EndTime.IsNotNullOrEmpty() ? $"- {item.EndTime}": "" )</span>
+                <a href="/events/Overview?id=@item.ChurchEventSchedulerId&day=@item.StartDate.Date&defaultselected=@item.Id" class="font-size-h5 font-weight-bolder d-block mb-5">@item.Title</a>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="border-3 border-left mb-10 pl-5 text-left border-left-light-dark">
+            <span class="font-size-h5 font-weight-bolder d-block my-5">No scheduled events</span>
+        </div>
+    }
+</div>

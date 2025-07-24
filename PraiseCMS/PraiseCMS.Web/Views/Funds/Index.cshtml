@@ -1,0 +1,133 @@
+﻿@using PraiseCMS.Shared.Methods
+@model IEnumerable<PraiseCMS.DataAccess.Models.Fund>
+
+@{
+    ViewBag.Title = "Funds";
+}
+
+@section leftsubheader{
+    @Html.Partial("~/Views/Giving/_GivingSubheader.cshtml")
+}
+
+@section subheader{
+    @Html.AjaxModalLink("Create Fund", "/funds/_CreateFund", "Create Fund", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+}
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-6 col-xl-4 mb-5">
+                <div class="card card-custom mb-8 mb-lg-0">
+                    <div class="card-header">
+                        @if (item.Hidden || item.Closed)
+                        {
+                            <div class="card-title">
+                                <span class="card-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                <h3 class="card-label">
+                                    Fund @(item.Hidden ? "Hidden" : "Closed")
+                                </h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-title"></div>
+                        }
+                        <div class="card-toolbar">
+                            <div class="dropdown dropdown-inline" data-toggle="tooltip" data-placement="left" data-original-title="Quick actions">
+                                <a href="#" class="btn btn-hover-light-primary btn-sm btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ki ki-bold-more-hor"></i>
+                                </a>
+                                <div class="dropdown-menu p-0 m-0 dropdown-menu-md dropdown-menu-right" style="">
+                                    <ul class="navi navi-hover">
+                                        <li class="navi-header font-weight-bold py-4">
+                                            <span class="font-size-lg">Actions:</span>
+                                        </li>
+                                        <li class="navi-separator mb-3 opacity-70"></li>
+                                        @if (item.QRCodeLinkToken.IsNotNullOrEmpty())
+                                        {
+                                            <li class="navi-item">
+                                                @Html.AjaxModalLink("<span class='navi-text'>Download QR Code</span>", $"/funds/GenerateQRCode?Param={item.QRCodeLinkToken}", $"{item.Display} Fund QR Code", "Download", "navi-link", "", "")
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="navi-item">
+                                                <span class="navi-link"><span class="navi-text">QR Code Not Enabled</span></span>
+                                            </li>
+                                        }
+                                        @if (item.Name == GivingFunds.General || item.Name == GivingFunds.TithesAndOfferings)
+                                        {
+                                            <li class="navi-item">
+                                                @Html.AjaxModalLink("<span class='navi-text'>Edit</span>", "/funds/_editfund/" + item.Id, "Edit Fund", "Update", "navi-link" + (item.Hidden || item.Closed ? " text-muted text-hover-primary" : ""), "")
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="navi-item">
+                                                @Html.AjaxModalLink("<span class='navi-text'>Edit</span>", "/funds/_editfund/" + item.Id, "Edit Fund", "Update", "navi-link" + (item.Hidden || item.Closed ? " text-muted text-hover-primary" : ""), "", "/funds/delete/" + item.Id)
+                                            </li>
+                                        }
+                                        @if (SessionVariables.CurrentUser.IsNotNull() && SessionVariables.CurrentUser.IsSuperAdmin)
+                                        {
+                                            <li class="navi-item">
+                                                <a href="/funds/details/@item.Id" class="navi-link"><span class="navi-text">View Details</span></a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center p-5">
+                            <div class="mr-6">
+                                <div class="symbol symbol-circle symbol-lg-90">
+                                    <i class="fas fa-piggy-bank fa-4x"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="text-dark font-weight-bold font-size-h4">@item.Display</span>
+                                <div class="text-dark-75">@Html.DisplayFor(modelItem => item.Description)</div>
+                                <div class="mt-5">
+                                    <span class="label label-outline-@((item.IsDigitalAllowed) ? "success" : "danger") label-inline label-xl mb-2"><i class="mr-2 fas @((item.IsDigitalAllowed) ? "fa-check-circle text-success" : "fa-times-circle text-danger")"></i>Digital Giving @((item.IsDigitalAllowed) ? "Enabled" : "Disabled")</span>
+                                    <span class="label label-outline-dark label-inline label-xl mb-2"><i class="mr-2 fas fa-dollar-sign text-dark"></i>@((item.IsTaxDeductible) ? "Tax Deductible" : "Taxed")</span>
+                                    @if (!string.IsNullOrEmpty(item.QRCodeLink))
+                                    {
+                                        <span class="label label-outline-dark label-inline label-xl mb-2"><i class="mr-2 fas fa-qrcode text-dark"></i>QR Code Generated</span>
+                                    }
+                                    @if (item.IsDefaultFund)
+                                    {
+                                        <span class="label label-outline-primary label-inline label-xl mb-2"><i class="mr-2 fas fa-star text-primary"></i>Default Fund</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="col-lg-6 col-xl-4 mb-5">
+        <div class="card card-custom mb-8 mb-lg-0">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <h5 class="mt-md-10 mt-lg-14" style="font-size:30px;">Funds</h5>
+                        <p style="font-size:18px;">Let's add some funds to designate where your giving will be applied.</p>
+                        @Html.AjaxModalLink("Create Fund", "/funds/_CreateFund", "Create Fund", "Save", "btn btn-light-primary btn-sm font-weight-bold", "")
+                    </div>
+                    <div class="col-md-5">
+                        <img src="~/Content/assets/image/funds.svg" class="img-fluid" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

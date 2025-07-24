@@ -1,0 +1,414 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.DonorsModel
+@{
+    ViewBag.Title = "Donor Demographics Report";
+    const string notProvided = "/Not Provided";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/Reports/_ReportSubheader.cshtml")
+}
+<div class="row">
+    <div class="col-xl-2">
+        <div class="card card-custom bg-primary card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-users fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.People.Count()</span>
+                <span class="font-weight-bold text-white font-size-sm">Total Donors</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-success card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-user fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.TotalGiving.Where(q => q.PersonId.IsNotNullOrEmpty()).GroupBy(x => x.PersonId).Where(x => x.Count() == 1 && !x.Any(z => z.CreatedDate.Date < DateTime.Now.AddYears(-1).Date)).Select(x => x.Key).Count()</span>
+                <span class="font-weight-bold text-white font-size-sm">1st Time Donors</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card card-custom bg-danger card-stretch gutter-b">
+            <div class="card-body">
+                <i class="fas fa-sync-alt fa-2x text-white"></i>
+                <span class="card-title font-weight-bolder text-white font-size-h3 mb-0 mt-6 d-block">@Model.TotalGiving.Where(q => q.PersonId.IsNotNullOrEmpty()).GroupBy(x => x.PersonId).Where(x => x.Count() > 1).Select(x => x.Key).Count()</span>
+                <span class="font-weight-bold text-white font-size-sm">Repeat Donors</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_1">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Donations by Gender</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportDonationsByGenderToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export Donations by Gender Report">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Gender</th>
+                        <th width="20%" class="text-center">Count</th>
+                        <th width="20%" class="text-center">%</th>
+                        <th width="15%" class="text-right pr-5">Avg. Donation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Constants.Genders.Concat(new[] { new KeyValuePair<string, string>("", "Not Provided") }))
+                    {
+                        var genderKey = string.IsNullOrEmpty(item.Key) ? "Not Provided" : item.Key;
+                        var stat = Model.GenderStats.ContainsKey(genderKey) ? Model.GenderStats[genderKey] : new GenderStat();
+
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">
+                                    @(genderKey.Equals("Not Provided") ? "Not Provided" : item.Value)
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.Count</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.Percentage.ToFormattedPercentage()</span>
+                            </td>
+                            <td class="text-right pr-6">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.AverageDonation.ToCurrencyString()</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Totals</th>
+                        <th width="20%" class="text-center">@Model.TotalGenderCount</th>
+                        <th width="20%" class="text-center">@Model.TotalGenderPercentage.ToFormattedPercentage()</th>
+                        <th width="15%" class="text-right pr-6">@Model.TotalGenderAverageDonation.ToCurrencyString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_2">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Donations by Marital Status</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportDonationsByMaritalStatusToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export Donations by Marital Status Report">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Marital Status</th>
+                        <th width="20%" class="text-center">Count</th>
+                        <th width="20%" class="text-center">%</th>
+                        <th width="15%" class="text-right pr-5">Avg. Donation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in MaritalStatuses.Items)
+                    {
+                        var stat = Model.MaritalStatusStats[item];
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">@item@(item.Equals(MaritalStatuses.Other) ? notProvided : "")</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.Count</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@(stat.Percentage.ToFormattedPercentage())</span>
+                            </td>
+                            <td class="text-right pr-6">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.AverageDonation.ToCurrencyString()</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Totals</th>
+                        <th width="20%" class="text-center">@Model.TotalMaritalStatusCount</th>
+                        <th width="20%" class="text-center">@Model.TotalMaritalStatusPercentage.ToFormattedPercentage()</th>
+                        <th width="15%" class="text-right pr-6">@Model.TotalMaritalStatusAverageDonation.ToCurrencyString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_3">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Donations by Age Group</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportDonationsByAgeGroupToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export Donations by Age Group Report">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Age Group</th>
+                        <th width="20%" class="text-center">Count</th>
+                        <th width="20%" class="text-center">%</th>
+                        <th width="15%" class="text-right  pr-5">Avg. Donation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in AgeGroupDemographics.Items)
+                    {
+                        var stat = Model.AgeGroupStats[item];
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">@item@(item.Equals(AgeGroupDemographics.Other) ? notProvided : "")</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.Count</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@(stat.Percentage.ToFormattedPercentage())</span>
+                            </td>
+                            <td class="text-right pr-6">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.AverageDonation.ToCurrencyString()</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Totals</th>
+                        <th width="20%" class="text-center">@Model.TotalAgeGroupCount</th>
+                        <th width="20%" class="text-center">@Model.TotalAgeGroupPercentage.ToFormattedPercentage()</th>
+                        <th width="15%" class="text-right pr-6">@Model.TotalAgeGroupAverageDonation.ToCurrencyString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_4">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Donations by Ethnicity</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportDonationsByEthnicityToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export Donations by Ethnicity Report">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Ethnicity</th>
+                        <th width="20%" class="text-center">Count</th>
+                        <th width="20%" class="text-center">%</th>
+                        <th width="15%" class="text-right pr-5">Avg. Donation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in EthnicTypes.Items.OrderBy(x => x))
+                    {
+                        var stat = Model.EthnicTypeStats[item];
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">@item@(item.Equals(EthnicTypes.Other) ? notProvided : "")</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.Count</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@(stat.Percentage.ToFormattedPercentage())</span>
+                            </td>
+                            <td class="text-right pr-6">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.AverageDonation.ToCurrencyString()</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Totals</th>
+                        <th width="20%" class="text-center">@Model.TotalEthnicTypeCount</th>
+                        <th width="20%" class="text-center">@Model.TotalEthnicTypePercentage.ToFormattedPercentage()</th>
+                        <th width="15%" class="text-right pr-6">@Model.TotalEthnicTypeAverageDonation.ToCurrencyString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_5">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Donations by Education</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportDonationsByEducationToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export Donations by Education Report">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Education</th>
+                        <th width="20%" class="text-center">Count</th>
+                        <th width="20%" class="text-center">%</th>
+                        <th width="15%" class="text-right pr-5">Avg. Donation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in EducationTypes.Items)
+                    {
+                        var stat = Model.EducationTypeStats[item];
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">@item@(item.Equals(EducationTypes.Other) ? notProvided : "")</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.Count</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@(stat.Percentage.ToFormattedPercentage())</span>
+                            </td>
+                            <td class="text-right pr-6">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.AverageDonation.ToCurrencyString()</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Totals</th>
+                        <th width="20%" class="text-center">@Model.TotalEducationTypeCount</th>
+                        <th width="20%" class="text-center">@Model.TotalEducationTypePercentage.ToFormattedPercentage()</th>
+                        <th width="15%" class="text-right pr-6">@Model.TotalEducationTypeAverageDonation.ToCurrencyString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b" id="kt_card_6">
+    <div class="card-header border-0 py-5">
+        <div class="card-title">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder text-dark">Donations by Employment Status</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">Digital and Offline Giving</span>
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            <a href="#" class="btn btn-icon btn-circle btn-sm btn-light-primary mr-2 toggle" data-toggle="tooltip" data-placement="top" title="Toggle Visibility">
+                <i class="fas fa-chevron-down icon-nm toggle-icon"></i>
+            </a>
+            <a href="/Reports/ExportDonationsByEmploymentStatusToCSV?dateRange=@Model.DateRange" class="btn btn-icon btn-sm btn-light-warning mr-2" data-toggle="tooltip" data-placement="top" data-original-title="Export Donations by Employment Status Report">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body pt-0 pb-3">
+        <div class="table-responsive">
+            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                <thead>
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Employment Status</th>
+                        <th width="20%" class="text-center">Count</th>
+                        <th width="20%" class="text-center">%</th>
+                        <th width="15%" class="text-right pr-5">Avg. Donation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in EmploymentStatuses.Items.OrderBy(x => x))
+                    {
+                        var stat = Model.EmploymentStatusStats[item];
+                        <tr>
+                            <td class="pl-5 py-8">
+                                <span class="text-dark-75 d-block font-size-lg">@item@(item.Equals(EmploymentStatuses.Other) ? notProvided : "")</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.Count</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-dark-75 d-block font-size-lg">@(stat.Percentage.ToFormattedPercentage())</span>
+                            </td>
+                            <td class="text-right pr-6">
+                                <span class="text-dark-75 d-block font-size-lg">@stat.AverageDonation.ToCurrencyString()</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="tfoot-grey">
+                    <tr class="text-left text-uppercase">
+                        <th width="45%" class="pl-7">Totals</th>
+                        <th width="20%" class="text-center">@Model.TotalEmploymentStatusCount</th>
+                        <th width="20%" class="text-center">@Model.TotalEmploymentStatusPercentage.ToFormattedPercentage()</th>
+                        <th width="15%" class="text-right pr-6">@Model.TotalEmploymentStatusAverageDonation.ToCurrencyString()</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+@section belowscripts{
+    <script type="text/javascript">
+        $(function () {
+            new KTCard('kt_card_1');
+            new KTCard('kt_card_2');
+            new KTCard('kt_card_3');
+            new KTCard('kt_card_4');
+            new KTCard('kt_card_5');
+            new KTCard('kt_card_6');
+        });
+    </script>
+}

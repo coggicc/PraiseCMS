@@ -1,0 +1,68 @@
+﻿body {
+    background: #EEF0F8 !important;
+}
+
+.modal .modal-header .close span {
+    display: initial;
+}
+
+.field-validation-error {
+    color: #F64E60;
+}
+
+.invalid-feedback {
+    font-size: 13px !important;
+}
+
+#ajax-verification-modal .modal-body {
+    padding-top: 0.3rem;
+}
+
+.tfoot-grey {
+    background-color: #F3F6F9;
+    border-bottom: 0;
+    letter-spacing: 1px;
+}
+
+.block-form-control {
+    border: 1px solid red !important;
+    color: red !important;
+}
+
+.pointer {
+    cursor: pointer !important;
+}
+
+.timeline.timeline-5 .timeline-item .timeline-label {
+    width: 100px;
+}
+
+.timeline.timeline-5:before {
+    left: 120px;
+}
+
+.inner-card-footer {
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+    background-color: #ffffff;
+    border-top: 1px solid #ECF0F3;
+}
+
+#fund-div .form-control[readonly] {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.text-muted {
+    color: #80808F !important
+}
+
+.campusDetails, .fundDetails {
+    display: none;
+}
+
+@media (max-width: 320px) {
+     .mb-xs-4 {
+         margin-bottom: 1rem !important;
+     }
+ }

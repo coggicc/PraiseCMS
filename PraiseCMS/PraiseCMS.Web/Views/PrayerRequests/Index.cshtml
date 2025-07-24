@@ -1,0 +1,38 @@
+﻿@model PraiseCMS.DataAccess.Models.PrayerRequestsView
+@{
+    ViewBag.Title = "Prayer Requests";
+}
+@section leftsubheader{
+    @Html.Partial("~/Views/People/_PeopleSubheader.cshtml")
+}
+@section subheader{
+    @if (SessionVariables.CurrentUser != null && SessionVariables.CurrentUser.IsSuperAdmin)
+    {
+        <a href="/prayerrequests/categories" class="btn btn-light-primary btn-sm font-weight-bold mr-1">Manage Categories</a>
+    }
+    @Html.AjaxModalLink("New Prayer Request", "/prayerrequests/_addprayerrequest", "Create Prayer Request", "Save", "btn btn-light-success btn-sm font-weight-bold", "", "", "", false, ModalSizes.Large)
+}
+
+<!--begin::Inbox-->
+<div class="d-flex flex-row">
+    <!--begin::Aside-->
+    <div class="flex-row-auto offcanvas-mobile w-200px w-xxl-275px" id="kt_todo_aside">
+        @*@Html.Partial("_Sidebar", Model)*@
+        @Html.Partial("_Sidebar", ViewBag.SidebarData as PraiseCMS.DataAccess.Models.SidebarViewModel)
+    </div>
+    <!--end::Aside-->
+    <!--begin::List-->
+    <div class="flex-row-fluid ml-lg-8 d-block" id="kt_inbox_list">
+        @Html.Partial("_RequestList", Model)
+    </div>
+    <!--end::List-->
+    <!--begin::View-->
+    <div class="flex-row-fluid ml-lg-8 d-none" id="kt_inbox_view"></div>
+    <!--end::View-->
+    <a href="" id="filter"></a>
+</div>
+<!--end::Inbox-->
+@section belowScripts
+{
+    <script src="~/Scripts/custom-inbox.js"></script>
+}

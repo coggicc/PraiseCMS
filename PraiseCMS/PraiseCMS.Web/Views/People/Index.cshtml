@@ -1,0 +1,170 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.PeopleDashboard
+
+@{
+    ViewBag.Title = "People Dashboard";
+}
+
+@section leftsubheader{
+    @Html.Partial("_PeopleSubheader")
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-custom gutter-b">
+                    <div class="card-body">
+                        <div class="input-group input-group-lg input-group-solid my-2">
+                            <input type="text" class="form-control pl-4" placeholder="Search for people or households and hit enter to search." id="filterKeyword">
+                            <div class="input-group-append">
+                                <span class="input-group-text pr-3">
+                                    <a id="clearSearchBtn" class="pointer mr-3" style="display: none;" onclick="clearSearch()" data-toggle="tooltip" data-original-title="Clear search">
+                                        <i class="fas fa-times  icon-sm"></i>
+                                    </a>
+                                    <a class="pointer" onclick="filter()" data-toggle="tooltip" title="" data-original-title="Search">
+                                        <span class="svg-icon svg-icon-lg">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect x="0" y="0" width="24" height="24"></rect>
+                                                    <path d="M14.2928932,16.7071068 C13.9023689,16.3165825 13.9023689,15.6834175 14.2928932,15.2928932 C14.6834175,14.9023689 15.3165825,14.9023689 15.7071068,15.2928932 L19.7071068,19.2928932 C20.0976311,19.6834175 20.0976311,20.3165825 19.7071068,20.7071068 C19.3165825,21.0976311 18.6834175,21.0976311 18.2928932,20.7071068 L14.2928932,16.7071068 Z" fill="#000000" fill-rule="nonzero" opacity="0.3"></path>
+                                                    <path d="M11,16 C13.7614237,16 16,13.7614237 16,11 C16,8.23857625 13.7614237,6 11,6 C8.23857625,6 6,8.23857625 6,11 C6,13.7614237 8.23857625,16 11,16 Z M11,18 C7.13400675,18 4,14.8659932 4,11 C4,7.13400675 7.13400675,4 11,4 C14.8659932,4 18,7.13400675 18,11 C18,14.8659932 14.8659932,18 11,18 Z" fill="#000000" fill-rule="nonzero"></path>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12" id="search-result-div"></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card card-custom gutter-b">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-4x text-success mt-4 mb-4"></i>
+                        <h3 class="font-weight-bold mb-4">People</h3>
+                        <h4 class="text-muted font-size-sm mb-10">Quickly add a person to your church family.</h4>
+                        @Html.AjaxModalLink("Add Person", "/people/_CreatePerson/", "Add Person", "Save", "btn btn-light-primary font-weight-bold mr-2 mb-xs-4", "", "", "", false, ModalSizes.Large)
+                        <a href="/people/list" class="btn btn-outline-primary font-weight-bold">View People</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card card-custom gutter-b">
+                    <div class="card-body text-center">
+                        <i class="fas fa-home fa-4x text-info mt-4 mb-4"></i>
+                        <h3 class="font-weight-bold mb-4">Households</h3>
+                        <h4 class="text-muted font-size-sm mb-10">Quickly add a household to the church.</h4>
+                        @Html.AjaxModalLink("Add Household", "/people/_CreateHousehold/", "Add Household", "Save", "btn btn-light-primary font-weight-bold mr-2 mb-xs-4", "")
+                        <a href="/people/households" class="btn btn-outline-primary font-weight-bold">View Households</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom card-stretch gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-praying-hands fa-6x text-danger mt-8 mb-8"></i>
+                <h3 class="font-weight-bold mb-4">Prayer Requests</h3>
+                <h4 class="text-muted font-size-sm mb-10">Quickly add a prayer request.</h4>
+                @Html.AjaxModalLink("New Prayer Request", "/prayerrequests/_addprayerrequest", "Create Prayer Request", "Save", "btn btn-light-primary font-weight-bold mr-2 mb-xs-4", "", "", "", false, ModalSizes.Large)
+                <a href="@Url.Action("Index","prayerrequests")" class="btn btn-outline-primary font-weight-bold">View Requests</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card card-custom gutter-b">
+                    <div class="card-body text-center">
+                        <i class="fas fa-layer-group fa-4x text-warning mt-4 mb-4"></i>
+                        <h3 class="font-weight-bold mb-4">Lists/Groups</h3>
+                        <h4 class="text-muted font-size-sm mb-10">Quickly communicate with a group.</h4>
+                        @Html.AjaxModalLink("Communicate with Group", "/people/CommunicateWithGroup", "Communicate with Group", "Send", "btn btn-light-primary font-weight-bold needs-write module-95936354299c1669b236e5435cb4a9 mr-2 mb-xs-4", "")
+                        <a href="/people/communicationgroups" class="btn btn-outline-primary font-weight-bold">View Groups</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card card-custom gutter-b">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-alt fa-4x text-dark mt-4 mb-4"></i>
+                        <h3 class="font-weight-bold mb-4">Attendance</h3>
+                        <h4 class="text-muted font-size-sm mb-10">Manage church attendance.</h4>
+                        <a href="/attendance" class="btn btn-light-primary font-weight-bold">View Attendance</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom gutter-b">
+            <div class="card-body text-center">
+                <i class="fas fa-star fa-6x text-primary mt-8 mb-8"></i>
+                <h3 class="font-weight-bold mb-4">Recently Added People</h3>
+                <h4 class="text-muted font-size-sm mb-10">Help them feel welcome.</h4>
+                <ul class="list-unstyled font-weight-bold">
+                    @foreach (var person in Model.People)
+                    {
+                        <li>
+                            @if (SessionVariables.CurrentUser.IsSuperAdmin || SessionVariables.CurrentUser.IsAdmin)
+                            {
+                                if (person.UserId.IsNotNullOrEmpty())
+                                {
+                                    <a href="/users/userprofile?Id=@person.UserId&type=user">@person.Display</a>
+                                }
+                                else
+                                {
+                                    <a href="/users/userprofile?Id=@person.Id&type=person">@person.Display</a>
+
+                                }
+                            }
+                            else
+                            {
+                                <a>@person.Display</a>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        filter();
+    });
+
+    function clearSearch() {
+        StartLoading();
+        $('#filterKeyword').val('');
+        $("#search-result-div").html('');
+        $("#clearSearchBtn").hide();
+        StopLoading();
+    }
+
+    $(document).on('keypress', '#filterKeyword', function (e) {
+        if (e.which === 13) {
+            filter();
+        }
+    });
+
+    function filter() {
+        let filterKeyword = $('#filterKeyword').val();
+        if (filterKeyword) {
+            $.get("/People/GetPeopleAndHouseholds", ({ param: filterKeyword }), function (result) {
+                $("#search-result-div").html('').html(result);
+                $("#clearSearchBtn").show();
+            });
+        } else {
+            $("#search-result-div").html('');
+        }
+    }
+</script>

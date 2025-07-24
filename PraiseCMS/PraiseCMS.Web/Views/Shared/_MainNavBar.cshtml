@@ -1,0 +1,190 @@
+﻿@using PraiseCMS.Shared.Methods
+@model MainNavBarViewModel
+
+<style type="text/css">
+    .header-menu .menu-nav > .menu-item .menu-submenu > .menu-subnav .menu-content .menu-inner > .menu-item > .menu-link {
+        padding: 5px 30px !important;
+    }
+</style>
+<div class="header-menu-wrapper header-menu-wrapper-left" id="kt_header_menu_wrapper">
+    <div id="kt_header_menu" class="header-menu header-menu-mobile header-menu-layout-default">
+        <ul class="menu-nav">
+            @if (SessionVariables.CurrentUser.IsNotNull())
+            {
+                if (SessionVariables.CurrentUser.IsDonorOnly)
+                {
+                    <li class="menu-item menu-item-rel module-039942579226fbdffc28c8429886fd @Html.IsActiveSubChild("mygiving", "Index")">
+                        <a href="/mygiving" class="menu-link">
+                            <span class="menu-text">My Giving</span>
+                        </a>
+                    </li>
+                    <li class="menu-item menu-item-rel module-06283318877438adcea4ac4c50bc47 @Html.IsActiveSubChild("mygiving", "paymentmethods")">
+                        <a href="/mygiving/paymentmethods" class="menu-link">
+                            <span class="menu-text">Payment Methods</span>
+                        </a>
+                    </li>
+                    <li class="menu-item menu-item-rel module-0808423970319db537e9d94a599da7 @Html.IsActiveSubChild("mygiving", "history")">
+                        <a href="/mygiving/history" class="menu-link">
+                            <span class="menu-text">History</span>
+                        </a>
+                    </li>
+                    <li class="menu-item menu-item-rel module-1701450885d2d9d9337db74b2ca075 @Html.IsActiveSubChild("mygiving", "statements")">
+                        <a href="/mygiving/statements" class="menu-link">
+                            <span class="menu-text">Statements</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    @*if (SessionVariables.CurrentUser.IsAdmin)
+                        {
+                            <li class="menu-item menu-item-rel module-711965845719f2d5baeaa345919ec4 @Html.IsActive("mychurch", "Index")">
+                                <a href="/settings" class="menu-link">
+                                    <span class="menu-text">My Church</span>
+                                </a>
+                            </li>
+                        }*@
+                    @*<li class="menu-item menu-item-rel module-72142377372b70c1df42a948a08c39 @Html.IsActive("events", "Index")">
+                            <a href="/events" class="menu-link">
+                                <span class="menu-text">Events</span>
+                            </a>
+                        </li>*@
+                    <li class="menu-item menu-item-rel module-882922349528680237c3c34f04b1c3 @Html.IsActive("giving", "Index")">
+                        <a href="/giving" class="menu-link">
+                            <span class="menu-text">Giving</span>
+                        </a>
+                    </li>
+                    <li class="menu-item menu-item-rel module-87345006275f4bcae00d144f98a62a @Html.IsActive("people", "Index")">
+                        <a href="/people" class="menu-link">
+                            <span class="menu-text">People</span>
+                        </a>
+                    </li>
+                    <li class="menu-item menu-item-submenu menu-item-open-dropdown module-1080633919ada9e25feeb84455a998 @Html.IsActive("reports", "Index")" data-menu-toggle="click" aria-haspopup="true">
+                        <a href="javascript:;" class="menu-link menu-toggle">
+                            <span class="menu-text">Reports</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="menu-submenu menu-submenu-fixed menu-submenu-left" style="width:1000px" data-hor-direction="menu-submenu-left">
+                            <div class="menu-subnav">
+                                <ul class="menu-content">
+                                    <li class="menu-item">
+                                        <h3 class="menu-heading menu-toggle">
+                                            <i class="menu-bullet menu-bullet-dot">
+                                                <span></span>
+                                            </i>
+                                            <span class="menu-text">Favorites</span>
+                                            <i class="menu-arrow"></i>
+                                        </h3>
+                                        <ul class="menu-inner">
+                                            <li class="menu-item module-1080633919ada9e25feeb84455a998 @Html.IsActiveSubChild("reports", "index")" aria-haspopup="true">
+                                                <a href="/reports/index" class="menu-link">
+                                                    <i class="menu-bullet menu-bullet-dot">
+                                                        <span></span>
+                                                    </i>
+                                                    <span class="menu-text">Dashboard</span>
+                                                </a>
+                                            </li>
+                                            @foreach (var item in Model.FavoriteReports)
+                                            {
+                                                var urlParts = item.ReportUrl.TrimStart('/').Split('/').ToArray();
+                                                var controller = urlParts.Length > 0 ? urlParts[0] : string.Empty;
+                                                var action = urlParts.Length > 1 ? urlParts[1] : string.Empty;
+
+                                                <li class="menu-item module-@item.ModuleId @Html.IsActiveSubChild(controller, action)" aria-haspopup="true">
+                                                    <a href="@item.ReportUrl" class="menu-link">
+                                                        <i class="menu-bullet menu-bullet-dot">
+                                                            <span></span>
+                                                        </i>
+                                                        <span class="menu-text">@item.Name</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                    <li class="menu-item">
+                                        <h3 class="menu-heading menu-toggle">
+                                            <i class="menu-bullet menu-bullet-dot">
+                                                <span></span>
+                                            </i>
+                                            <span class="menu-text">Giving</span>
+                                            <i class="menu-arrow"></i>
+                                        </h3>
+                                        <ul class="menu-inner">
+                                            @foreach (var item in Model.GivingReports)
+                                            {
+                                                var urlParts = item.ReportUrl.TrimStart('/').Split('/').ToArray();
+                                                var controller = urlParts.Length > 0 ? urlParts[0] : string.Empty;
+                                                var action = urlParts.Length > 1 ? urlParts[1] : string.Empty;
+
+                                                <li class="menu-item module-@item.ModuleId @Html.IsActiveSubChild(controller, action)" aria-haspopup="true">
+                                                    <a href="@item.ReportUrl" class="menu-link">
+                                                        <i class="menu-bullet menu-bullet-dot">
+                                                            <span></span>
+                                                        </i>
+                                                        <span class="menu-text">@item.Name</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                    <li class="menu-item">
+                                        <h3 class="menu-heading menu-toggle">
+                                            <i class="menu-bullet menu-bullet-dot">
+                                                <span></span>
+                                            </i>
+                                            <span class="menu-text">Attendance &amp; Outreach</span>
+                                            <i class="menu-arrow"></i>
+                                        </h3>
+                                        <ul class="menu-inner">
+                                            @foreach (var item in Model.OutreachReports)
+                                            {
+                                                var urlParts = item.ReportUrl.TrimStart('/').Split('/').ToArray();
+                                                var controller = urlParts.Length > 0 ? urlParts[0] : string.Empty;
+                                                var action = urlParts.Length > 1 ? urlParts[1] : string.Empty;
+
+                                                <li class="menu-item module-@item.ModuleId @Html.IsActiveSubChild(controller, action)" aria-haspopup="true">
+                                                    <a href="@item.ReportUrl" class="menu-link">
+                                                        <i class="menu-bullet menu-bullet-dot">
+                                                            <span></span>
+                                                        </i>
+                                                        <span class="menu-text">@item.Name</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                    <li class="menu-item">
+                                        <h3 class="menu-heading menu-toggle">
+                                            <i class="menu-bullet menu-bullet-dot">
+                                                <span></span>
+                                            </i>
+                                            <span class="menu-text">Other</span>
+                                            <i class="menu-arrow"></i>
+                                        </h3>
+                                        <ul class="menu-inner">
+                                            @foreach (var item in Model.OtherReports)
+                                            {
+                                                var urlParts = item.ReportUrl.TrimStart('/').Split('/').ToArray();
+                                                var controller = urlParts.Length > 0 ? urlParts[0] : string.Empty;
+                                                var action = urlParts.Length > 1 ? urlParts[1] : string.Empty;
+
+                                                <li class="menu-item module-@item.ModuleId @Html.IsActiveSubChild(controller, action)" aria-haspopup="true">
+                                                    <a href="@item.ReportUrl" class="menu-link">
+                                                        <i class="menu-bullet menu-bullet-dot">
+                                                            <span></span>
+                                                        </i>
+                                                        <span class="menu-text">@item.Name</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>

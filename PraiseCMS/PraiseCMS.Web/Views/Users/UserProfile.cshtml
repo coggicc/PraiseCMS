@@ -1,0 +1,1132 @@
+﻿@using PraiseCMS.Shared.Methods
+
+@model PraiseCMS.DataAccess.Models.UserView
+
+@{
+    ViewBag.Title = "Personal Info";
+
+    //var profileCompleteness = 0;
+    //if (Model.User.PhoneNumberConfirmed)
+    //{
+    //    profileCompleteness += 50;
+    //}
+    //if (Model.User.EmailConfirmed)
+    //{
+    //    profileCompleteness += 50;
+    //}
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+@*<style>
+        #PhoneCodeStatus, #EmailCodeStatus {
+            display: none;
+        }
+
+        .profile-completeness-magnet {
+            background: #ffffff;
+            width: 160px;
+            border-radius: 0.42rem;
+            box-shadow: 0px 0px 30px 0px rgba(82, 63, 105, 0.05);
+        }
+    </style>*@
+
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", Model)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom">
+            <div class="card-header py-3">
+                <div class="card-title align-items-start flex-column">
+                    <h3 class="card-label font-weight-bolder text-dark">Personal Information</h3>
+                    <span class="text-muted font-weight-bold font-size-sm mt-1">Manage personal information</span>
+                </div>
+                <div class="card-toolbar">
+                    @if (!string.IsNullOrEmpty(Convert.ToString(ViewBag.hasUserAccount)) && !ViewBag.hasUserAccount)
+                    {
+                        @Html.AjaxModalLink("Create User Account", $"/users/CreateUser?id={Model.Person.Id}", "Create User Account", "Create", "btn btn-light-primary mr-2", "")
+                    }
+                    <button class="btn btn-light-primary mr-2 edit">Edit</button>
+                </div>
+            </div>
+            @if (Model.Type == Constants.User)
+            {
+                <div class="card-body view-details py-4">
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Name:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Display))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Display</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Phone:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.PhoneNumber))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.PhoneNumber</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Email:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Email))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Email</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Address:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Address1))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Address1</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Apt/Unit/Suite:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Address2))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Address2</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">City:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.City))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.City</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">State:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.State))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.State</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Zip:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Zip))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Zip</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Birthday:</label>
+                        @if (Model.User.Person.DOB != null)
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Person.DOB.Value.ToShortDateString()</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Gender:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Person.Gender))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@(Constants.Genders.FirstOrDefault(x=>x.Key.Equals(Model.User.Person.Gender)).Value)</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Marital Status:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Person.MaritalStatus))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Person.MaritalStatus</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Family Size:</label>
+                        <div class="col-8">
+                            <span class="form-control-plaintext">@Model.User.Person.FamilySize</span>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Household:</label>
+                        <div class="col-8">
+                            <span class="form-control-plaintext">@Html.Raw(Model.Person.Households)</span>
+                        </div>
+                    </div>
+                    @*<div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Relationships:</label>
+                            <div class="col-8">
+                                @if (Model.Relationships.Any())
+                                {
+                                    foreach (var relative in Model.Relationships.OrderBy(x => x.RelativePerson.Display))
+                                    {
+                                        if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+                                        {
+                                            if (relative.RelativePerson.UserId.IsNotNullOrEmpty())
+                                            {
+                                                <span><a href="/users/userprofile?Id=@relative.RelativePerson.UserId&type=user" target="_blank" data-toggle="tooltip" data-placement="left" data-original-title="View profile" class="form-control-plaintext text-primary" style="display:inline;">@relative.RelativePerson.Display</a> (@relative.Relation)</span>
+                                            }
+                                            else
+                                            {
+                                                <span><a href="/users/userprofile?Id=@relative.RelativePerson.Id&type=person" target="_blank" data-toggle="tooltip" data-placement="left" data-original-title="View profile" class="form-control-plaintext text-primary" style="display:inline;">@relative.RelativePerson.Display</a> (@relative.Relation)</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="form-control-plaintext" style="display:inline;">@relative.RelativePerson.Display (@relative.Relation)</span>
+                                        }
+                                    }
+                                    @Html.AjaxModalLink("<i class='fas fa-pencil-alt ml-2'></i>", $"/users/addrelationship?personId={Model.Person.Id}", "Add/Edit Relationships", "Save", "text-hover-primary", "margin:0 auto;", $"/users/deleterelationships?personId={Model.Person.Id}", "", false, ModalSizes.Large, true, "delete-relationships")
+                                }
+                                else
+                                {
+                                    @Html.AjaxModalLink("Add Relationship", $"/users/addrelationship?personId={Model.Person.Id}", "Add Relationship", "Save", "btn btn-light-primary btn-sm", "", "", "", false, ModalSizes.Large, false)
+                                }
+                            </div>
+                        </div>*@
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Primary Language:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Person.PrimaryLanguage))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Person.PrimaryLanguage</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Ethnicity:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Person.Ethnicity))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Person.Ethnicity</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Education:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Person.Education))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Person.Education</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Employment Status:</label>
+                        @if (!string.IsNullOrEmpty(Model.User.Person.EmploymentStatus))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.User.Person.EmploymentStatus</span>
+                            </div>
+                        }
+                    </div>
+                    @if (SessionVariables.CurrentUser.MemberOf(PraiseCMS.Shared.Shared.Roles.Administrator, PraiseCMS.Shared.Shared.Roles.SuperAdmin, PraiseCMS.Shared.Shared.Roles.SeniorPastor, PraiseCMS.Shared.Shared.Roles.Pastor))
+                    {
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Baptism Date:</label>
+                            @if (Model.User.Person.BaptismDate.IsNotNull())
+                            {
+                                <div class="col-8">
+                                    <span class="form-control-plaintext">@Model.User.Person.BaptismDate.Value.ToShortDateString()</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Deceased Date:</label>
+                            @if (Model.User.Person.DeceasedDate != null)
+                            {
+                                <div class="col-8">
+                                    <span class="form-control-plaintext">@Model.User.Person.DeceasedDate.Value.ToShortDateString()</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">First Visit Date:</label>
+                            @if (Model.User.Person.FirstVisitDate != null)
+                            {
+                                <div class="col-8">
+                                    <span class="form-control-plaintext">@Model.User.Person.FirstVisitDate.Value.ToShortDateString()</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Membership Date:</label>
+                            @if (Model.User.Person.MembershipDate != null)
+                            {
+                                <div class="col-8">
+                                    <span class="form-control-plaintext">@Model.User.Person.MembershipDate.Value.ToShortDateString()</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group row my-2">
+                            <label class="col-4 col-form-label">Member Visitor Status:</label>
+                            @if (Model.User.Person.MemberVisitorStatus.IsNotNull())
+                            {
+                                <div class="col-8">
+                                    <span class="form-control-plaintext">@Model.User.Person.MemberVisitorStatus</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="edit-details" style="display:none;">
+                    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", id = "userProfile", enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(x => x.Type)
+                        @Html.HiddenFor(x => x.User.Person.FirstName)
+                        @Html.HiddenFor(x => x.User.Person.LastName)
+                        @Html.HiddenFor(x => x.User.Id)
+                        @Html.HiddenFor(x => x.Settings.PrimaryChurchId)
+                        @Html.HiddenFor(x => x.User.Number)
+                        @Html.HiddenFor(x => x.User.UserName)
+                        @Html.HiddenFor(x => x.User.PasswordHash)
+                        @Html.HiddenFor(x => x.User.SecurityStamp)
+                        @Html.HiddenFor(x => x.Settings.Id)
+                        @Html.HiddenFor(x => x.Settings.UserId)
+                        @Html.HiddenFor(x => x.Settings.ProfileImage)
+                        @Html.HiddenFor(x => x.Settings.CreatedBy)
+                        @Html.HiddenFor(x => x.Settings.CreatedDate)
+                        @Html.HiddenFor(x => x.BrowserRemembered)
+                        @Html.HiddenFor(x => x.HasPassword)
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-xl-3"></label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <h5 class="font-weight-bold mb-6">Personal Info</h5>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Avatar</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="image-input image-input-outline" id="kt_profile_avatar" style="background-image: url('@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)')">
+                                        @if (!string.IsNullOrEmpty(Model.Settings.ProfileImage))
+                                        {
+                                            <div class="image-input-wrapper" style="background-image: url(@Html.AmazonLink(Model.Settings.ProfileImage,"Uploads/ProfileImages"))"></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="image-input-wrapper" style="background-image: url('@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)')"></div>
+                                        }
+                                        <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="change" data-toggle="tooltip" title="" data-original-title="Change avatar">
+                                            <i class="fa fa-pen icon-sm text-muted"></i>
+                                            <input type="file" name="ImageFile" accept=".png, .jpg, .jpeg" />
+                                            <input type="hidden" name="profile_avatar_remove" />
+                                        </label>
+                                        @if (!string.IsNullOrEmpty(Model.Settings.ProfileImage))
+                                        {
+                                            <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="remove" data-toggle="tooltip" title="Remove avatar">
+                                                <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                            </span>
+                                        }
+                                        <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="cancel" data-toggle="tooltip" title="Cancel avatar change">
+                                            <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                        </span>
+                                    </div>
+                                    <span class="form-text text-muted">Allowed file types: png, jpg, jpeg.</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">First Name</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.User.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name" } })
+                                    @Html.ValidationMessageFor(x => x.User.FirstName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Last Name</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.User.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = "Last Name" } })
+                                    @Html.ValidationMessageFor(x => x.User.LastName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Phone</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group">
+                                        @if (!string.IsNullOrEmpty(Model.User.PhoneNumber))
+                                        {
+                                            if (!Model.User.PhoneNumberConfirmed)
+                                            {
+                                                <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-exclamation-circle text-warning" data-toggle="tooltip" data-original-title="Unverified"></i></span></div>
+                                            }
+                                            else
+                                            {
+                                                <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-check-circle text-success" data-toggle="tooltip" data-original-title="Verified" aria-hidden="true"></i></span></div>
+                                            }
+                                        }
+                                        @Html.EditorFor(x => x.User.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone" } })
+                                    </div>
+                                    @if (!Model.User.PhoneNumberConfirmed && !string.IsNullOrEmpty(Model.User.PhoneNumber))
+                                    {
+                                        if (SessionVariables.CurrentUser.User.Id.Equals(Model.User.Id))
+                                        {
+                                            @Html.AjaxPlainModalLink("<i class='menu-bullet menu-bullet-dot'><span></span></i><span class='form-text'>Send code to verify phone number.</span>", $"/users/_SendVerificationPhoneCode?id={Url.Encode(Model.User.Id)}", null, null, null, null, null, null, false, 320)
+                                        }
+                                        <span id="PhoneCodeStatus" class="form-text" style="display:none;">Check your text messages for the code or <a data-ajax="true" onclick="StartLoading();" data-ajax-method="get" href="/users/_SendVerificationPhoneCode?id=@Url.Encode(Model.User.Id)"> send another code.</a></span>
+                                    }
+                                    @Html.ValidationMessageFor(x => x.User.PhoneNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Email</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group">
+                                        @if (!Model.User.EmailConfirmed)
+                                        {
+                                            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-exclamation-circle text-warning" data-toggle="tooltip" data-original-title="Unverified" aria-hidden="true"></i></span></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-check-circle text-success" data-toggle="tooltip" data-original-title="Verified" aria-hidden="true"></i></span></div>
+                                        }
+                                        @if (Model.User.ExternalProvider.IsNotNullOrEmpty())
+                                        {
+                                            <input type="email" class="form-control" value="@Model.User.Email" placeholder="Email" disabled="disabled" readonly="readonly" />
+                                        }
+                                        else
+                                        {
+                                            <input type="email" name="User.Email" class="form-control" value="@Model.User.Email" placeholder="Email" />
+                                        }
+                                    </div>
+                                    @if (!Model.User.EmailConfirmed && !string.IsNullOrEmpty(Model.User.Email))
+                                    {
+                                        if (SessionVariables.CurrentUser.User.Id.Equals(Model.User.Id))
+                                        {
+                                            <a id="SendEmailCode" onclick="StartLoading();" data-ajax="true" data-ajax-method="get" href="/users/_SendVerificationEmail?id=@Url.Encode(Model.User.Id)"><span class="form-text">Send me a code to verify my email address.</span></a>
+                                        }
+                                        else
+                                        {
+                                            <a id="SendEmailCode" onclick="StartLoading();" data-ajax="true" data-ajax-method="get" href="/users/_SendVerificationEmail?id=@Url.Encode(Model.User.Id)"><span class="form-text">Send the user a code to verify their email address.</span></a>
+                                        }
+                                        <span id="EmailCodeStatus" class="form-text" style="display:none;">A verification code has been sent to your email. <a data-ajax="true" onclick="StartLoading();" data-ajax-method="get" href="/users/_SendVerificationEmail?id=@Url.Encode(Model.User.Id)"> Request another code.</a></span>
+                                    }
+                                    @Html.ValidationMessageFor(x => x.User.Email, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Address</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.User.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.User.Address1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Apt/Unit/Suite</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.User.Address2, new { htmlAttributes = new { @class = "form-control", placeholder = "optional" } })
+                                    @Html.ValidationMessageFor(x => x.User.Address2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">City</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.User.City, new { htmlAttributes = new { @class = "form-control formal" } })
+                                    @Html.ValidationMessageFor(x => x.User.City, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">State</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.User.State, Constants.AbbrevToState.ToSelectList(x => x.Value, x => x.Key), "Select a state...", new { @class = "form-control select2", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.User.State, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Zip</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.User.Zip, new { htmlAttributes = new { maxlength = "5", @class = "form-control numeric" } })
+                                    @Html.ValidationMessageFor(x => x.User.Zip, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Birthday</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="form-group input-group date">
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(x => x.User.Person.DOB, "{0:MM/dd/yyyy}", new { @class = "dateOfBirth form-control numeric", autocomplete = "off", placeholder = "MM/DD/YYYY" })
+                                            <div class="input-group-append"><span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span></div>
+                                        </div>
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.User.Person.DOB, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="separator separator-dashed my-5"></div>
+                            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Demographic Information: <small>These fields are totally optional but we'd love to know more about our church family.</small></h3>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Gender</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.User.Person.Gender, Constants.Genders.ToSelectList(x => x.Value, x => x.Key), "Select a gender...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Marital Status</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.User.Person.MaritalStatus, MaritalStatuses.Items.ToSelectList(x => x, x => x), "Select a marital status...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Family Size</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.TextBoxFor(x => x.User.Person.FamilySize, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Primary Language</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.User.Person.PrimaryLanguage, Languages.Items.ToSelectList(x => x, x => x), "Select a language...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Ethnicity</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.User.Person.Ethnicity, EthnicTypes.Items.ToSelectList(x => x, x => x), "Select an ethnicity...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Education</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.User.Person.Education, EducationTypes.Items.ToSelectList(x => x, x => x), "Select an education level...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Employment Status</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.User.Person.EmploymentStatus, EmploymentStatuses.Items.ToSelectList(x => x, x => x), "Select an employment status...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Baptism Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.User.Person.BaptismDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.User.Person.BaptismDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Deceased Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.User.Person.DeceasedDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.User.Person.DeceasedDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">First Visit Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.User.Person.FirstVisitDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.User.Person.FirstVisitDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Membership Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.User.Person.MembershipDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.User.Person.MembershipDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Member/Visitor Status</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="radio-inline">
+                                        <label class="radio" checked>
+                                            @Html.RadioButtonFor(x => x.User.Person.MemberVisitorStatus, "Attendee", new { id = "inlineRadioAttendee" }) Attendee
+                                            <span></span>
+                                        </label>
+                                        <label class="radio" checked>
+                                            @Html.RadioButtonFor(x => x.User.Person.MemberVisitorStatus, "Member", new { id = "inlineRadioMember" }) Member
+                                            <span></span>
+                                        </label>
+                                        <label class="radio">
+                                            @Html.RadioButtonFor(x => x.User.Person.MemberVisitorStatus, "Visitor", new { id = "inlineRadioVisitor" }) Visitor
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.User.Person.MemberVisitorStatus, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" id="btn-submit" class="btn btn-light-primary font-weight-bold mr-2">Save Changes</button>
+                            <a href="/users/userprofile?Id=@Model.User.Id&type=user" class="btn btn-light-dark font-weight-bold">Cancel</a>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="card-body view-details py-4">
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Name:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Display))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.Display</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Phone:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.PhoneNumber))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.PhoneNumber</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Email:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Email))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.Email</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Address:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Address1))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.Address1</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Apt/Unit/Suite:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Address2))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.Address2</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">City:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.City))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.City</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">State:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.State))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.State</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Zip:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Zip))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.Zip</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Birthday:</label>
+                        @if (Model.Person.DOB.IsNotNull())
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.DOB.Value.ToShortDateString()</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Gender:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Gender))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@(Constants.Genders.FirstOrDefault(x=>x.Key.Equals(Model.Person.Gender)).Value)</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Marital Status:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.MaritalStatus))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.MaritalStatus</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Family Size:</label>
+                        <div class="col-8">
+                            <span class="form-control-plaintext">@Model.Person.FamilySize</span>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Household:</label>
+                        <div class="col-8">
+                            <span class="form-control-plaintext">@Html.Raw(Model.Households)</span>
+                        </div>
+                    </div>
+                    @*<div class="form-group row my-2">
+                            <label class="col-4 col-form-label">
+                                Relationship: @if (Model.Relationships.Any())
+                                {
+                                    @Html.AjaxModalLink("<i class='fas fa-pencil-alt'></i>", $"/users/addrelationship?personId={Model.Person.Id}", "Add/Edit Relationship", "Save", "text-hover-primary", "", $"/users/deleterelationships?personId={Model.Person.Id}", "", false, ModalSizes.Large, true, "delete-relationships")
+                                }
+                            </label>
+                            <div class="col-8">
+                                @if (Model.Relationships.Any())
+                                {
+                                    foreach (var relative in Model.Relationships.OrderBy(x => x.RelativePerson.Display))
+                                    {
+                                        if (SessionVariables.CurrentUser.IsAdmin || SessionVariables.CurrentUser.IsSuperAdmin)
+                                        {
+                                            if (relative.RelativePerson.UserId.IsNotNullOrEmpty())
+                                            {
+                                                <a href="/users/userprofile?Id=@relative.RelativePerson.UserId&type=user" target="_blank" data-toggle="tooltip" data-placement="left" data-original-title="View profile" class="form-control-plaintext text-primary">@relative.RelativePerson.Display (@relative.Relation)</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/users/userprofile?Id=@relative.RelativePerson.Id&type=person" target="_blank" data-toggle="tooltip" data-placement="left" data-original-title="View profile" class="form-control-plaintext text-primary">@relative.RelativePerson.Display (@relative.Relation)</a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="form-control-plaintext">@relative.RelativePerson.Display (@relative.Relation)</span>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    @Html.AjaxModalLink("Add Relationship", $"/users/addrelationship?personId={Model.Person.Id}", "Add Relationship", "Save", "btn btn-light-primary btn-sm", "", "", "", false, ModalSizes.Large, false)
+                                }
+                            </div>
+                        </div>*@
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Primary Language:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.PrimaryLanguage))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.PrimaryLanguage</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Ethnicity:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Ethnicity))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.Ethnicity</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Education:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.Education))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.Education</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Employment Status:</label>
+                        @if (!string.IsNullOrEmpty(Model.Person.EmploymentStatus))
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.EmploymentStatus</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Baptism Date:</label>
+                        @if (Model.Person.BaptismDate.IsNotNull())
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.BaptismDate.Value.ToShortDateString()</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Deceased Date:</label>
+                        @if (Model.Person.DeceasedDate.IsNotNull())
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.DeceasedDate.Value.ToShortDateString()</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">First Visit Date:</label>
+                        @if (Model.Person.FirstVisitDate.IsNotNull())
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.FirstVisitDate.Value.ToShortDateString()</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Membership Date:</label>
+                        @if (Model.Person.MembershipDate.IsNotNull())
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.MembershipDate.Value.ToShortDateString()</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-4 col-form-label">Member Visitor Status:</label>
+                        @if (Model.Person.MemberVisitorStatus.IsNotNull())
+                        {
+                            <div class="col-8">
+                                <span class="form-control-plaintext">@Model.Person.MemberVisitorStatus</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="edit-details" style="display:none;">
+                    @using (Html.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, FormMethod.Post, new { @class = "form", enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(x => x.Type)
+                        @Html.HiddenFor(x => x.Person.Id)
+                        @Html.HiddenFor(x => x.Person.Number)
+                        @Html.HiddenFor(x => x.Person.ProfileImage)
+                        @Html.HiddenFor(x => x.Person.CreatedBy)
+                        @Html.HiddenFor(x => x.Person.CreatedDate)
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-xl-3"></label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <h5 class="font-weight-bold mb-6">Personal Info</h5>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Profile Image</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="image-input image-input-outline" id="kt_profile_avatar" style="background-image: url('@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)')">
+                                        @if (!string.IsNullOrEmpty(Model.Person.ProfileImage))
+                                        {
+                                            <div class="image-input-wrapper" style="background-image: url(@Html.AmazonLink(Model.Person.ProfileImage,"Uploads/ProfileImages"))"></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="image-input-wrapper" style="background-image: url('@RazorAssetHelpers.ResolveDefaultProfileImageUrl(Url)')"></div>
+                                        }
+                                        <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="change" data-toggle="tooltip" title="" data-original-title="Change avatar">
+                                            <i class="fa fa-pen icon-sm text-muted"></i>
+                                            <input type="file" name="ImageFile" accept=".png, .jpg, .jpeg" />
+                                            <input type="hidden" name="profile_avatar_remove" />
+                                        </label>
+                                        @if (!string.IsNullOrEmpty(Model.Person.ProfileImage))
+                                        {
+                                            <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="remove" data-toggle="tooltip" title="Remove avatar">
+                                                <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                            </span>
+                                        }
+                                        <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="cancel" data-toggle="tooltip" title="Cancel avatar change">
+                                            <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                        </span>
+                                    </div>
+                                    <span class="form-text text-muted">Allowed file types: png, jpg, jpeg.</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">First Name</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.Person.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name" } })
+                                    @Html.ValidationMessageFor(x => x.Person.FirstName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Last Name</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.Person.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = "Last Name" } })
+                                    @Html.ValidationMessageFor(x => x.Person.LastName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Phone</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group">
+                                        @*<div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-check-circle text-success" data-toggle="tooltip" data-original-title="Verified" aria-hidden="true"></i></span></div>*@
+                                        @Html.EditorFor(x => x.Person.PhoneNumber, new { htmlAttributes = new { @class = "form-control phone" } })
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.PhoneNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Email</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group">
+                                        @*<div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-check-circle text-success" data-toggle="tooltip" data-original-title="Verified" aria-hidden="true"></i></span></div>*@
+                                        @Html.EditorFor(x => x.Person.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "example@domain.com" } })
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.Email, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Gender</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.Person.Gender, Constants.Genders.ToSelectList(x => x.Value, x => x.Key), "Select a gender...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Address</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.Person.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Person.Address1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Apt/Unit/Suite</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.Person.Address2, new { htmlAttributes = new { @class = "form-control", placeholder = "optional" } })
+                                    @Html.ValidationMessageFor(x => x.Person.Address2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">City</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.Person.City, new { htmlAttributes = new { @class = "form-control formal" } })
+                                    @Html.ValidationMessageFor(x => x.Person.City, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">State</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.Person.State, Constants.AbbrevToState.ToSelectList(x => x.Value, x => x.Key), "Select a state...", new { @class = "form-control select2", style = "width:100%;" })
+                                    @Html.ValidationMessageFor(x => x.Person.State, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Zip</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.EditorFor(x => x.Person.Zip, new { htmlAttributes = new { maxlength = "5", @class = "form-control numeric" } })
+                                    @Html.ValidationMessageFor(x => x.Person.Zip, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Birthday</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="form-group input-group date">
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(x => x.Person.DOB, "{0:MM/dd/yyyy}", new { @class = "dateOfBirth form-control numeric", autocomplete = "off", placeholder = "MM/DD/YYYY" })
+                                            <div class="input-group-append"><span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span></div>
+                                        </div>
+                                        <div class="fv-plugins-message-container"></div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.DOB, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="separator separator-dashed my-5"></div>
+                            <h3 class="font-size-lg text-dark font-weight-bold mb-6">Demographic Information: <small>These fields are totally optional but we'd love to know who's attending our church.</small></h3>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Primary Language</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.Person.PrimaryLanguage, Languages.Items.ToSelectList(x => x, x => x), "Select a language...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Marital Status</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.Person.MaritalStatus, MaritalStatuses.Items.ToSelectList(x => x, x => x), "Select a marital status...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Family Size</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.TextBoxFor(x => x.Person.FamilySize, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Ethnicity</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.Person.Ethnicity, EthnicTypes.Items.ToSelectList(x => x, x => x), "Select an ethnicity...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Education</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.Person.Education, EducationTypes.Items.ToSelectList(x => x, x => x), "Select an education level...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Employment Status</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    @Html.DropDownListFor(x => x.Person.EmploymentStatus, EmploymentStatuses.Items.ToSelectList(x => x, x => x), "Select an employment status...", new { @class = "form-control select2", style = "width:100%;" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Baptism Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.Person.BaptismDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.BaptismDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Deceased Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.Person.DeceasedDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.DeceasedDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">First Visit Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.Person.FirstVisitDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.FirstVisitDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Membership Date</label>
+                                <div class="col-lg-9 col-xl-6">
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(x => x.Person.MembershipDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "MM/DD/YYYY", autocomplete = "off" })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.MembershipDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row mb-0">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Member Visitor Status</label>
+                                <div class="col-lg-9 col-xl-6 mt-3">
+                                    <div class="radio-inline">
+                                        <label class="radio" checked>
+                                            @Html.RadioButtonFor(x => x.Person.MemberVisitorStatus, "Attendee", new { id = "inlineRadioAttendee" }) Attendee
+                                            <span></span>
+                                        </label>
+                                        <label class="radio" checked>
+                                            @Html.RadioButtonFor(x => x.Person.MemberVisitorStatus, "Member", new { id = "inlineRadioMember" }) Member
+                                            <span></span>
+                                        </label>
+                                        <label class="radio">
+                                            @Html.RadioButtonFor(x => x.Person.MemberVisitorStatus, "Visitor", new { id = "inlineRadioVisitor" }) Visitor
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                    @Html.ValidationMessageFor(x => x.Person.MemberVisitorStatus, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-light-primary font-weight-bold mr-2">Save Changes</button>
+                            <a href="/users/userprofile?Id=@Model.Person.Id&type=person" class="btn btn-light-dark font-weight-bold">Cancel</a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var validation = [];
+    $(function () {
+        $(".edit").click(function () {
+            $(".view-details").toggle();
+            $(".edit-details").toggle();
+        });
+    });
+
+    $(document).on('click', '#delete-relationships', function (e) {
+        e.preventDefault();
+        setTimeout(function () {
+            StopLoading();
+        });
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to delete all of the relationships for this person?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Yes, delete them!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.get($(this).attr("href"), function (result) {
+                    if (result.Success) {
+                        $('#ajax-modal').modal('toggle');
+                        Notify("success", "SUCCESS", Constants.SavedMessage);
+                        setTimeout(function () {
+                            location.reload(true);
+                        }, 1000);
+                    } else {
+                        ShowErrorAlert(result.Message);
+                    }
+                });
+            }
+        });
+    });
+</script>
+@section belowscripts
+{
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}

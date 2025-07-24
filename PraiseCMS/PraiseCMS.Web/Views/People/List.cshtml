@@ -1,0 +1,171 @@
+﻿@using PraiseCMS.Shared.Methods
+@model PraiseCMS.DataAccess.Models.PeopleDashboard
+
+@{
+    ViewBag.Title = "People List";
+}
+
+@section leftsubheader{
+    @Html.Partial("_PeopleSubheader")
+}
+
+@section subheader{
+    @Html.AjaxModalLink("Add Person", "/people/_CreatePerson/", "Add Person", "Save", "btn btn-light-primary font-weight-bold", "", "", "", false, ModalSizes.Large)
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="col-md-6 col-xxl-4 d-flex align-items-center justify-content-center">
+            <div class="input-group input-group-lg input-group-solid my-2">
+                <input type="text" class="form-control pl-4" placeholder="Search people..." id="userFilterKeyword" value="@ViewBag.userFilterKeyword">
+                <div class="input-group-append">
+                    <span class="input-group-text pr-3">
+                        <a class="pointer mr-3" id="clearSearchBtn" @(string.IsNullOrEmpty(ViewBag.userFilterKeyword) ? "style=display:none;" : "") onclick="clearUserSearch()" data-toggle="tooltip" title="Clear search">
+                            <i class="fas fa-times icon-sm"></i>
+                        </a>
+                        <a class="pointer" onclick="getUserByKeyword()" data-toggle="tooltip" title="Search"><i class="fa fa-search"></i></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @if (Model.People.Any())
+            {
+                foreach (var person in Model.People)
+                {
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="card card-custom gutter-b card-stretch">
+                            <div class="card-body pt-4">
+                                <div class="d-flex align-items-end mb-7">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0 mr-4 mt-lg-0 mt-3">
+                                            <div class="symbol symbol-circle symbol-lg-75">
+                                                <img src="@person.ProfileImageURL" alt="profile image" />
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            @if (SessionVariables.CurrentUser.IsSuperAdmin || SessionVariables.CurrentUser.IsAdmin)
+                                            {
+                                                if (person.UserId.IsNotNullOrEmpty())
+                                                {
+                                                    <a href="/users/userprofile?Id=@person.UserId&type=user" class="text-dark font-weight-bold text-hover-primary font-size-h4 mb-0">@person.Display</a>
+                                                    <span class="text-muted font-weight-bold"># @person.Number</span>
+                                                }
+                                                else
+                                                {
+                                                    <a href="/users/userprofile?Id=@person.Id&type=person" class="text-dark font-weight-bold text-hover-primary font-size-h4 mb-0">@person.Display</a>
+                                                    <span class="text-muted font-weight-bold"># @person.Number</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-dark font-weight-bold font-size-h4 mb-0">@person.Display</span>
+                                                <span class="text-muted font-weight-bold"># @person.Number</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-7">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-dark-75 font-weight-bolder mr-2">Status:</span>
+                                        <span class="text-muted font-weight-bold">@(person.IsActive ? ActiveStatuses.Active : ActiveStatuses.Inactive)</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-dark-75 font-weight-bolder mr-2">Email:</span>
+                                        <span class="text-muted font-weight-bold">@(!string.IsNullOrEmpty(person.Email) ? person.Email : "")</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-dark-75 font-weight-bolder mr-2">Phone:</span>
+                                        <span class="text-muted font-weight-bold">@(!string.IsNullOrEmpty(person.PhoneNumber) ? person.PhoneNumber : "")</span>
+                                    </div>
+                                </div>
+                                @*<a href="#" class="btn btn-block btn-sm btn-light-primary font-weight-bolder text-uppercase py-4">Contact</a>*@
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-xl-4 col-sm-6">
+                    <p>You haven't added any people yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#userFilterKeyword').keyup(function (e) {
+        if (e.currentTarget.value !== "") {
+            $('#clearSearchBtn').show();
+        } else {
+            $('#clearSearchBtn').hide();
+        }
+    });
+    $('#userFilterKeyword').keypress(function (e) {
+        var key = e.which;
+        if (key === 13) {
+            getUserByKeyword();
+            return false;
+        }
+    });
+    function getUserByKeyword() {
+        if ($('#userFilterKeyword').val()) {
+            let currentUrl = window.location;
+            if (!currentUrl.href.includes('filterKeyword')) {
+                if (currentUrl.href.includes('?')) {
+                    let url = currentUrl.href + "&filterKeyword=" + $('#userFilterKeyword').val();
+                    location.replace(url);
+                }
+                else {
+                    let url = currentUrl.href + "?filterKeyword=" + $('#userFilterKeyword').val();
+                    location.replace(url);
+                }
+            }
+            else {
+                let url = currentUrl.href;
+                let startIndex = url.indexOf("filterKeyword=") + 14;
+                let oldKeyword = url.substr(startIndex);
+                if (oldKeyword !== '') {
+                    url = url.replace(oldKeyword, $('#userFilterKeyword').val());
+                } else {
+                    url = currentUrl.href + $('#userFilterKeyword').val();
+                }
+                location.replace(url);
+            }
+        }
+    }
+    function clearUserSearch() {
+        if ($('#userFilterKeyword').val()) {
+            $('#userFilterKeyword').val('');
+            $('#clearSearchBtn').hide();
+            $('#userFilterKeyword').focus();
+            let currentUrl = window.location;
+            if (currentUrl.href.includes('filterKeyword')) {
+                {
+                    let url = currentUrl.href;
+                    let items = url.split('filterKeyword=');
+                    if (items && items.length > 0) {
+                        if (items[1].includes('&')) {
+                            let subItems = items[1].split('&');
+                            if (subItems && subItems.length > 0) {
+                                url = url.replace("=" + subItems[0], "=");
+                            }
+                        }
+                        else {
+                            url = url.replace("=" + items[1], "=");
+                        }
+                    }
+                    location.replace(url);
+                }
+            }
+        }
+    }
+</script>

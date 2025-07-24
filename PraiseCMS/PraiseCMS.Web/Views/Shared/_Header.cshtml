@@ -1,0 +1,30 @@
+﻿@using PraiseCMS.Shared.Methods
+<div id="kt_header" class="header header-fixed">
+    <!--begin::Container-->
+    <div class="container-fluid d-flex align-items-stretch justify-content-between">
+        @Html.Action("MainNavBar", "Base")
+        <div class="topbar d-print-none">
+            @if (SessionVariables.CurrentUser.IsNotNull() && !SessionVariables.CurrentUser.IsSuperAdmin)
+            {
+                <!--begin::Search-->
+                @Html.Partial("_NavBarSearch")
+                <!--end::Search-->
+            }
+            <!--begin::Notifications-->
+            @*@Html.Partial("_NavBarNotifications")*@
+            <!--end::Notifications-->
+            @*<!--begin::Quick Actions-->
+            @Html.Partial("_NavBarQuickActions")
+            <!--end::Quick Actions-->*@
+            @*<!--begin::Quick panel-->
+            @Html.Partial("_NavBarQuickPanel")
+            <!--end::Quick panel-->*@
+            @*<!--begin::Chat-->
+            @Html.Partial("_NavBarChat")
+            <!--end::Chat-->*@
+            <!--begin::User-->
+            @Html.Partial("_NavBarUserBar")
+            <!--end::User-->
+        </div>
+    </div>
+</div>

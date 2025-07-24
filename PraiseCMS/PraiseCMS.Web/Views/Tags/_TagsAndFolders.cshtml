@@ -1,0 +1,153 @@
+﻿@model PraiseCMS.DataAccess.Models.FoldersTagsViewModel
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@Model.ParentFolder.Display</h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Add Folder", $"/tags/CreateFolder?folderId={Model.ParentFolder.Id}", "Add Folder", "Save", "btn btn-light-primary btn-sm mr-2", "", "", "", false, "", false)
+            @Html.AjaxModalLink("Add Tag", $"/tags/CreateTag?folderId={Model.ParentFolder.Id}", "Add Tag", "Save", "btn btn-light-primary btn-sm", "", "", "", false, "", false)
+        </div>
+    </div>
+    <div class="card-body px-5 py-10">
+        @if (Model.Folders.Any() || Model.Tags.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover table-borderless folder-tags">
+                    <tbody>
+                        @foreach (var item in Model.Folders.OrderBy(q => q.Display))
+                        {
+                            <tr data-id="@item.Id" class="table-tr draggable">
+                                <td>
+                                    @{
+                                        var id = $"{item.Id}_anchor";
+                                    }
+                                    <i class="fas fa-folder text-warning mr-2"></i> <a href="#" class="jstree-anchor text-primary" id="@id">@item.Display</a>
+                                </td>
+                                <td class="text-right edit">
+                                    <div class="edit" style="display:none;">
+                                        @Html.AjaxModalLink("<i class='fas fa-pencil-alt text-hover-dark'></i>", "/tags/Editfolder/" + item.Id, "Edit Folder", "Update", "mr-2", "", "")
+                                        <a href="/tags/deletefolder?id=@item.Id" class="delete-folder" data-toggle="tooltip" title="Delete Folder"><i class="fas fa-trash-alt text-hover-danger"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var item in Model.Tags.OrderBy(q => q.Display))
+                        {
+                            <tr data-id="@item.Id" class="table-tr draggable">
+                                <td>
+                                    <i class="fas fa-tag text-primary mr-2"></i> <a href="/tags/TagDetails/@item.Id" id="@item.Id-tag">@item.Display</a>
+                                </td>
+                                <td class="text-right edit">
+                                    <div class="edit" style="display:none;">
+                                        @Html.AjaxModalLink("<i class='fas fa-pencil-alt text-hover-dark'></i>", "/tags/EditTag/" + item.Id, "Edit Tag", "Update", "mr-2", "", "")
+                                        <a href="/tags/deletetag?id=@item.Id" class="delete-tag" data-toggle="tooltip" title="Delete Tag"><i class="fas fa-trash-alt text-hover-danger"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-7">
+                    <p class="mt-lg-10">You don't have any tags in this folder. Want to add one?</p>
+                    @Html.AjaxModalLink("<i class='fas fa-tag mr-2'></i>Add Tag", $"/tags/CreateTag?folderId={Model.ParentFolder.Id}", "Add Tag", "Save", "btn btn-light-primary btn-sm mt-4", "")
+                </div>
+            </div>
+        }
+    </div>
+    <div class="card-footer">
+        <p class="font-size-sm text-muted"><strong>Note:</strong> Folders and tags may be dragged &amp; dropped inside another folder shown above.</p>
+    </div>
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.draggable').draggable({
+                revert: "invalid", // when not dropped, the item will revert back to its initial position
+                containment: "document",
+                helper: "clone",
+                cursor: 'move'
+            });
+            $(".draggable").droppable({
+                hoverClass: "droppable-hover",
+                activeClass: "ui-state-highlight",
+                drop: function (event, ui) {
+                    updateFolderParent(ui.helper.data('id'), $(this).data('id'));
+                }
+            });
+        });
+
+        $(document).on('mouseover', '.table-tr', function () {
+            var action = $(this).children('.edit').children('.edit');
+            if (action) {
+                action.show();
+            }
+
+        });
+
+        $(document).on('mouseleave', '.table-tr', function () {
+            var action = $(this).children('.edit').children('.edit');
+            if (action) {
+                action.hide();
+            }
+        });
+
+        $(document).on('click', '.delete-tag', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Delete Tag",
+                text: "Are you sure you want to delete this tag?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#aaa',
+                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Yes, Delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    StartLoading();
+                    $.get($(this).attr('href'), null, function (result) {
+                        if (result.Success) {
+                            Notify("success", "SUCCESS", result.Message);
+                        } else {
+                            ShowErrorAlert(result.Message);
+                        }
+                        refreshFoldersAndTags();
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-folder', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Delete Folder",
+                text: "Are you sure you want to delete this folder? This cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#aaa',
+                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Yes, Delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    StartLoading();
+                    $.get($(this).attr('href'), null, function (result) {
+                        if (result.Success) {
+                            Notify("success", "SUCCESS", result.Message);
+                        } else {
+                            ShowErrorAlert(result.Message);
+                        }
+                        RefreshTree();
+                    });
+                }
+            });
+        });
+    </script>
+}

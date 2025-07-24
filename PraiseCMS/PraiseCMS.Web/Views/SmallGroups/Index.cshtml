@@ -1,0 +1,98 @@
+﻿@model IEnumerable<PraiseCMS.DataAccess.Models.SmallGroup>
+
+@{
+    ViewBag.Title = "Small Groups";
+    var db = new ApplicationDbContext();
+}
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @ViewBag.Title
+            </h3>
+        </div>
+        <div class="card-toolbar">
+            @Html.AjaxModalLink("Create Small Group", "/smallgroups/_createsmallgroup/", "Create Small Group", "Save", "btn btn-light-primary font-weight-bold", "", "", "", false, ModalSizes.Large)
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 text-center">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Campus</th>
+                                    <th>Leader</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Age Range</th>
+                                    <th>@Html.DisplayNameFor(x => x.ChildCareProvided)</th>
+                                    <th>@Html.DisplayNameFor(x => x.HandicapAccessible)</th>
+                                    <th>@Html.DisplayNameFor(x => x.City)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var church = db.Churches.FirstOrDefault(x => x.Id.Equals(item.ChurchId));
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Display)
+                                        </td>
+                                        <td>
+                                            @(!string.IsNullOrEmpty(item.Description) ? item.Description.EllipsisAt(20) : "")
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.CampusId))
+                                            {
+                                                <span> @(SessionVariables.Campuses.Any(x => x.Id.Equals(item.CampusId))? SessionVariables.Campuses.FirstOrDefault(x => x.Id.Equals(item.CampusId)).Display :"")</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LeaderOneName)
+                                            @(!string.IsNullOrEmpty(item.LeaderTwoName) ? ", " + item.LeaderTwoName : "")
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LeaderOnePhone)
+                                            @(!string.IsNullOrEmpty(item.LeaderTwoPhone) ? ", " + item.LeaderTwoPhone : "")
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LeaderOneEmail)
+                                            @(!string.IsNullOrEmpty(item.LeaderTwoEmail) ? ", " + item.LeaderTwoEmail : "")
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AgeRange)
+                                        </td>
+                                        <td>
+                                            @(item.ChildCareProvided ? "Yes" : "No")
+                                        </td>
+                                        <td>
+                                            @(item.HandicapAccessible ? "Yes" : "No")
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.City)
+                                        </td>
+                                        <td>
+                                            @Html.AjaxModalLink(item.Name, "/smallgroups/_editsmallgroup/" + item.Id, "Edit Small Group", "Save", "", "", "/smallgroups/delete/" + item.Id, "", false, ModalSizes.Large) |
+                                            @Html.ActionLink("Details", "Details", new { id = item.Id })
+                                        </td>
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p> You don't have any small groups yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

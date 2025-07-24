@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="{bootstrap}" rel="stylesheet" media='all' />
+
+
+    <style>
+        .notesInput:focus {
+            outline: none;
+        }
+
+        table {
+            table-layout: fixed;
+            width: auto;
+            word-break: break-all;
+            border-spacing: 1em;
+        }
+
+        textarea {
+            overflow-y: hidden;
+            border-bottom: 0px !important;
+            overflow-wrap: normal;
+            resize: none;
+        }
+    </style>
+
+
+
+</head>
+<body>
+
+    <div id="content">
+        <div class="row">
+            <div class="col-6 ">
+                <img src='{img}' height="30" class="mx-2 w-auto" />
+                <hr />
+            </div>
+            <div class="col-6">
+                <hr style="margin-top: 2.8rem;" />
+            </div>
+
+            <div id="msg" class="ml-3 text-justify pr-3">
+                {msg}
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
+<script src="{Jquery}"></script>
+
+<script>
+
+    $(document).ready(function () {
+        var noteType = $("#NoteType").val();
+        var msg = $("#msg").html();
+        msg = msg.replace(/&lt;/g, "<");
+        msg = msg.replace(/&gt;/g, ">");
+        msg = msg.replace(/&amp;nbsp;/g, "");
+        msg = msg.replace(/\[input_half\]/g, "<input type='text' size='20' class='input-half btm-bodr border-top-0  border-right-0 border-left-0 notesInput'/>");
+        msg = msg.replace(/\[input_full\]/g, " <br/><input type='text'   class='input-full btm-bodr border-top-0  border-right-0 border-left-0 notesInput' style=' width: 100%;'/><br/>");
+        $("#msg").html(msg);
+
+
+
+        $("#msg").find(".input-full").each(function () {
+            var value = $(this).text();
+            $(this).before("<textarea  cols='105' rows='2'  class='input-full  border-top-0  border-right-0 border-left-0 notesInput'>" + value + "</textarea>");
+            $(this).remove();
+        });
+        $(function () {
+            $("textarea").each(function () {
+                this.style.height = (this.scrollHeight + 10) + 'px';
+            });
+        });
+        $(".table td").css({ "border-top": 0 });
+
+
+    });
+
+</script>

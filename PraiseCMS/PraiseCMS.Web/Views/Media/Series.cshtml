@@ -1,0 +1,59 @@
+﻿@model PraiseCMS.DataAccess.Models.SeriesView
+
+@{
+    ViewBag.Title = "Series";
+}
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="text-primary fa fa-bible"></i>
+            </span>
+            <h3 class="card-label">
+                Series
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-4">
+                <div class="card">
+                    @{var image = !string.IsNullOrEmpty(Model.Series.Image) ? "~/Uploads/sermonseries/" + Model.Series.Image : "~/Content/assets/media/products/product2.jpg"; }
+                    <img class="card-img-top" src="@Url.Content(image)" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">@Model.Series.Title</h5>
+                        <p class="card-text">Series: @(!string.IsNullOrEmpty(Model.Series.Title) ? Model.Series.Title : "Not Provided")</p>
+                        <p class="card-text">Topic: @(!string.IsNullOrEmpty(Model.Topic.Title) ? Model.Topic.Title : "Not Provided")</p>
+                        <p class="text-muted">@Model.Series.CreatedDate.ToShortDateString()</p>
+                        <p class="text-muted">@Html.AjaxModalLink("Edit Series", "/media/_editseries/" + Model.Series.Id, "Edit Series", "Save", "", "", "/media/deleteseries/" + Model.Series.Id)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Sermons.Any())
+        {
+            <hr />
+            <div class="row">
+
+                @foreach (var sermon in Model.Sermons)
+                {
+                    var sermonImage = !string.IsNullOrEmpty(sermon.Image) ? "~/Uploads/sermons/" + sermon.Image : "~/Content/assets/media/products/product1.jpg";
+                    var topic = Model.TopicsList.FirstOrDefault(x => x.Id.Equals(sermon.TopicId));
+                    <div class="col-4">
+                        <div class="card">
+                            <a href="@Url.Action("sermon", "media", new { sermonId = sermon.Id })">
+                                <img class="card-img-top" src="@Url.Content(sermonImage)" alt="@sermon.Title">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="@Url.Action("sermon", "media", new { sermonId = sermon.Id })">@sermon.Title</a></h5>
+                                <p class="card-text"><a href="@Url.Action("sermons", "media", new { topicId = sermon.TopicId })">@topic.Title</a></p>
+                                <p class="text-muted">@sermon.CreatedDate.ToShortDateString()</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

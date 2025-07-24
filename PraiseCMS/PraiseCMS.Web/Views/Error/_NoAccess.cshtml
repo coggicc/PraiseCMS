@@ -1,0 +1,14 @@
+﻿@model ErrorViewModel
+
+@if (!string.IsNullOrEmpty(Model.AccessDeniedMessage))
+{
+    <span>
+        @Html.Raw(Model.AccessDeniedMessage)
+    </span>
+}
+else
+{
+    <span>
+        Access to this area of the application has been restricted for your user account. Please contact your administrator if you need access.
+    </span>
+}

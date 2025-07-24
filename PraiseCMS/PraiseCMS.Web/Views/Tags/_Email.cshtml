@@ -1,0 +1,153 @@
+﻿@model PraiseCMS.DataAccess.Models.EmailModel
+
+<div id="email-message-div">
+    <div id="alert-container"></div>
+    <p class="pl-1 text-dark-50"><span class="font-weight-bolder">Note:</span> By default, all people assigned to the tag are added to the BCC (blind carbon copy) field. You may add additional email addresses below.</p>
+    @using (Ajax.BeginForm(RouteHelpers.CurrentAction, RouteHelpers.CurrentController, new AjaxOptions() { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "email-message-div" }, new { @class = "kt-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(q => q.TagId)
+        <div class="form-group">
+            <label>To:</label>
+            @Html.DropDownListFor(x => x.BCC, Model.People.ToSelectList(x => x.Display, x => x.Email), new { onchange = "validateForm(this)", @class = "form-control select2", style = "width:100%", multiple = "multiple" })
+            @Html.ValidationMessageFor(x => x.To, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Subject:</label>
+            @Html.TextBoxFor(x => x.Subject, new { @class = "form-control", placeholder = "Subject" })
+            @Html.ValidationMessageFor(x => x.Subject, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Message:</label>
+            @Html.TextAreaFor(x => x.Message, new { @class = "form-control", placeholder = "Enter your message", rows = "5" })
+            @Html.ValidationMessageFor(x => x.Message, "", new { @class = "text-danger" })
+        </div>
+    }
+</div>
+@section belowScripts
+{
+    <script type="text/javascript">
+        var people = @Html.Raw(Json.Encode(Model.People));
+        var formValidations = [];
+        var IsSubmitted = false;
+        var formSubmitted = false;
+        var editorMessage;
+
+        function initSelect2() {
+            $('.select2').select2({
+                tags: true
+            });
+        }
+
+        $(function () {
+              ClassicEditor
+                  .create(document.querySelector('#Message'))
+                  .then(editor => {
+                      editorMessage = editor;
+                  })
+                .catch(error => {
+                    console.error(error);
+                });
+            StopLoading();
+            var defaultBCC = [];
+            $.each(people, function (index, value) {
+              defaultBCC.push(value.Email);
+            });
+            $("#BCC").val(defaultBCC);
+            initSelect2();
+            setValidationStep();
+        });
+
+        function setValidationStep() {
+          let form = document.getElementById('communicationEmailForm');
+           formValidations.push(FormValidation.formValidation(form,
+            {
+                fields: {
+                    'Subject': { validators: { notEmpty: { message: "Please enter subject of your email." } } },
+                    'BCC': {
+                        validators: {
+                            callback: {
+                                message: 'Please add at least one recipient',
+                                callback: function (input) {
+                                    let bcc = $('#communicationEmailForm #BCC').val();
+                                    return bcc.length ? true : false;
+                                }
+                            }
+                        }
+                    },
+                    'Message': {
+                        validators: {
+                            callback: {
+                                message: 'Please enter the message',
+                                callback: function (input) {
+                                    let editorValue = $('#communicationEmailForm .ck-editor__editable').text();
+                                    if (!editorValue) {
+                                        return false;
+                                    } else {
+                                        form.Message.value = editorMessage.getData();
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger,
+                    bootstrap: new FormValidation.plugins.Bootstrap({ eleValidClass: "" })
+                }
+            }));
+        }
+
+        $("#communicationEmailForm").submit(function (e) {
+            e.preventDefault(e);
+            StopLoading();
+        });
+
+        $(document).on('click', '.btn_submit', function (e) {
+            if (!$("#communicationEmailForm") || !$("#communicationEmailForm").length) {
+                return false;
+            }
+            IsSubmitted = true;
+            e.preventDefault();
+            formValidations[0].validate().then(function (status) {
+                if (status === 'Valid') {
+                    if (formSubmitted) {
+                        return false;
+                    }
+                    formSubmitted = true;
+                    $.ajax({
+                        type: "POST",
+                        url: $('#communicationEmailForm').attr('action'),
+                        data: $('#communicationEmailForm').serialize(),
+                        success: function (result) {
+                            if (result.Success === false) {
+                                ShowErrorAlert(result.Message);
+                            } else {
+                                document.getElementById("communicationEmailForm").reset();
+                                $('#communication-history').html('');
+                                $('#communication-history').html(result);
+                                $('#ajax-modal').modal('toggle');
+                                //Notify("success", "SUCCESS", "The email has been sent");
+                                ShowErrorAlert(result.Message);
+                            }
+                        },
+                        error: function (result) {
+                            ShowErrorAlert(result.Message);
+                        }
+                    });
+                } else {
+                    setTimeout(function () {
+                        StopLoading();
+                    });
+                }
+            });
+        });
+
+        function validateForm(self) {
+            if (IsSubmitted) {
+                formValidations[0].validate();
+            }
+        }
+    </script>
+}

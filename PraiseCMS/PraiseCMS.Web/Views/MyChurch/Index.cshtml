@@ -1,0 +1,16 @@
+﻿@using Roles = PraiseCMS.Shared.Shared.Roles
+@{
+    ViewBag.Title = "Index";
+}
+
+@section leftsubheader{
+    <a href="/settings" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2">Church Info</a>
+    <a href="/campuses" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2">Campuses</a>
+    <a href="/campuses/Buildings" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2">Buildings</a>
+    <a href="/campuses/floors" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2">Floors</a>
+    <a href="/campuses/rooms" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2">Rooms</a>
+    <a href="/users?type=@Roles.Administrator" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2">Administrators</a>
+    <a href="/settings" class="btn btn-hover-light-primary font-weight-bold btn-sm mr-2">Settings</a>
+}
+
+<h2>Index</h2>

@@ -1,0 +1,266 @@
+﻿@model PraiseCMS.DataAccess.Models.PaymentMethodViewModel
+@{
+    ViewBag.Title = "Payment Methods";
+}
+
+@section leftsubheader{
+    @Html.Partial("_AccountSubHeader")
+}
+
+@section mobileOnlyMenu{
+    <button class="burger-icon burger-icon-left mr-4 d-inline-block d-lg-none" id="kt_subheader_mobile_toggle">
+        <span></span>
+    </button>
+}
+
+<link href="~/Scripts/card/card.css" rel="stylesheet" />
+
+<style type="text/css">
+    #card-info, #check-info, #nickname, #actionbuttons {
+        display: none;
+    }
+
+    .form-control-error {
+        border: 1px solid #F64E60 !important;
+    }
+
+    @@media (max-width: 991.98px) {
+        #check-label {
+            margin-top: 1.5rem;
+        }
+    }
+</style>
+<div class="d-flex flex-column-fluid">
+    @Html.Partial("_Sidebar", SessionVariables.CurrentChurch)
+    <div class="flex-row-fluid ml-lg-8">
+        <div class="card card-custom gutter-b">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">
+                        Cards &amp; Accounts
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <div class="dropdown">
+                        <button class="btn btn-light-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Add Payment Method
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/settings/AddCard">Card</a>
+                            <a class="dropdown-item" href="/settings/AddBank">Bank Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 class="mb-5">Credit/Debit Cards</h4>
+                                @if (Model.PaymentMethods.CreditCards.Any())
+                                {
+                                    <table id="my_card_table" class="table table-bordered table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Nickname</th>
+                                                <th>Type</th>
+                                                <th>Card #</th>
+                                                <th>Exp.</th>
+                                                <th class="text-center">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.PaymentMethods.CreditCards.Any(q => q.AccountGUID.Equals(Model.PrimaryAccountGUID)))
+                                            {
+                                                var card = Model.PaymentMethods.CreditCards.FirstOrDefault(q => q.AccountGUID.Equals(Model.PrimaryAccountGUID));
+                                                var days = Utilities.CardExpirationCalculateInDays(card.ExpMonth, card.ExpYear);
+                                                var isPrimary = Model.PrimaryAccountGUID == card.AccountGUID;
+                                                <tr>
+                                                    <td>
+                                                        @(!string.IsNullOrEmpty(card.Nickname) ? card.Nickname : "")
+                                                        <small class="text-primary">(Primary Account)</small>
+
+                                                        @if (days <= 1)
+                                                        {
+                                                            <small class="text-danger">(Expired)</small>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @card.CardType
+                                                    </td>
+                                                    <td>
+                                                        @card.MaskedCardNumber
+                                                    </td>
+                                                    <td>
+                                                        @card.ExpMonth/@card.ExpYear
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="card-toolbar">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="btn btn-hover-primary btn-icon btn-light btn-sm dropdown-toggle w-50px" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <i class="fas fa-pencil-alt text-primary"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                    <a data-primary="@isPrimary" href="/settings/EditCard/@card.AccountGUID" class="dropdown-item">Edit Card</a>
+                                                                    @if (days >= 1 && !isPrimary)
+                                                                    {
+                                                                        <a href="/settings/makeprimary?id=@card.AccountGUID&updateScheduledPayments=true" class="dropdown-item">Make Primary</a>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                            @foreach (var card in Model.PaymentMethods.CreditCards.Where(q => !q.AccountGUID.Equals(Model.PrimaryAccountGUID)).OrderBy(q => q.StatusName).ThenBy(q => q.Nickname).ToList())
+                                            {
+                                                var days = Utilities.CardExpirationCalculateInDays(card.ExpMonth, card.ExpYear);
+                                                var isPrimary = Model.PrimaryAccountGUID == card.AccountGUID;
+                                                <tr>
+                                                    <td>
+                                                        @(!string.IsNullOrEmpty(card.Nickname) ? card.Nickname : "")
+                                                        @if (days <= 1)
+                                                        {
+                                                            <small class="text-danger">(Expired)</small>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @card.CardType
+                                                    </td>
+                                                    <td>
+                                                        @card.MaskedCardNumber
+                                                    </td>
+                                                    <td>
+                                                        @card.ExpMonth/@card.ExpYear
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="card-toolbar">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="btn btn-hover-primary btn-icon btn-light btn-sm dropdown-toggle w-50px" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <i class="fas fa-pencil-alt text-primary"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                    <a data-primary="@isPrimary" href="/settings/EditCard/@card.AccountGUID" class="dropdown-item">Edit Card</a>
+                                                                    @if (days >= 1 && !isPrimary)
+                                                                    {
+                                                                        <a href="/settings/makeprimary?id=@card.AccountGUID&updateScheduledPayments=true" class="dropdown-item">Make Primary</a>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                                else
+                                {
+                                    <p>You don't have a card on file yet. <a href="/settings/AddCard">Add one here</a>.</p>
+                                }
+                                <div class="separator separator-dashed my-5"></div>
+                                <h4 class="mb-5">Bank Accounts</h4>
+                                @if (Model.PaymentMethods.BankAccounts.Any())
+                                {
+                                    <table id="my_bank_table" class="table table-bordered table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Nickname</th>
+                                                <th>Type</th>
+                                                <th>Bank</th>
+                                                <th>Account #</th>
+                                                <th class="text-center">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.PaymentMethods.BankAccounts.Any(q => q.AccountGUID.Equals(Model.PrimaryAccountGUID)))
+                                            {
+                                                var account = Model.PaymentMethods.BankAccounts.FirstOrDefault(q => q.AccountGUID.Equals(Model.PrimaryAccountGUID));
+                                                var isPrimary = Model.PrimaryAccountGUID == account.AccountGUID;
+                                                <tr>
+                                                    <td>
+                                                        @(!string.IsNullOrEmpty(account.Nickname) ? account.Nickname : "")
+                                                        <small class="text-primary">(Primary Account)</small>
+                                                    </td>
+                                                    <td>
+                                                        @account.AccountType
+                                                    </td>
+                                                    <td>
+                                                        @account.BankName
+                                                    </td>
+                                                    <td>
+                                                        @account.MaskedAccountNumber
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="card-toolbar">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="btn btn-hover-primary btn-icon btn-light btn-sm dropdown-toggle w-50px" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <i class="fas fa-pencil-alt text-primary"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                    <a data-primary="@isPrimary" href="/settings/EditBank/@account.AccountGUID" class="dropdown-item">Edit Account</a>
+                                                                    @if (!isPrimary)
+                                                                    {
+                                                                        <a href="/settings/makeprimary?id=@account.AccountGUID&updateScheduledPayments=true" class="dropdown-item">Make Primary</a>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @foreach (var account in Model.PaymentMethods.BankAccounts.Where(q => !q.AccountGUID.Equals(Model.PrimaryAccountGUID)).OrderBy(q => q.Nickname).ToList())
+                                            {
+                                                var isPrimary = Model.PrimaryAccountGUID == account.AccountGUID;
+                                                <tr>
+                                                    <td>
+                                                        @(!string.IsNullOrEmpty(account.Nickname) ? account.Nickname : "")
+                                                    </td>
+                                                    <td>
+                                                        @account.AccountType
+                                                    </td>
+                                                    <td>
+                                                        @account.BankName
+                                                    </td>
+                                                    <td>
+                                                        @account.MaskedAccountNumber
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="card-toolbar">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="btn btn-hover-primary btn-icon btn-light btn-sm dropdown-toggle w-50px" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <i class="fas fa-pencil-alt text-primary"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                    <a data-primary="@isPrimary" href="/settings/EditBank/@account.AccountGUID" class="dropdown-item">Edit Account</a>
+                                                                    @if (!isPrimary)
+                                                                    {
+                                                                        <a href="/settings/makeprimary?id=@account.AccountGUID&updateScheduledPayments=true" class="dropdown-item">Make Primary</a>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                                else
+                                {
+                                    <p>You don't have a bank account on file yet. <a href="/settings/AddBank">Add one here</a>.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section belowscripts
+{
+    <script src="~/Content/assets/js/pages/custom/profile/profile.js?v=7.0.4"></script>
+}
